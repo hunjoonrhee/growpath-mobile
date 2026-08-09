@@ -4,6 +4,7 @@ import { ThemedText } from '@/components/themed-text';
 import { Colors, Spacing } from '@/constants/theme';
 
 export type QuickStat = {
+  id: string;
   icon: string;
   label: string;
 };
@@ -16,7 +17,7 @@ export function QuickStatsRow({ stats }: QuickStatsRowProps) {
   return (
     <View style={styles.row}>
       {stats.map((stat) => (
-        <View key={stat.label} style={styles.card}>
+        <View key={stat.id} style={styles.card}>
           <ThemedText style={styles.icon}>{stat.icon}</ThemedText>
           <ThemedText type="small" themeColor="textDim" style={styles.label}>
             {stat.label}

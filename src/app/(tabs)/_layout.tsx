@@ -1,4 +1,5 @@
 import { Tabs } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
 import { ThemedText } from '@/components/themed-text';
 import { Colors } from '@/constants/theme';
@@ -12,6 +13,8 @@ function TabIcon({ icon, focused }: { icon: string; focused: boolean }) {
 }
 
 export default function TabsLayout() {
+  const { t } = useTranslation();
+
   return (
     <Tabs
       screenOptions={{
@@ -26,21 +29,21 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: '오늘',
+          title: t('tabs.today'),
           tabBarIcon: ({ focused }) => <TabIcon icon="🧭" focused={focused} />,
         }}
       />
       <Tabs.Screen
         name="log"
         options={{
-          title: '기록',
+          title: t('tabs.log'),
           tabBarIcon: ({ focused }) => <TabIcon icon="📓" focused={focused} />,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
-          title: '나',
+          title: t('tabs.profile'),
           tabBarIcon: ({ focused }) => <TabIcon icon="👤" focused={focused} />,
         }}
       />

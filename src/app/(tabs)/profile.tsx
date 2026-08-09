@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { StyleSheet } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
@@ -6,10 +7,12 @@ import { Spacing } from '@/constants/theme';
 
 // TODO(phase-3+): avatar upload, stats, career goal summary, settings, logout.
 export default function ProfileScreen() {
+  const { t } = useTranslation();
+
   return (
     <ThemedView style={styles.screen}>
       <ThemedText type="title" style={styles.title}>
-        나
+        {t('profile.title')}
       </ThemedText>
     </ThemedView>
   );

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
@@ -11,6 +12,8 @@ export type StageProgressBarProps = {
 };
 
 export function StageProgressBar({ totalStages, currentStage, currentStageLabel }: StageProgressBarProps) {
+  const { t } = useTranslation();
+
   return (
     <View>
       <View style={styles.row}>
@@ -31,7 +34,7 @@ export function StageProgressBar({ totalStages, currentStage, currentStageLabel 
         })}
       </View>
       <ThemedText type="small" themeColor="textFaint" style={styles.label}>
-        현재 {currentStage}단계 — {currentStageLabel}
+        {t('today.currentStage', { stage: currentStage, label: currentStageLabel })}
       </ThemedText>
     </View>
   );

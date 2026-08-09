@@ -1,0 +1,29 @@
+{
+  "tabs": {
+    "today": "오늘",
+    "log": "기록",
+    "profile": "나"
+  },
+  "today": {
+    "greeting": "안녕, {{name}} 👋",
+    "streak": "🔥 {{count}}일 연속 기록 중",
+    "dialLabel": "갭분석 · 탭해서 로드맵 보기",
+    "dialAccessibilityLabel": "로드맵 화면으로 이동",
+    "stageOfTotal": "{{stage}}단계 / {{total}}단계 · {{sub}}",
+    "currentStage": "현재 {{stage}}단계 — {{label}}",
+    "recommendationTitle": "오늘 추천",
+    "startCta": "시작하기",
+    "domain": {
+      "dev": "💻 개발",
+      "language": "🗣️ 언어",
+      "art": "🎨 예술",
+      "other": "✨ 기타"
+    }
+  },
+  "log": {
+    "title": "기록"
+  },
+  "profile": {
+    "title": "나"
+  }
+}

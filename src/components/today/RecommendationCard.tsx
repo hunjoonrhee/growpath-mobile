@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
@@ -5,27 +6,28 @@ import { Colors, Spacing } from '@/constants/theme';
 
 export type RecommendationDomain = 'dev' | 'language' | 'art' | 'other';
 
-const DOMAIN_LABEL: Record<RecommendationDomain, string> = {
-  dev: '💻 개발',
-  language: '🗣️ 언어',
-  art: '🎨 예술',
-  other: '✨ 기타',
+const DOMAIN_LABEL_KEY: Record<RecommendationDomain, string> = {
+  dev: 'today.domain.dev',
+  language: 'today.domain.language',
+  art: 'today.domain.art',
+  other: 'today.domain.other',
 };
 
 export type RecommendationCardProps = {
   domain: RecommendationDomain;
   title: string;
   description: string;
-  ctaLabel: string;
   onPressCta: () => void;
 };
 
-export function RecommendationCard({ domain, title, description, ctaLabel, onPressCta }: RecommendationCardProps) {
+export function RecommendationCard({ domain, title, description, onPressCta }: RecommendationCardProps) {
+  const { t } = useTranslation();
+
   return (
     <View style={styles.card}>
       <View style={styles.domainChip}>
         <ThemedText type="smallBold" themeColor="pri2">
-          {DOMAIN_LABEL[domain]}
+          {t(DOMAIN_LABEL_KEY[domain])}
         </ThemedText>
       </View>
       <ThemedText style={styles.title}>{title}</ThemedText>
@@ -34,7 +36,7 @@ export function RecommendationCard({ domain, title, description, ctaLabel, onPre
       </ThemedText>
       <Pressable style={styles.cta} onPress={onPressCta}>
         <ThemedText type="smallBold" themeColor="text">
-          {ctaLabel}
+          {t('today.startCta')}
         </ThemedText>
         <ThemedText themeColor="text">→</ThemedText>
       </Pressable>

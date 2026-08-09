@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
@@ -9,14 +10,16 @@ export type GreetingHeaderProps = {
 };
 
 export function GreetingHeader({ name, streakDays }: GreetingHeaderProps) {
+  const { t } = useTranslation();
+
   return (
     <View style={styles.container}>
       <ThemedText type="title" style={styles.greeting}>
-        안녕, <ThemedText type="title" themeColor="pri2" style={styles.greeting}>{name}</ThemedText> 👋
+        {t('today.greeting', { name })}
       </ThemedText>
       <View style={styles.streak}>
         <ThemedText type="smallBold" themeColor="amber">
-          🔥 {streakDays}일 연속 기록 중
+          {t('today.streak', { count: streakDays })}
         </ThemedText>
       </View>
     </View>

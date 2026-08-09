@@ -1,0 +1,29 @@
+{
+  "tabs": {
+    "today": "Heute",
+    "log": "Protokoll",
+    "profile": "Ich"
+  },
+  "today": {
+    "greeting": "Hallo, {{name}} 👋",
+    "streak": "🔥 {{count}} Tage in Folge",
+    "dialLabel": "Gap-Analyse · Tippen für Roadmap",
+    "dialAccessibilityLabel": "Zur Roadmap",
+    "stageOfTotal": "Stufe {{stage}} / {{total}} · {{sub}}",
+    "currentStage": "Stufe {{stage}} — {{label}}",
+    "recommendationTitle": "Heutige Empfehlung",
+    "startCta": "Starten",
+    "domain": {
+      "dev": "💻 Entwicklung",
+      "language": "🗣️ Sprache",
+      "art": "🎨 Kunst",
+      "other": "✨ Sonstiges"
+    }
+  },
+  "log": {
+    "title": "Protokoll"
+  },
+  "profile": {
+    "title": "Ich"
+  }
+}

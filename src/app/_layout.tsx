@@ -4,6 +4,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 
 import { Colors } from '@/constants/theme';
+import '@/lib/i18n';
 import { queryClient } from '@/lib/query-client';
 
 SplashScreen.preventAutoHideAsync();

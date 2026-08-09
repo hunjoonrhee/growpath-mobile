@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet } from 'react-native';
 
 import { CompassDial } from '@/components/compass-dial';
@@ -12,6 +13,9 @@ import { Spacing } from '@/constants/theme';
 
 // TODO(phase-3+): replace with real data from Supabase (active goal, gap %,
 // today's recommendation) once auth + roadmap generation/switching land.
+// Unlike the UI chrome around it (translated via src/locales/*.json), these
+// values stand in for user/AI-generated content that will come from the DB,
+// not static copy - so they're plain strings here, not i18n keys.
 const MOCK_TODAY = {
   userName: 'Joon',
   streakDays: 12,
@@ -27,12 +31,14 @@ const MOCK_TODAY = {
     description: '2단계 갭 스킬 중 우선순위 1위. 예상 25분, 끝나면 코드리뷰 모드로 바로 이어갈 수 있어요.',
   },
   quickStats: [
-    { icon: '📚', label: '단어장 복습 · 7개' },
-    { icon: '🎯', label: '이번 주 3/5회' },
+    { id: 'vocab-review', icon: '📚', label: '단어장 복습 · 7개' },
+    { id: 'weekly-progress', icon: '🎯', label: '이번 주 3/5회' },
   ],
 };
 
 export default function TodayScreen() {
+  const { t } = useTranslation();
+
   return (
     <ThemedView style={styles.screen}>
       <ScrollView contentContainerStyle={styles.content}>
@@ -43,13 +49,17 @@ export default function TodayScreen() {
           // TODO(phase-3): navigate to /roadmap once that route exists.
           onPress={() => {}}
           accessibilityRole="button"
-          accessibilityLabel="로드맵 화면으로 이동">
-          <CompassDial percent={MOCK_TODAY.gapPercent} label="갭분석 · 탭해서 로드맵 보기" />
+          accessibilityLabel={t('today.dialAccessibilityLabel')}>
+          <CompassDial percent={MOCK_TODAY.gapPercent} label={t('today.dialLabel')} />
           <ThemedText type="smallBold" style={styles.goalName}>
             {MOCK_TODAY.goalName}
           </ThemedText>
           <ThemedText type="small" themeColor="textDim">
-            {MOCK_TODAY.currentStage}단계 / {MOCK_TODAY.totalStages}단계 · {MOCK_TODAY.goalSub}
+            {t('today.stageOfTotal', {
+              stage: MOCK_TODAY.currentStage,
+              total: MOCK_TODAY.totalStages,
+              sub: MOCK_TODAY.goalSub,
+            })}
           </ThemedText>
         </Pressable>
 
@@ -60,13 +70,12 @@ export default function TodayScreen() {
         />
 
         <ThemedText type="small" themeColor="textFaint" style={styles.sectionTitle}>
-          오늘 추천
+          {t('today.recommendationTitle')}
         </ThemedText>
         <RecommendationCard
           domain={MOCK_TODAY.recommendation.domain}
           title={MOCK_TODAY.recommendation.title}
           description={MOCK_TODAY.recommendation.description}
-          ctaLabel="시작하기"
           // TODO(phase-4): open the timer/web-handoff bottom sheet.
           onPressCta={() => {}}
         />

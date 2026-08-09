@@ -1,8 +1,12 @@
 -- Phase 0-5: 롤플레이 세션 + 단어장(스페이스드 리피티션) 테이블
+--
+-- user_id는 default auth.uid()로 채워진다 - 앱 코드(insertWithUser 등)가
+-- user_id를 깜빡 안 채워도 DB 레벨에서 항상 요청자 본인으로 채워지고, RLS가
+-- 그 값을 다시 검증한다. 클라이언트 쪽 실수 하나에 안전망이 하나만 있지 않게.
 
 create table if not exists roleplay_sessions (
   id uuid primary key default gen_random_uuid(),
-  user_id uuid not null references auth.users(id) on delete cascade,
+  user_id uuid not null default auth.uid() references auth.users(id) on delete cascade,
   -- ai_roadmaps는 이 마이그레이션 히스토리 밖(joon-dashboard 프로젝트)에 있어 FK를
   -- 걸지 않는다. 타입/존재 여부를 확인한 뒤 필요하면 별도 마이그레이션으로 FK 추가:
   --   select column_name, data_type from information_schema.columns
@@ -52,7 +56,7 @@ create index if not exists roleplay_sessions_user_id_idx
 
 create table if not exists vocab_words (
   id uuid primary key default gen_random_uuid(),
-  user_id uuid not null references auth.users(id) on delete cascade,
+  user_id uuid not null default auth.uid() references auth.users(id) on delete cascade,
   roleplay_session_id uuid references roleplay_sessions(id) on delete set null,
   language text not null,
   word text not null,

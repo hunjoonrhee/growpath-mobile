@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
@@ -8,8 +9,14 @@ export type CaptureFabProps = {
 };
 
 export function CaptureFab({ onPress }: CaptureFabProps) {
+  const { t } = useTranslation();
+
   return (
-    <Pressable style={styles.fab} onPress={onPress} accessibilityRole="button" accessibilityLabel="음성으로 기록하기">
+    <Pressable
+      style={styles.fab}
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={t('today.captureAccessibilityLabel')}>
       <ThemedText style={styles.icon}>🎙️</ThemedText>
     </Pressable>
   );

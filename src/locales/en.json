@@ -9,6 +9,7 @@
     "streak": "🔥 {{count}}-day streak",
     "dialLabel": "Gap analysis · Tap to see roadmap",
     "dialAccessibilityLabel": "Go to roadmap",
+    "captureAccessibilityLabel": "Record with voice",
     "stageOfTotal": "Stage {{stage}} / {{total}} · {{sub}}",
     "currentStage": "Stage {{stage}} — {{label}}",
     "recommendationTitle": "Today's pick",

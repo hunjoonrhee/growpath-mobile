@@ -1,14 +1,13 @@
 -- Phase 0-5: 롤플레이 세션 + 단어장(스페이스드 리피티션) 테이블
---
--- 주의: ai_roadmaps.id 참조 컬럼 타입(uuid 가정)은 실제 joon-dashboard 프로젝트에서
--- `select column_name, data_type from information_schema.columns
---   where table_name = 'ai_roadmaps' and column_name = 'id';`
--- 로 한 번 확인 후 적용할 것. 다르면 roadmap_id 컬럼 타입을 맞춰 수정.
 
 create table if not exists roleplay_sessions (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade,
-  roadmap_id uuid references ai_roadmaps(id) on delete set null,
+  -- ai_roadmaps는 이 마이그레이션 히스토리 밖(joon-dashboard 프로젝트)에 있어 FK를
+  -- 걸지 않는다. 타입/존재 여부를 확인한 뒤 필요하면 별도 마이그레이션으로 FK 추가:
+  --   select column_name, data_type from information_schema.columns
+  --     where table_name = 'ai_roadmaps' and column_name = 'id';
+  roadmap_id uuid,
   scenario text not null,
   language text not null,
   transcript jsonb not null default '[]'::jsonb,
@@ -18,18 +17,22 @@ create table if not exists roleplay_sessions (
 
 alter table roleplay_sessions enable row level security;
 
+drop policy if exists "roleplay_sessions: owner select" on roleplay_sessions;
 create policy "roleplay_sessions: owner select"
   on roleplay_sessions for select to authenticated
   using (auth.uid() = user_id);
 
+drop policy if exists "roleplay_sessions: owner insert" on roleplay_sessions;
 create policy "roleplay_sessions: owner insert"
   on roleplay_sessions for insert to authenticated
   with check (auth.uid() = user_id);
 
+drop policy if exists "roleplay_sessions: owner update" on roleplay_sessions;
 create policy "roleplay_sessions: owner update"
   on roleplay_sessions for update to authenticated
   using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
+drop policy if exists "roleplay_sessions: owner delete" on roleplay_sessions;
 create policy "roleplay_sessions: owner delete"
   on roleplay_sessions for delete to authenticated
   using (auth.uid() = user_id);
@@ -43,6 +46,9 @@ create index if not exists roleplay_sessions_user_id_idx
 --   where user_id = :uid and next_review_at <= now()
 --   order by next_review_at limit 20
 -- 로 처리한다 (오늘 못 본 단어는 next_review_at이 그대로라 자연히 다음 날로 이월).
+-- (user_id, language, word) unique 제약으로 같은 단어 재저장 시
+--   on conflict (user_id, language, word) do update set example_sentence = excluded.example_sentence
+-- 형태의 upsert를 쓰면 중복 SRS 카드가 생기지 않는다.
 
 create table if not exists vocab_words (
   id uuid primary key default gen_random_uuid(),
@@ -52,27 +58,53 @@ create table if not exists vocab_words (
   word text not null,
   meaning text not null,
   example_sentence text,
-  interval_days integer not null default 1,
-  ease_factor numeric(3,2) not null default 2.5,
-  review_count integer not null default 0,
+  interval_days integer not null default 1 check (interval_days > 0),
+  ease_factor numeric(3,2) not null default 2.5 check (ease_factor >= 1.3),
+  review_count integer not null default 0 check (review_count >= 0),
   next_review_at timestamptz not null default now(),
-  created_at timestamptz not null default now()
+  created_at timestamptz not null default now(),
+  unique (user_id, language, word)
 );
 
 alter table vocab_words enable row level security;
 
+drop policy if exists "vocab_words: owner select" on vocab_words;
 create policy "vocab_words: owner select"
   on vocab_words for select to authenticated
   using (auth.uid() = user_id);
 
+-- roleplay_session_id가 채워진 경우, 그 세션도 같은 유저 소유여야 통과.
+-- (다른 유저의 roleplay_sessions.id를 가리키게 만드는 걸 RLS 레벨에서 차단)
+drop policy if exists "vocab_words: owner insert" on vocab_words;
 create policy "vocab_words: owner insert"
   on vocab_words for insert to authenticated
-  with check (auth.uid() = user_id);
+  with check (
+    auth.uid() = user_id
+    and (
+      roleplay_session_id is null
+      or exists (
+        select 1 from roleplay_sessions rs
+        where rs.id = roleplay_session_id and rs.user_id = auth.uid()
+      )
+    )
+  );
 
+drop policy if exists "vocab_words: owner update" on vocab_words;
 create policy "vocab_words: owner update"
   on vocab_words for update to authenticated
-  using (auth.uid() = user_id) with check (auth.uid() = user_id);
+  using (auth.uid() = user_id)
+  with check (
+    auth.uid() = user_id
+    and (
+      roleplay_session_id is null
+      or exists (
+        select 1 from roleplay_sessions rs
+        where rs.id = roleplay_session_id and rs.user_id = auth.uid()
+      )
+    )
+  );
 
+drop policy if exists "vocab_words: owner delete" on vocab_words;
 create policy "vocab_words: owner delete"
   on vocab_words for delete to authenticated
   using (auth.uid() = user_id);

@@ -1,3 +1,4 @@
+import { useId } from 'react';
 import Svg, { Circle, Defs, Line, LinearGradient, Stop, Text as SvgText } from 'react-native-svg';
 
 import { Colors } from '@/constants/theme';
@@ -16,8 +17,6 @@ export type CompassDialProps = {
   trackColor?: string;
 };
 
-const GRADIENT_ID = 'compass-dial-gradient';
-
 export function CompassDial({
   percent,
   size = 176,
@@ -28,7 +27,11 @@ export function CompassDial({
   tickActiveColor = Colors.pri2,
   trackColor = Colors.surf2,
 }: CompassDialProps) {
-  const clampedPercent = Math.max(0, Math.min(100, percent));
+  // useId() includes colons (":r0:"), which are valid in SVG ids but risky in
+  // CSS-style url(#...) references on the react-native-web renderer - strip them.
+  const gradientId = `compass-dial-gradient-${useId().replace(/:/g, '')}`;
+  const safePercent = Number.isFinite(percent) ? percent : 0;
+  const clampedPercent = Math.max(0, Math.min(100, safePercent));
   const cx = size / 2;
   const cy = size / 2;
   const radius = size * 0.42;
@@ -40,7 +43,7 @@ export function CompassDial({
   return (
     <Svg width={size} height={size}>
       <Defs>
-        <LinearGradient id={GRADIENT_ID} x1="0%" y1="0%" x2="100%" y2="100%">
+        <LinearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
           <Stop offset="0%" stopColor={colorFrom} />
           <Stop offset="100%" stopColor={colorTo} />
         </LinearGradient>
@@ -66,7 +69,7 @@ export function CompassDial({
         cy={cy}
         r={radius}
         fill="none"
-        stroke={`url(#${GRADIENT_ID})`}
+        stroke={`url(#${gradientId})`}
         strokeWidth={strokeWidth}
         strokeLinecap="round"
         strokeDasharray={circ}

@@ -34,7 +34,7 @@ export function computeTicks(size: number, radius: number, percent: number): Tic
     return {
       key: i,
       isMajor,
-      isActive: (i / TICK_COUNT) * 100 <= percent,
+      isActive: (i / TICK_COUNT) * 100 < percent,
       from: polarToCartesian(cx, cy, outer, angleDeg),
       to: polarToCartesian(cx, cy, inner, angleDeg),
     };

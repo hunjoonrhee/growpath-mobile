@@ -1,0 +1,30 @@
+{
+  "tabs": {
+    "today": "Today",
+    "log": "Log",
+    "profile": "Me"
+  },
+  "today": {
+    "greeting": "Hi, {{name}} 👋",
+    "streak": "🔥 {{count}}-day streak",
+    "dialLabel": "Gap analysis · Tap to see roadmap",
+    "dialAccessibilityLabel": "Go to roadmap",
+    "captureAccessibilityLabel": "Record with voice",
+    "stageOfTotal": "Stage {{stage}} / {{total}} · {{sub}}",
+    "currentStage": "Stage {{stage}} — {{label}}",
+    "recommendationTitle": "Today's pick",
+    "startCta": "Start",
+    "domain": {
+      "dev": "💻 Dev",
+      "language": "🗣️ Language",
+      "art": "🎨 Art",
+      "other": "✨ Other"
+    }
+  },
+  "log": {
+    "title": "Log"
+  },
+  "profile": {
+    "title": "Me"
+  }
+}

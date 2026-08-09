@@ -34,7 +34,11 @@ export function RecommendationCard({ domain, title, description, onPressCta }: R
       <ThemedText type="small" themeColor="textDim" style={styles.description}>
         {description}
       </ThemedText>
-      <Pressable style={styles.cta} onPress={onPressCta}>
+      <Pressable
+        style={styles.cta}
+        onPress={onPressCta}
+        accessibilityRole="button"
+        accessibilityLabel={t('today.startCta')}>
         <ThemedText type="smallBold" themeColor="text">
           {t('today.startCta')}
         </ThemedText>

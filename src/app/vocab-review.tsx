@@ -13,6 +13,7 @@ import { Spacing } from '@/constants/theme';
 import { useDueVocabWords } from '@/hooks/vocab/use-due-vocab-words';
 import { useReviewVocabWord } from '@/hooks/vocab/use-review-vocab-word';
 import { useAuth } from '@/lib/auth-context';
+import type { VocabWord } from '@/lib/vocab';
 
 export default function VocabReviewScreen() {
   const { t } = useTranslation();
@@ -21,12 +22,26 @@ export default function VocabReviewScreen() {
   const dueWords = useDueVocabWords(session?.user.id);
   const reviewWord = useReviewVocabWord(session?.user.id);
   const [currentIndex, setCurrentIndex] = useState(0);
+  // Reviewing a word invalidates the due-words query, which then refetches
+  // with that word removed. Reading dueWords.data directly here would shift
+  // every later word down one slot mid-session and skip it. Snapshotting
+  // the deck once, on first load, keeps the session's word order stable
+  // regardless of what the query refetches in the background.
+  const [deck, setDeck] = useState<VocabWord[] | null>(null);
+  // Set directly during render (React's documented pattern for deriving
+  // state from data that just arrived), not in a useEffect - the guard
+  // means this only fires once, the first render after dueWords.data
+  // arrives, so it can't loop.
+  if (deck === null && dueWords.data) {
+    setDeck(dueWords.data);
+  }
 
   if (!session) return <Redirect href="/login" />;
 
-  const words = dueWords.data ?? [];
+  const words = deck ?? [];
   const total = words.length;
   const currentWord = words[currentIndex];
+  const isInitializing = dueWords.isLoading || deck === null;
 
   const handleReview = (knew: boolean) => {
     if (!currentWord) return;
@@ -54,25 +69,25 @@ export default function VocabReviewScreen() {
         />
 
         <ScrollView contentContainerStyle={styles.content}>
-          {dueWords.isLoading && (
+          {isInitializing && !dueWords.isError && (
             <ThemedText type="small" themeColor="textDim" style={styles.centerText}>
               {t('vocab.loading')}
             </ThemedText>
           )}
 
-          {!dueWords.isLoading && dueWords.isError && (
+          {dueWords.isError && (
             <ThemedText type="small" themeColor="amber" style={styles.centerText}>
               {t('vocab.loadError')}
             </ThemedText>
           )}
 
-          {!dueWords.isLoading && !dueWords.isError && total === 0 && (
+          {!isInitializing && !dueWords.isError && total === 0 && (
             <ThemedText type="subtitle" style={styles.centerText}>
               {t('vocab.emptyDeck')}
             </ThemedText>
           )}
 
-          {!dueWords.isLoading && !dueWords.isError && total > 0 && currentIndex >= total && (
+          {!isInitializing && !dueWords.isError && total > 0 && currentIndex >= total && (
             <ThemedText type="subtitle" style={styles.centerText}>
               {t('vocab.deckComplete')}
             </ThemedText>

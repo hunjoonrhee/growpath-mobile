@@ -1,5 +1,6 @@
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
+import { BackButton } from '@/components/navigation/BackButton';
 import { ThemedText } from '@/components/themed-text';
 import { Colors, Spacing } from '@/constants/theme';
 
@@ -15,9 +16,7 @@ export function VocabProgressHeader({ onBack, backAccessibilityLabel, current, t
 
   return (
     <View style={styles.row}>
-      <Pressable accessibilityRole="button" accessibilityLabel={backAccessibilityLabel} onPress={onBack} style={styles.backButton}>
-        <ThemedText type="smallBold">←</ThemedText>
-      </Pressable>
+      <BackButton accessibilityLabel={backAccessibilityLabel} onPress={onBack} />
       <View style={styles.track}>
         <View style={[styles.fill, { width: `${progress * 100}%` }]} />
       </View>
@@ -35,14 +34,6 @@ const styles = StyleSheet.create({
     gap: Spacing.two + 2,
     height: 52,
     paddingHorizontal: Spacing.two + 4,
-  },
-  backButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
-    backgroundColor: Colors.surf2,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   track: {
     flex: 1,

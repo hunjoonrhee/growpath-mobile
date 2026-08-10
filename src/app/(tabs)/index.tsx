@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Alert, Pressable, ScrollView, StyleSheet } from 'react-native';
 
 import { CompassDial } from '@/components/compass-dial';
+import { NoActiveRoadmapState } from '@/components/roadmap/NoActiveRoadmapState';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { CaptureFab } from '@/components/today/CaptureFab';
@@ -13,36 +14,44 @@ import { RecommendationCard } from '@/components/today/RecommendationCard';
 import { StageProgressBar } from '@/components/today/StageProgressBar';
 import { TimerHandoffSheet } from '@/components/today/TimerHandoffSheet';
 import { Spacing } from '@/constants/theme';
-
-// TODO(phase-3+): replace with real data from Supabase (active goal, gap %,
-// today's recommendation) once auth + roadmap generation/switching land.
-// Unlike the UI chrome around it (translated via src/locales/*.json), these
-// values stand in for user/AI-generated content that will come from the DB,
-// not static copy - so they're plain strings here, not i18n keys.
-const MOCK_TODAY = {
-  userName: 'Joon',
-  streakDays: 12,
-  gapPercent: 68,
-  goalName: 'Lead Architekt 방향',
-  goalSub: '저번달 대비 +3%',
-  totalStages: 5,
-  currentStage: 2,
-  currentStageLabel: '상태관리 심화',
-  recommendation: {
-    domain: 'dev' as const,
-    title: 'NgRx Effects 학습하기',
-    description: '2단계 갭 스킬 중 우선순위 1위. 예상 25분, 끝나면 코드리뷰 모드로 바로 이어갈 수 있어요.',
-  },
-  quickStats: [
-    { id: 'vocab-review', icon: '📚', label: '단어장 복습 · 7개' },
-    { id: 'weekly-progress', icon: '🎯', label: '이번 주 3/5회' },
-  ],
-};
+import { useAdoptedRoadmapId } from '@/hooks/roadmap/use-adopted-roadmap-id';
+import { useFocusStageLevel } from '@/hooks/roadmap/use-focus-stage-level';
+import { useRoadmap } from '@/hooks/roadmap/use-roadmap';
+import { useStudyStreak } from '@/hooks/sessions/use-study-streak';
+import { useWeeklySessionCount } from '@/hooks/sessions/use-weekly-session-count';
+import { useDueVocabWordCount } from '@/hooks/vocab/use-due-vocab-word-count';
+import { useAuth } from '@/lib/auth-context';
+import { deriveTodayRecommendation } from '@/lib/today-recommendation';
 
 export default function TodayScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const { session } = useAuth();
+  const userId = session?.user.id;
+
+  const adoptedRoadmapId = useAdoptedRoadmapId(userId);
+  const roadmap = useRoadmap(adoptedRoadmapId.data);
+  const focusStageLevel = useFocusStageLevel(adoptedRoadmapId.data);
+  const streak = useStudyStreak(userId);
+  const weeklySessionCount = useWeeklySessionCount(userId);
+  const dueVocabWordCount = useDueVocabWordCount(userId);
   const [isHandoffSheetVisible, setIsHandoffSheetVisible] = useState(false);
+
+  const hasAdoptedRoadmap = Boolean(adoptedRoadmapId.data);
+  const isLoading =
+    adoptedRoadmapId.isLoading || (hasAdoptedRoadmap && (roadmap.isLoading || focusStageLevel.isLoading));
+  const isError =
+    adoptedRoadmapId.isError ||
+    roadmap.isError ||
+    focusStageLevel.isError ||
+    (hasAdoptedRoadmap && !roadmap.isLoading && !roadmap.data);
+
+  const displayName = session?.user.email?.split('@')[0] ?? '';
+  const recommendation = roadmap.data ? deriveTodayRecommendation(roadmap.data.stages, focusStageLevel.data ?? null) : null;
+  const totalStages = roadmap.data?.stages.length ?? 0;
+  const currentStage = focusStageLevel.data ?? 1;
+  const currentStageLabel = roadmap.data?.stages.find((s) => s.level === currentStage)?.title ?? '';
+  const dialPercent = totalStages > 0 ? Math.round(((currentStage - 1) / totalStages) * 100) : 0;
 
   const handleSelectWeb = () => {
     setIsHandoffSheetVisible(false);
@@ -50,50 +59,69 @@ export default function TodayScreen() {
   };
 
   const handleSelectTimer = () => {
+    if (!recommendation) return;
     setIsHandoffSheetVisible(false);
-    router.push({ pathname: '/timer', params: { topic: MOCK_TODAY.recommendation.title } });
+    router.push({ pathname: '/timer', params: { topic: recommendation.title } });
   };
 
   return (
     <ThemedView style={styles.screen}>
       <ScrollView contentContainerStyle={styles.content}>
-        <GreetingHeader name={MOCK_TODAY.userName} streakDays={MOCK_TODAY.streakDays} />
+        <GreetingHeader name={displayName} streakDays={streak.data ?? 0} />
 
-        <Pressable
-          style={styles.dialWrap}
-          onPress={() => router.push('/roadmap')}
-          accessibilityRole="button"
-          accessibilityLabel={t('today.dialAccessibilityLabel')}>
-          <CompassDial percent={MOCK_TODAY.gapPercent} label={t('today.dialLabel')} />
-          <ThemedText type="smallBold" style={styles.goalName}>
-            {MOCK_TODAY.goalName}
+        {isLoading && (
+          <ThemedText type="small" themeColor="textDim" style={styles.centerText}>
+            {t('today.loading')}
           </ThemedText>
-          <ThemedText type="small" themeColor="textDim">
-            {t('today.stageOfTotal', {
-              stage: MOCK_TODAY.currentStage,
-              total: MOCK_TODAY.totalStages,
-              sub: MOCK_TODAY.goalSub,
-            })}
+        )}
+
+        {!isLoading && isError && (
+          <ThemedText type="small" themeColor="amber" style={styles.centerText}>
+            {t('today.loadError')}
           </ThemedText>
-        </Pressable>
+        )}
 
-        <StageProgressBar
-          totalStages={MOCK_TODAY.totalStages}
-          currentStage={MOCK_TODAY.currentStage}
-          currentStageLabel={MOCK_TODAY.currentStageLabel}
+        {!isLoading && !isError && !hasAdoptedRoadmap && <NoActiveRoadmapState onPressSetGoal={() => router.push('/goal-setup')} />}
+
+        {!isLoading && !isError && roadmap.data && (
+          <>
+            <Pressable
+              style={styles.dialWrap}
+              onPress={() => router.push('/roadmap')}
+              accessibilityRole="button"
+              accessibilityLabel={t('today.dialAccessibilityLabel')}>
+              <CompassDial percent={dialPercent} label={t('today.dialLabel')} />
+              <ThemedText type="smallBold" style={styles.goalName}>
+                {roadmap.data.goal}
+              </ThemedText>
+              <ThemedText type="small" themeColor="textDim">
+                {t('today.stageOfTotal', { stage: currentStage, total: totalStages })}
+              </ThemedText>
+            </Pressable>
+
+            <StageProgressBar totalStages={totalStages} currentStage={currentStage} currentStageLabel={currentStageLabel} />
+
+            {recommendation && (
+              <>
+                <ThemedText type="small" themeColor="textFaint" style={styles.sectionTitle}>
+                  {t('today.recommendationTitle')}
+                </ThemedText>
+                <RecommendationCard
+                  title={recommendation.title}
+                  description={t('today.recommendationDescription', { stage: recommendation.stageTitle })}
+                  onPressCta={() => setIsHandoffSheetVisible(true)}
+                />
+              </>
+            )}
+          </>
+        )}
+
+        <QuickStatsRow
+          stats={[
+            { id: 'vocab-review', icon: '📚', label: t('today.quickStats.vocabReview', { count: dueVocabWordCount.data ?? 0 }) },
+            { id: 'weekly-progress', icon: '🎯', label: t('today.quickStats.weeklyProgress', { count: weeklySessionCount.data ?? 0 }) },
+          ]}
         />
-
-        <ThemedText type="small" themeColor="textFaint" style={styles.sectionTitle}>
-          {t('today.recommendationTitle')}
-        </ThemedText>
-        <RecommendationCard
-          domain={MOCK_TODAY.recommendation.domain}
-          title={MOCK_TODAY.recommendation.title}
-          description={MOCK_TODAY.recommendation.description}
-          onPressCta={() => setIsHandoffSheetVisible(true)}
-        />
-
-        <QuickStatsRow stats={MOCK_TODAY.quickStats} />
       </ScrollView>
 
       {/* Icon/label imply voice capture specifically, so route this to the
@@ -125,6 +153,10 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: Spacing.four,
     paddingBottom: Spacing.six,
+  },
+  centerText: {
+    textAlign: 'center',
+    marginTop: Spacing.six,
   },
   dialWrap: {
     alignItems: 'center',

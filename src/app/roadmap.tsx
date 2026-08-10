@@ -1,15 +1,16 @@
 import { Redirect, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BackHeader } from '@/components/navigation/BackHeader';
+import { NoActiveRoadmapState } from '@/components/roadmap/NoActiveRoadmapState';
 import { OtherGoalsList } from '@/components/roadmap/OtherGoalsList';
 import { RoadmapHero } from '@/components/roadmap/RoadmapHero';
 import { StageTimeline } from '@/components/roadmap/StageTimeline';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
 import { useAdoptedRoadmapId } from '@/hooks/roadmap/use-adopted-roadmap-id';
 import { useFocusStageLevel } from '@/hooks/roadmap/use-focus-stage-level';
 import { useRoadmap } from '@/hooks/roadmap/use-roadmap';
@@ -70,25 +71,7 @@ export default function RoadmapScreen() {
             </ThemedText>
           )}
 
-          {!isLoading && !isError && !hasAdoptedRoadmap && (
-            <View style={styles.emptyState}>
-              <ThemedText type="subtitle" style={styles.centerText}>
-                {t('roadmap.emptyTitle')}
-              </ThemedText>
-              <ThemedText type="small" themeColor="textDim" style={styles.centerText}>
-                {t('roadmap.emptySubtitle')}
-              </ThemedText>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={t('roadmap.emptyCta')}
-                onPress={() => router.push('/goal-setup')}
-                style={styles.emptyCta}>
-                <ThemedText type="smallBold" style={styles.emptyCtaLabel}>
-                  {t('roadmap.emptyCta')}
-                </ThemedText>
-              </Pressable>
-            </View>
-          )}
+          {!isLoading && !isError && !hasAdoptedRoadmap && <NoActiveRoadmapState onPressSetGoal={() => router.push('/goal-setup')} />}
 
           {!isLoading && !isError && roadmap.data && (
             <>
@@ -129,20 +112,5 @@ const styles = StyleSheet.create({
   },
   centerText: {
     textAlign: 'center',
-  },
-  emptyState: {
-    marginTop: Spacing.six,
-    gap: Spacing.two,
-  },
-  emptyCta: {
-    marginTop: Spacing.three,
-    alignSelf: 'center',
-    backgroundColor: Colors.pri,
-    borderRadius: 14,
-    paddingVertical: Spacing.two + 2,
-    paddingHorizontal: Spacing.four,
-  },
-  emptyCtaLabel: {
-    color: '#ffffff',
   },
 });

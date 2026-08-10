@@ -6,7 +6,8 @@ import { Colors, Spacing } from '@/constants/theme';
 import { DOMAIN_LABEL_KEY, type Domain } from '@/lib/domain';
 
 export type RecommendationCardProps = {
-  domain: Domain;
+  /** Omitted when the recommendation isn't tied to a known domain (e.g. derived from roadmap data, which doesn't record one). */
+  domain?: Domain;
   title: string;
   description: string;
   onPressCta: () => void;
@@ -17,11 +18,13 @@ export function RecommendationCard({ domain, title, description, onPressCta }: R
 
   return (
     <View style={styles.card}>
-      <View style={styles.domainChip}>
-        <ThemedText type="smallBold" themeColor="pri2">
-          {t(DOMAIN_LABEL_KEY[domain])}
-        </ThemedText>
-      </View>
+      {domain && (
+        <View style={styles.domainChip}>
+          <ThemedText type="smallBold" themeColor="pri2">
+            {t(DOMAIN_LABEL_KEY[domain])}
+          </ThemedText>
+        </View>
+      )}
       <ThemedText style={styles.title}>{title}</ThemedText>
       <ThemedText type="small" themeColor="textDim" style={styles.description}>
         {description}

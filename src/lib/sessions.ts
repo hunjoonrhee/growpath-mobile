@@ -1,3 +1,4 @@
+import { toDateString } from '@/lib/date';
 import { fetchAdoptedRoadmapId } from '@/lib/roadmap';
 import { insertWithUser, supabase } from '@/lib/supabase';
 
@@ -40,12 +41,13 @@ function toSessionRecord(row: SessionRow): SessionRecord {
   };
 }
 
-function todayDateString(): string {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
+/** Monday of the week containing `date` (ISO week, not locale-dependent). */
+function startOfIsoWeek(date: Date): Date {
+  const dayOfWeek = date.getDay(); // 0=Sun ... 6=Sat
+  const daysSinceMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+  const monday = new Date(date);
+  monday.setDate(date.getDate() - daysSinceMonday);
+  return monday;
 }
 
 export async function fetchRecentSessions(userId: string, limit = 20): Promise<SessionRecord[]> {
@@ -67,8 +69,31 @@ export async function createSession(userId: string, input: CreateSessionInput): 
     duration_minutes: input.durationMinutes,
     til: input.til || null,
     tags: input.tags,
-    date: todayDateString(),
+    date: toDateString(new Date()),
     roadmap_id: roadmapId,
   });
   if (error) throw error;
+}
+
+/** Distinct session dates, most recent first - used to compute the study streak. */
+export async function fetchStudySessionDates(userId: string, limit = 200): Promise<string[]> {
+  const { data, error } = await supabase
+    .from('sessions')
+    .select('date')
+    .eq('user_id', userId)
+    .order('date', { ascending: false })
+    .limit(limit);
+  if (error) throw error;
+  return Array.from(new Set((data ?? []).map((row) => row.date as string)));
+}
+
+export async function fetchWeeklySessionCount(userId: string): Promise<number> {
+  const weekStart = toDateString(startOfIsoWeek(new Date()));
+  const { count, error } = await supabase
+    .from('sessions')
+    .select('id', { count: 'exact', head: true })
+    .eq('user_id', userId)
+    .gte('date', weekStart);
+  if (error) throw error;
+  return count ?? 0;
 }

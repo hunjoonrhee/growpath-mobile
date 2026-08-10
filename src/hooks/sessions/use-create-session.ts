@@ -9,6 +9,8 @@ export function useCreateSession(userId: string | undefined) {
     mutationFn: (input: CreateSessionInput) => createSession(userId as string, input),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['sessions', 'recent', userId] });
+      queryClient.invalidateQueries({ queryKey: ['sessions', 'streak', userId] });
+      queryClient.invalidateQueries({ queryKey: ['sessions', 'weeklyCount', userId] });
     },
   });
 }

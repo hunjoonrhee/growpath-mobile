@@ -10,11 +10,18 @@
     "dialLabel": "Gap-Analyse · Tippen für Roadmap",
     "dialAccessibilityLabel": "Zur Roadmap",
     "captureAccessibilityLabel": "Per Sprache aufnehmen",
-    "stageOfTotal": "Stufe {{stage}} / {{total}} · {{sub}}",
+    "stageOfTotal": "Stufe {{stage}} / {{total}}",
     "currentStage": "Stufe {{stage}} — {{label}}",
     "recommendationTitle": "Heutige Empfehlung",
+    "recommendationDescription": "Ein Skill, den du in {{stage}} als Nächstes ausprobieren könntest.",
     "startCta": "Starten",
+    "loading": "Wird geladen...",
+    "loadError": "Konnte nicht geladen werden. Bitte versuche es gleich noch einmal.",
     "webHandoffComingSoon": "Weiter im Web ist noch nicht bereit. Bitte nutze vorerst nur den Timer.",
+    "quickStats": {
+      "vocabReview": "Vokabeln wiederholen · {{count}}",
+      "weeklyProgress": "Diese Woche {{count}}/5"
+    },
     "handoffSheet": {
       "closeAccessibilityLabel": "Schließen",
       "title": "Wie möchtest du starten?",
@@ -53,7 +60,14 @@
     "learningSectionTitle": "Lernen",
     "vocabReviewCta": "Vokabeln wiederholen",
     "vocabDueCount": "{{count}} Vokabeln fällig",
-    "vocabAddCta": "Vokabel hinzufügen"
+    "vocabAddCta": "Vokabel hinzufügen",
+    "accountSectionTitle": "Konto",
+    "logoutCta": "Abmelden",
+    "logoutConfirmTitle": "Abmelden?",
+    "logoutConfirmMessage": "Nach dem erneuten Anmelden kannst du direkt weitermachen.",
+    "logoutCancel": "Abbrechen",
+    "logoutConfirm": "Abmelden",
+    "logoutError": "Abmelden fehlgeschlagen. Bitte versuche es gleich noch einmal."
   },
   "auth": {
     "tagline": "Kenne dein Ziel → kenne den heutigen Schritt\nKI-gestützter Wachstumskompass",

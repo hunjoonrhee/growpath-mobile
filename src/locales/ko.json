@@ -22,7 +22,19 @@
     }
   },
   "log": {
-    "title": "기록"
+    "title": "기록",
+    "voiceLabel": "음성으로 기록",
+    "photoLabel": "사진으로 기록",
+    "captureComingSoon": "이 방식은 아직 준비 중이에요. 직접 입력을 사용해주세요.",
+    "manualEntryCta": "직접 입력",
+    "recentTitle": "최근 기록",
+    "loading": "기록 불러오는 중...",
+    "loadError": "기록을 불러오지 못했어요. 잠시 후 다시 시도해주세요.",
+    "empty": "아직 기록이 없어요. 첫 기록을 남겨보세요.",
+    "relativeToday": "오늘",
+    "relativeYesterday": "어제",
+    "relativeDaysAgo": "{{count}}일 전",
+    "durationAndDate": "{{minutes}}분 · {{date}}"
   },
   "profile": {
     "title": "나"
@@ -76,5 +88,19 @@
     "submitCta": "이 목표로 시작하기",
     "generationUnavailable": "AI 로드맵 생성은 아직 준비 중이에요. 곧 만나요!",
     "errorGeneric": "문제가 발생했어요. 잠시 후 다시 시도해주세요."
+  },
+  "captureEntry": {
+    "backAccessibilityLabel": "뒤로가기",
+    "title": "기록 추가",
+    "titleLabel": "무엇을 공부했나요?",
+    "titlePlaceholder": "예: NgRx Effects 학습",
+    "durationLabel": "시간 (분)",
+    "durationPlaceholder": "예: 25",
+    "tilLabel": "오늘 배운 것",
+    "tilPlaceholder": "간단히 정리해보세요...",
+    "tagsLabel": "태그 (쉼표로 구분)",
+    "tagsPlaceholder": "예: ngrx, 상태관리",
+    "saveCta": "저장하기",
+    "errorGeneric": "저장에 실패했어요. 잠시 후 다시 시도해주세요."
   }
 }

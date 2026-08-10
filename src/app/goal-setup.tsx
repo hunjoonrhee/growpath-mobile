@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { MultilineTextInput } from '@/components/forms/MultilineTextInput';
 import { DomainChipSelector } from '@/components/goal-setup/DomainChipSelector';
-import { GoalTextInput } from '@/components/goal-setup/GoalTextInput';
 import { InputModeToggle, type InputMode } from '@/components/goal-setup/InputModeToggle';
 import { VoiceInputPlaceholder } from '@/components/goal-setup/VoiceInputPlaceholder';
 import { BackHeader } from '@/components/navigation/BackHeader';
@@ -67,7 +67,7 @@ export default function GoalSetupScreen() {
               voiceLabel={t('goalSetup.inputMode.voice')}
             />
             {inputMode === 'text' ? (
-              <GoalTextInput value={goalText} onChangeText={setGoalText} placeholder={t('goalSetup.textPlaceholder')} />
+              <MultilineTextInput value={goalText} onChangeText={setGoalText} placeholder={t('goalSetup.textPlaceholder')} />
             ) : (
               <VoiceInputPlaceholder message={t('goalSetup.voiceComingSoon')} />
             )}

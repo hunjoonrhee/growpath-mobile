@@ -2,13 +2,14 @@ import { StyleSheet, TextInput } from 'react-native';
 
 import { Colors, Spacing } from '@/constants/theme';
 
-export type GoalTextInputProps = {
+export type MultilineTextInputProps = {
   value: string;
   onChangeText: (text: string) => void;
   placeholder: string;
+  minHeight?: number;
 };
 
-export function GoalTextInput({ value, onChangeText, placeholder }: GoalTextInputProps) {
+export function MultilineTextInput({ value, onChangeText, placeholder, minHeight = 110 }: MultilineTextInputProps) {
   return (
     <TextInput
       value={value}
@@ -17,14 +18,13 @@ export function GoalTextInput({ value, onChangeText, placeholder }: GoalTextInpu
       placeholderTextColor={Colors.textFaint}
       multiline
       textAlignVertical="top"
-      style={styles.textarea}
+      style={[styles.textarea, { minHeight }]}
     />
   );
 }
 
 const styles = StyleSheet.create({
   textarea: {
-    minHeight: 110,
     backgroundColor: Colors.surf,
     borderWidth: 1,
     borderColor: Colors.border,

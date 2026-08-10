@@ -22,7 +22,19 @@
     }
   },
   "log": {
-    "title": "Protokoll"
+    "title": "Protokoll",
+    "voiceLabel": "Per Sprache erfassen",
+    "photoLabel": "Per Foto erfassen",
+    "captureComingSoon": "Das ist noch nicht bereit. Bitte nutze vorerst die manuelle Eingabe.",
+    "manualEntryCta": "Manuell eingeben",
+    "recentTitle": "Letzte Einträge",
+    "loading": "Einträge werden geladen...",
+    "loadError": "Einträge konnten nicht geladen werden. Bitte versuche es gleich noch einmal.",
+    "empty": "Noch keine Einträge. Leg deinen ersten an.",
+    "relativeToday": "Heute",
+    "relativeYesterday": "Gestern",
+    "relativeDaysAgo": "vor {{count}} Tagen",
+    "durationAndDate": "{{minutes}} Min · {{date}}"
   },
   "profile": {
     "title": "Ich"
@@ -76,5 +88,19 @@
     "submitCta": "Mit diesem Ziel starten",
     "generationUnavailable": "Die KI-Roadmap-Generierung ist noch nicht bereit. Kommt bald!",
     "errorGeneric": "Etwas ist schiefgelaufen. Bitte versuche es gleich noch einmal."
+  },
+  "captureEntry": {
+    "backAccessibilityLabel": "Zurück",
+    "title": "Eintrag hinzufügen",
+    "titleLabel": "Was hast du gelernt?",
+    "titlePlaceholder": "z. B. NgRx Effects",
+    "durationLabel": "Dauer (Minuten)",
+    "durationPlaceholder": "z. B. 25",
+    "tilLabel": "Was du gelernt hast",
+    "tilPlaceholder": "Kurz zusammenfassen...",
+    "tagsLabel": "Tags (kommagetrennt)",
+    "tagsPlaceholder": "z. B. ngrx, state-management",
+    "saveCta": "Speichern",
+    "errorGeneric": "Speichern fehlgeschlagen. Bitte versuche es gleich noch einmal."
   }
 }

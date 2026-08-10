@@ -1,5 +1,4 @@
 import { makeRedirectUri } from 'expo-auth-session';
-import * as QueryParams from 'expo-auth-session/build/QueryParams';
 import * as WebBrowser from 'expo-web-browser';
 
 import { supabase } from '@/lib/supabase';
@@ -10,9 +9,24 @@ WebBrowser.maybeCompleteAuthSession();
 
 const redirectTo = makeRedirectUri({ scheme: 'growpath', path: 'auth-callback' });
 
+/** Merges the query and hash params of a redirect URL (Supabase's implicit-flow tokens land in the hash). */
+function extractCallbackParams(url: string): Record<string, string> {
+  const parsed = new URL(url, 'https://phony.example');
+  const params: Record<string, string> = {};
+  parsed.searchParams.forEach((value, key) => {
+    params[key] = value;
+  });
+  if (parsed.hash) {
+    new URLSearchParams(parsed.hash.replace(/^#/, '')).forEach((value, key) => {
+      params[key] = value;
+    });
+  }
+  return params;
+}
+
 async function createSessionFromUrl(url: string): Promise<boolean> {
-  const { params, errorCode } = QueryParams.getQueryParams(url);
-  if (errorCode) throw new Error(errorCode);
+  const params = extractCallbackParams(url);
+  if (params.error) throw new Error(params.error_description ?? params.error);
 
   const { access_token: accessToken, refresh_token: refreshToken } = params;
   if (!accessToken || !refreshToken) return false;

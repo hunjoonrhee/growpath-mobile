@@ -1,4 +1,4 @@
-import { useLocalSearchParams } from 'expo-router';
+import { Redirect, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Pressable, StyleSheet, TextInput } from 'react-native';
@@ -11,10 +11,12 @@ import { requestEmailOtp, verifyEmailOtp } from '@/lib/email-otp';
 
 export default function OtpScreen() {
   const { t } = useTranslation();
-  const { email } = useLocalSearchParams<{ email: string }>();
+  const { email } = useLocalSearchParams<{ email?: string }>();
   const [code, setCode] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
   const [isResending, setIsResending] = useState(false);
+
+  if (!email) return <Redirect href="/login" />;
 
   const handleVerify = async () => {
     setIsVerifying(true);

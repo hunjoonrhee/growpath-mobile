@@ -49,7 +49,11 @@
     "contextBannerDismiss": "Dismiss banner"
   },
   "profile": {
-    "title": "Me"
+    "title": "Me",
+    "learningSectionTitle": "Learning",
+    "vocabReviewCta": "Vocab review",
+    "vocabDueCount": "{{count}} words due",
+    "vocabAddCta": "Add a word"
   },
   "auth": {
     "tagline": "Know your goal → know today's step\nAI-powered personal growth compass",
@@ -122,5 +126,30 @@
     "pauseCta": "Pause",
     "resumeCta": "Resume",
     "finishCta": "Finish"
+  },
+  "vocab": {
+    "backAccessibilityLabel": "Go back",
+    "loading": "Loading words...",
+    "loadError": "Couldn't load your words. Please try again in a moment.",
+    "emptyDeck": "No words to review today.",
+    "deckComplete": "You've reviewed everything for today! 🎉",
+    "exampleHint": "Shown exactly as saved",
+    "againCta": "Review again",
+    "knowCta": "I know this",
+    "errorGeneric": "Couldn't save. Please try again in a moment."
+  },
+  "vocabAdd": {
+    "backAccessibilityLabel": "Go back",
+    "title": "Add a word",
+    "languageLabel": "Language",
+    "languagePlaceholder": "e.g. German",
+    "wordLabel": "Word",
+    "wordPlaceholder": "e.g. termingerecht",
+    "meaningLabel": "Meaning",
+    "meaningPlaceholder": "e.g. on time, punctually",
+    "exampleLabel": "Example sentence (optional)",
+    "examplePlaceholder": "Write a sentence using this word...",
+    "saveCta": "Save",
+    "errorGeneric": "Couldn't save. Please try again in a moment."
   }
 }

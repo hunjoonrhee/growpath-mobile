@@ -46,5 +46,20 @@
       "resend": "Code erneut senden",
       "resendSent": "Code erneut gesendet."
     }
+  },
+  "roadmap": {
+    "backAccessibilityLabel": "Zurück",
+    "stageProgress": "Stufe {{current}} / {{total}}",
+    "otherGoalsTitle": "Andere Ziele",
+    "loading": "Roadmap wird geladen...",
+    "loadError": "Roadmap konnte nicht geladen werden. Bitte versuche es gleich noch einmal.",
+    "emptyTitle": "Noch keine aktive Roadmap",
+    "emptySubtitle": "Sobald du ein Ziel festlegst, erscheint hier deine Roadmap.",
+    "errorGeneric": "Zielwechsel fehlgeschlagen. Bitte versuche es gleich noch einmal.",
+    "stageStatus": {
+      "done": "Fertig",
+      "current": "In Arbeit",
+      "upcoming": "Geplant"
+    }
   }
 }

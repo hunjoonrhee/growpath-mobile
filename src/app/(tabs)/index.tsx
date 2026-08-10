@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet } from 'react-native';
 
@@ -38,6 +39,7 @@ const MOCK_TODAY = {
 
 export default function TodayScreen() {
   const { t } = useTranslation();
+  const router = useRouter();
 
   return (
     <ThemedView style={styles.screen}>
@@ -46,8 +48,7 @@ export default function TodayScreen() {
 
         <Pressable
           style={styles.dialWrap}
-          // TODO(phase-3): navigate to /roadmap once that route exists.
-          onPress={() => {}}
+          onPress={() => router.push('/roadmap')}
           accessibilityRole="button"
           accessibilityLabel={t('today.dialAccessibilityLabel')}>
           <CompassDial percent={MOCK_TODAY.gapPercent} label={t('today.dialLabel')} />

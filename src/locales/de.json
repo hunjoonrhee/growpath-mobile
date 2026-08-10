@@ -14,6 +14,15 @@
     "currentStage": "Stufe {{stage}} — {{label}}",
     "recommendationTitle": "Heutige Empfehlung",
     "startCta": "Starten",
+    "webHandoffComingSoon": "Weiter im Web ist noch nicht bereit. Bitte nutze vorerst nur den Timer.",
+    "handoffSheet": {
+      "title": "Wie möchtest du starten?",
+      "subtitle": "Coding-Themen brauchen Deep Work - wechsle ins Web oder starte hier nur den Timer.",
+      "webLabel": "Im Web weitermachen",
+      "webDescription": "Wechsle mit Kontext zu joon-dashboard",
+      "timerLabel": "Nur Timer starten",
+      "timerDescription": "Zeit hier auf dem Handy erfassen"
+    },
     "domain": {
       "dev": "💻 Entwicklung",
       "language": "🗣️ Sprache",
@@ -34,7 +43,9 @@
     "relativeToday": "Heute",
     "relativeYesterday": "Gestern",
     "relativeDaysAgo": "vor {{count}} Tagen",
-    "durationAndDate": "{{minutes}} Min · {{date}}"
+    "durationAndDate": "{{minutes}} Min · {{date}}",
+    "contextBanner": "Gerade einen {{minutes}}-Min-Timer beendet — {{title}}. Trag ihn unten ein.",
+    "contextBannerDismiss": "Banner schließen"
   },
   "profile": {
     "title": "Ich"
@@ -102,5 +113,13 @@
     "tagsPlaceholder": "z. B. ngrx, state-management",
     "saveCta": "Speichern",
     "errorGeneric": "Speichern fehlgeschlagen. Bitte versuche es gleich noch einmal."
+  },
+  "timer": {
+    "backAccessibilityLabel": "Zurück",
+    "statusRunning": "Läuft",
+    "statusPaused": "Pausiert",
+    "pauseCta": "Pause",
+    "resumeCta": "Fortsetzen",
+    "finishCta": "Fertig"
   }
 }

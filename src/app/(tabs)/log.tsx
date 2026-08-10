@@ -1,8 +1,10 @@
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Pressable, ScrollView, StyleSheet } from 'react-native';
 
 import { CaptureButtonsRow } from '@/components/log/CaptureButtonsRow';
+import { ContextBanner } from '@/components/log/ContextBanner';
 import { SessionLogList } from '@/components/log/SessionLogList';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -15,8 +17,20 @@ export default function LogScreen() {
   const router = useRouter();
   const { session } = useAuth();
   const recentSessions = useRecentSessions(session?.user.id);
+  const { timerTitle, timerMinutes } = useLocalSearchParams<{ timerTitle?: string; timerMinutes?: string }>();
+  const [isBannerDismissed, setIsBannerDismissed] = useState(false);
 
   if (!session) return null;
+
+  const hasTimerContext = Boolean(timerTitle) && !isBannerDismissed;
+
+  const handlePressManualEntry = () => {
+    router.push(
+      hasTimerContext
+        ? { pathname: '/capture-entry', params: { title: timerTitle, minutes: timerMinutes } }
+        : '/capture-entry'
+    );
+  };
 
   return (
     <ThemedView style={styles.screen}>
@@ -24,6 +38,14 @@ export default function LogScreen() {
         <ThemedText type="title" style={styles.title}>
           {t('log.title')}
         </ThemedText>
+
+        {hasTimerContext && (
+          <ContextBanner
+            message={t('log.contextBanner', { minutes: timerMinutes, title: timerTitle })}
+            dismissAccessibilityLabel={t('log.contextBannerDismiss')}
+            onDismiss={() => setIsBannerDismissed(true)}
+          />
+        )}
 
         <CaptureButtonsRow
           voiceLabel={t('log.voiceLabel')}
@@ -35,7 +57,7 @@ export default function LogScreen() {
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={t('log.manualEntryCta')}
-          onPress={() => router.push('/capture-entry')}
+          onPress={handlePressManualEntry}
           style={styles.manualEntryButton}>
           <ThemedText type="smallBold" themeColor="pri2">
             {t('log.manualEntryCta')}

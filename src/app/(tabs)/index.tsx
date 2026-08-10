@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, StyleSheet } from 'react-native';
+import { Alert, Pressable, ScrollView, StyleSheet } from 'react-native';
 
 import { CompassDial } from '@/components/compass-dial';
 import { ThemedText } from '@/components/themed-text';
@@ -10,6 +11,7 @@ import { GreetingHeader } from '@/components/today/GreetingHeader';
 import { QuickStatsRow } from '@/components/today/QuickStatsRow';
 import { RecommendationCard } from '@/components/today/RecommendationCard';
 import { StageProgressBar } from '@/components/today/StageProgressBar';
+import { TimerHandoffSheet } from '@/components/today/TimerHandoffSheet';
 import { Spacing } from '@/constants/theme';
 
 // TODO(phase-3+): replace with real data from Supabase (active goal, gap %,
@@ -40,6 +42,17 @@ const MOCK_TODAY = {
 export default function TodayScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const [isHandoffSheetVisible, setIsHandoffSheetVisible] = useState(false);
+
+  const handleSelectWeb = () => {
+    setIsHandoffSheetVisible(false);
+    Alert.alert(t('today.webHandoffComingSoon'));
+  };
+
+  const handleSelectTimer = () => {
+    setIsHandoffSheetVisible(false);
+    router.push({ pathname: '/timer', params: { topic: MOCK_TODAY.recommendation.title } });
+  };
 
   return (
     <ThemedView style={styles.screen}>
@@ -77,16 +90,28 @@ export default function TodayScreen() {
           domain={MOCK_TODAY.recommendation.domain}
           title={MOCK_TODAY.recommendation.title}
           description={MOCK_TODAY.recommendation.description}
-          // TODO(phase-4): open the timer/web-handoff bottom sheet.
-          onPressCta={() => {}}
+          onPressCta={() => setIsHandoffSheetVisible(true)}
         />
 
         <QuickStatsRow stats={MOCK_TODAY.quickStats} />
       </ScrollView>
 
-      <CaptureFab
-        // TODO(phase-4): open the voice capture flow.
-        onPress={() => {}}
+      {/* Icon/label imply voice capture specifically, so route this to the
+          same "not ready yet" messaging as Log's voice button rather than
+          silently opening the text-only manual entry flow instead. */}
+      <CaptureFab onPress={() => Alert.alert(t('log.captureComingSoon'))} />
+
+      <TimerHandoffSheet
+        visible={isHandoffSheetVisible}
+        onClose={() => setIsHandoffSheetVisible(false)}
+        onSelectWeb={handleSelectWeb}
+        onSelectTimer={handleSelectTimer}
+        title={t('today.handoffSheet.title')}
+        subtitle={t('today.handoffSheet.subtitle')}
+        webOptionLabel={t('today.handoffSheet.webLabel')}
+        webOptionDescription={t('today.handoffSheet.webDescription')}
+        timerOptionLabel={t('today.handoffSheet.timerLabel')}
+        timerOptionDescription={t('today.handoffSheet.timerDescription')}
       />
     </ThemedView>
   );

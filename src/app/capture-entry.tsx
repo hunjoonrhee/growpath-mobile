@@ -1,4 +1,4 @@
-import { Redirect, useRouter } from 'expo-router';
+import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
@@ -25,9 +25,10 @@ export default function CaptureEntryScreen() {
   const router = useRouter();
   const { session } = useAuth();
   const createSession = useCreateSession(session?.user.id);
+  const prefill = useLocalSearchParams<{ title?: string; minutes?: string }>();
 
-  const [title, setTitle] = useState('');
-  const [durationText, setDurationText] = useState('');
+  const [title, setTitle] = useState(prefill.title ?? '');
+  const [durationText, setDurationText] = useState(prefill.minutes ?? '');
   const [til, setTil] = useState('');
   const [tagsText, setTagsText] = useState('');
 

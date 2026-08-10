@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { BackHeader } from '@/components/navigation/BackHeader';
 import { OtherGoalsList } from '@/components/roadmap/OtherGoalsList';
 import { RoadmapHero } from '@/components/roadmap/RoadmapHero';
 import { StageTimeline } from '@/components/roadmap/StageTimeline';
@@ -54,15 +55,7 @@ export default function RoadmapScreen() {
   return (
     <ThemedView style={styles.screen}>
       <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
-        <View style={styles.navHeader}>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={t('roadmap.backAccessibilityLabel')}
-            onPress={() => router.back()}
-            style={styles.backButton}>
-            <ThemedText type="smallBold">←</ThemedText>
-          </Pressable>
-        </View>
+        <BackHeader accessibilityLabel={t('roadmap.backAccessibilityLabel')} onPress={() => router.back()} />
 
         <ScrollView contentContainerStyle={styles.content}>
           {isLoading && (
@@ -129,19 +122,6 @@ const styles = StyleSheet.create({
   },
   safeArea: {
     flex: 1,
-  },
-  navHeader: {
-    height: 52,
-    justifyContent: 'center',
-    paddingHorizontal: Spacing.two + 4,
-  },
-  backButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
-    backgroundColor: Colors.surf2,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   content: {
     paddingHorizontal: Spacing.four,

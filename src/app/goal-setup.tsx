@@ -8,6 +8,7 @@ import { DomainChipSelector } from '@/components/goal-setup/DomainChipSelector';
 import { GoalTextInput } from '@/components/goal-setup/GoalTextInput';
 import { InputModeToggle, type InputMode } from '@/components/goal-setup/InputModeToggle';
 import { VoiceInputPlaceholder } from '@/components/goal-setup/VoiceInputPlaceholder';
+import { BackHeader } from '@/components/navigation/BackHeader';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Colors, Spacing } from '@/constants/theme';
@@ -46,15 +47,7 @@ export default function GoalSetupScreen() {
   return (
     <ThemedView style={styles.screen}>
       <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
-        <View style={styles.navHeader}>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={t('goalSetup.backAccessibilityLabel')}
-            onPress={() => router.back()}
-            style={styles.backButton}>
-            <ThemedText type="smallBold">←</ThemedText>
-          </Pressable>
-        </View>
+        <BackHeader accessibilityLabel={t('goalSetup.backAccessibilityLabel')} onPress={() => router.back()} />
 
         <ScrollView contentContainerStyle={styles.content}>
           <ThemedText type="subtitle" style={styles.title}>
@@ -102,19 +95,6 @@ const styles = StyleSheet.create({
   },
   safeArea: {
     flex: 1,
-  },
-  navHeader: {
-    height: 52,
-    justifyContent: 'center',
-    paddingHorizontal: Spacing.two + 4,
-  },
-  backButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
-    backgroundColor: Colors.surf2,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   content: {
     paddingHorizontal: Spacing.four,

@@ -9,24 +9,16 @@ export type GenerateRoadmapInput = {
 };
 
 /**
- * Calls joon-dashboard's /api/roadmap/generate. Throws
- * RoadmapGenerationUnavailableError until EXPO_PUBLIC_ROADMAP_API_URL is
- * configured (joon-dashboard isn't deployed yet, so there's nothing to call).
+ * Will call joon-dashboard's /api/roadmap/generate once it's deployed and
+ * EXPO_PUBLIC_ROADMAP_API_URL is set. Always throws
+ * RoadmapGenerationUnavailableError for now - deliberately not making the
+ * request even when the URL is configured, since the response shape isn't
+ * known yet: firing a real POST and then discarding a successful response
+ * would create a roadmap server-side while still reporting failure here,
+ * and a retry would create a duplicate.
  */
 export async function generateRoadmap(input: GenerateRoadmapInput): Promise<never> {
-  if (!env.roadmapApiUrl) {
-    throw new RoadmapGenerationUnavailableError('EXPO_PUBLIC_ROADMAP_API_URL is not configured yet.');
-  }
-
-  const response = await fetch(`${env.roadmapApiUrl}/api/roadmap/generate`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(input),
-  });
-  if (!response.ok) {
-    throw new Error(`Roadmap generation failed with status ${response.status}.`);
-  }
-  // No real endpoint to shape this response against yet - fill in once
-  // joon-dashboard is deployed and the actual response shape is known.
-  throw new RoadmapGenerationUnavailableError('Roadmap generation response handling is not implemented yet.');
+  throw new RoadmapGenerationUnavailableError(
+    env.roadmapApiUrl ? 'Roadmap generation response handling is not implemented yet.' : 'EXPO_PUBLIC_ROADMAP_API_URL is not configured yet.'
+  );
 }

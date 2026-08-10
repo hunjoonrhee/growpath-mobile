@@ -2,21 +2,27 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Pressable, ScrollView, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { NavRow } from '@/components/common/NavRow';
 import { CaptureButtonsRow } from '@/components/log/CaptureButtonsRow';
 import { ContextBanner } from '@/components/log/ContextBanner';
 import { SessionLogList } from '@/components/log/SessionLogList';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Colors, Spacing } from '@/constants/theme';
-import { useRecentSessions } from '@/hooks/sessions/use-recent-sessions';
+import { Colors, Spacing, Typography } from '@/constants/theme';
+import { useActiveRoadmapSessions } from '@/hooks/sessions/use-active-roadmap-sessions';
+import { useDueVocabWordCount } from '@/hooks/vocab/use-due-vocab-word-count';
 import { useAuth } from '@/lib/auth-context';
 
 export default function LogScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { session } = useAuth();
-  const recentSessions = useRecentSessions(session?.user.id);
+  // Scoped to the active goal, so switching goals shows that goal's own log
+  // instead of every session ever recorded under any goal.
+  const activeRoadmapSessions = useActiveRoadmapSessions(session?.user.id);
+  const dueVocabWordCount = useDueVocabWordCount(session?.user.id);
   const { timerTitle, timerMinutes, timerSessionId } = useLocalSearchParams<{
     timerTitle?: string;
     timerMinutes?: string;
@@ -45,52 +51,69 @@ export default function LogScreen() {
 
   return (
     <ThemedView style={styles.screen}>
-      <ScrollView contentContainerStyle={styles.content}>
-        <ThemedText type="title" style={styles.title}>
-          {t('log.title')}
-        </ThemedText>
-
-        {hasTimerContext && (
-          <ContextBanner
-            message={t('log.contextBanner', { minutes: timerMinutes, title: timerTitle })}
-            dismissAccessibilityLabel={t('log.contextBannerDismiss')}
-            onDismiss={() => setDismissedSessionId(timerSessionId ?? null)}
-          />
-        )}
-
-        <CaptureButtonsRow
-          voiceLabel={t('log.voiceLabel')}
-          photoLabel={t('log.photoLabel')}
-          onPressVoice={() => Alert.alert(t('log.captureComingSoon'))}
-          onPressPhoto={() => Alert.alert(t('log.captureComingSoon'))}
-        />
-
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={t('log.manualEntryCta')}
-          onPress={handlePressManualEntry}
-          style={styles.manualEntryButton}>
-          <ThemedText type="smallBold" themeColor="pri2">
-            {t('log.manualEntryCta')}
+      <SafeAreaView style={styles.safeArea} edges={['top']}>
+        <ScrollView contentContainerStyle={styles.content}>
+          <ThemedText type="title" style={styles.title}>
+            {t('log.title')}
           </ThemedText>
-        </Pressable>
 
-        <SessionLogList
-          title={t('log.recentTitle')}
-          sessions={recentSessions.data ?? []}
-          isLoading={recentSessions.isLoading}
-          isError={recentSessions.isError}
-          loadingLabel={t('log.loading')}
-          errorLabel={t('log.loadError')}
-          emptyLabel={t('log.empty')}
-        />
-      </ScrollView>
+          {hasTimerContext && (
+            <ContextBanner
+              message={t('log.contextBanner', { minutes: timerMinutes, title: timerTitle })}
+              dismissAccessibilityLabel={t('log.contextBannerDismiss')}
+              onDismiss={() => setDismissedSessionId(timerSessionId ?? null)}
+            />
+          )}
+
+          <CaptureButtonsRow
+            voiceLabel={t('log.voiceLabel')}
+            photoLabel={t('log.photoLabel')}
+            onPressVoice={() => Alert.alert(t('log.captureComingSoon'))}
+            onPressPhoto={() => Alert.alert(t('log.captureComingSoon'))}
+          />
+
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t('log.manualEntryCta')}
+            onPress={handlePressManualEntry}
+            style={styles.manualEntryButton}>
+            <ThemedText type="smallBold" themeColor="pri2">
+              {t('log.manualEntryCta')}
+            </ThemedText>
+          </Pressable>
+
+          <ThemedText type="small" themeColor="textFaint" style={styles.sectionTitle}>
+            {t('log.vocabSectionTitle')}
+          </ThemedText>
+          <NavRow
+            icon="🗂️"
+            label={t('log.vocabReviewCta')}
+            subtitle={t('log.vocabDueCount', { count: dueVocabWordCount.data ?? 0 })}
+            onPress={() => router.push('/vocab-review')}
+          />
+          <NavRow icon="➕" label={t('log.vocabAddCta')} onPress={() => router.push('/vocab-add')} />
+
+          <SessionLogList
+            title={t('log.recentTitle')}
+            sessions={activeRoadmapSessions.sessions ?? []}
+            isLoading={activeRoadmapSessions.isLoading}
+            isError={activeRoadmapSessions.isError}
+            loadingLabel={t('log.loading')}
+            errorLabel={t('log.loadError')}
+            emptyLabel={t('log.empty')}
+            onPressSession={(id) => router.push(`/til/${id}`)}
+          />
+        </ScrollView>
+      </SafeAreaView>
     </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
   screen: {
+    flex: 1,
+  },
+  safeArea: {
     flex: 1,
   },
   content: {
@@ -111,5 +134,10 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     paddingVertical: Spacing.two,
     paddingHorizontal: Spacing.four,
+  },
+  sectionTitle: {
+    ...Typography.sectionLabel,
+    marginTop: Spacing.five,
+    marginBottom: Spacing.two + 2,
   },
 });

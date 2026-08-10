@@ -1,36 +1,33 @@
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
+import { TagList } from '@/components/log/TagList';
 import { ThemedText } from '@/components/themed-text';
 import { Colors, Spacing } from '@/constants/theme';
-import { daysAgo } from '@/lib/date';
+import { relativeDateLabel } from '@/lib/date';
 import type { SessionRecord } from '@/lib/sessions';
 
 export type SessionLogCardProps = {
   session: SessionRecord;
+  onPress: () => void;
 };
 
-function relativeDateLabel(dateString: string, t: (key: string, options?: Record<string, unknown>) => string): string {
-  const days = daysAgo(dateString);
-  // A negative diff (session dated in the future relative to the device
-  // clock - skew, or a date recorded in a different timezone) shouldn't be
-  // mislabeled as "today" - fall back to the raw date instead of guessing.
-  if (days < 0) return dateString;
-  if (days === 0) return t('log.relativeToday');
-  if (days === 1) return t('log.relativeYesterday');
-  return t('log.relativeDaysAgo', { count: days });
-}
-
-export function SessionLogCard({ session }: SessionLogCardProps) {
+export function SessionLogCard({ session, onPress }: SessionLogCardProps) {
   const { t } = useTranslation();
   const dateLabel = relativeDateLabel(session.date, t);
   const timeLabel =
     session.durationMinutes !== null ? t('log.durationAndDate', { minutes: session.durationMinutes, date: dateLabel }) : dateLabel;
+  const tagsLabel = session.tags.map((tag) => `#${tag}`).join(', ');
+  const accessibilityLabel = [session.title, timeLabel, tagsLabel].filter(Boolean).join(', ');
 
   return (
-    <View style={styles.card}>
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
+      onPress={onPress}
+      style={({ pressed }) => [styles.card, pressed && styles.pressed]}>
       <View style={styles.top}>
-        <ThemedText type="smallBold" style={styles.title}>
+        <ThemedText type="smallBold" style={styles.title} numberOfLines={1}>
           {session.title}
         </ThemedText>
         <ThemedText type="small" themeColor="textFaint">
@@ -38,56 +35,39 @@ export function SessionLogCard({ session }: SessionLogCardProps) {
         </ThemedText>
       </View>
       {session.tags.length > 0 && (
-        <View style={styles.tags}>
-          {session.tags.map((tag) => (
-            <ThemedText key={tag} type="small" themeColor="textDim" style={styles.tag}>
-              #{tag}
-            </ThemedText>
-          ))}
+        <View style={styles.tagsRow}>
+          <TagList tags={session.tags} maxVisible={3} />
         </View>
       )}
-      {session.til && (
-        <ThemedText type="small" themeColor="textDim" style={styles.til}>
-          {session.til}
-        </ThemedText>
-      )}
-    </View>
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: Colors.surf,
     borderWidth: 1,
     borderColor: Colors.border,
-    borderRadius: 16,
-    padding: Spacing.three - 2,
-    marginBottom: Spacing.two,
+    borderRadius: 14,
+    paddingVertical: Spacing.two + 2,
+    paddingHorizontal: Spacing.three - 2,
+    marginBottom: Spacing.two - 2,
+    gap: Spacing.two,
+  },
+  pressed: {
+    opacity: 0.8,
   },
   top: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flex: 1,
+    gap: 2,
   },
   title: {
-    flex: 1,
     marginRight: Spacing.two,
   },
-  tags: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Spacing.one + 2,
-    marginTop: Spacing.two,
-  },
-  tag: {
-    backgroundColor: Colors.surf2,
-    borderRadius: 999,
-    paddingVertical: 3,
-    paddingHorizontal: 9,
-    fontSize: 11,
-  },
-  til: {
-    marginTop: Spacing.two,
-    lineHeight: 18,
+  tagsRow: {
+    flexShrink: 0,
+    maxWidth: '40%',
   },
 });

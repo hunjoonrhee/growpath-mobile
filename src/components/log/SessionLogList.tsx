@@ -2,7 +2,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { SessionLogCard } from '@/components/log/SessionLogCard';
 import { ThemedText } from '@/components/themed-text';
-import { Spacing } from '@/constants/theme';
+import { Spacing, Typography } from '@/constants/theme';
 import type { SessionRecord } from '@/lib/sessions';
 
 export type SessionLogListProps = {
@@ -13,9 +13,19 @@ export type SessionLogListProps = {
   loadingLabel: string;
   errorLabel: string;
   emptyLabel: string;
+  onPressSession: (id: string) => void;
 };
 
-export function SessionLogList({ title, sessions, isLoading, isError, loadingLabel, errorLabel, emptyLabel }: SessionLogListProps) {
+export function SessionLogList({
+  title,
+  sessions,
+  isLoading,
+  isError,
+  loadingLabel,
+  errorLabel,
+  emptyLabel,
+  onPressSession,
+}: SessionLogListProps) {
   return (
     <View style={styles.container}>
       <ThemedText type="small" themeColor="textFaint" style={styles.title}>
@@ -42,7 +52,7 @@ export function SessionLogList({ title, sessions, isLoading, isError, loadingLab
 
       {!isLoading &&
         !isError &&
-        sessions.map((session) => <SessionLogCard key={session.id} session={session} />)}
+        sessions.map((session) => <SessionLogCard key={session.id} session={session} onPress={() => onPressSession(session.id)} />)}
     </View>
   );
 }
@@ -52,10 +62,7 @@ const styles = StyleSheet.create({
     marginTop: Spacing.four,
   },
   title: {
-    textTransform: 'uppercase',
-    letterSpacing: 0.4,
-    fontWeight: '700',
-    fontSize: 12,
+    ...Typography.sectionLabel,
     marginBottom: Spacing.two + 2,
   },
 });

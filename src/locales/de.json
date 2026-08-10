@@ -1,8 +1,8 @@
 {
   "tabs": {
     "today": "Heute",
-    "log": "Protokoll",
-    "profile": "Ich"
+    "log": "Verlauf",
+    "profile": "Profil"
   },
   "today": {
     "greeting": "Hallo, {{name}} 👋",
@@ -39,7 +39,7 @@
     }
   },
   "log": {
-    "title": "Protokoll",
+    "title": "Verlauf",
     "voiceLabel": "Per Sprache erfassen",
     "photoLabel": "Per Foto erfassen",
     "captureComingSoon": "Das ist noch nicht bereit. Bitte nutze vorerst die manuelle Eingabe.",
@@ -53,21 +53,28 @@
     "relativeDaysAgo": "vor {{count}} Tagen",
     "durationAndDate": "{{minutes}} Min · {{date}}",
     "contextBanner": "Gerade einen {{minutes}}-Min-Timer beendet — {{title}}. Trag ihn unten ein.",
-    "contextBannerDismiss": "Banner schließen"
-  },
-  "profile": {
-    "title": "Ich",
-    "learningSectionTitle": "Lernen",
+    "contextBannerDismiss": "Banner schließen",
+    "vocabSectionTitle": "Vokabeln",
     "vocabReviewCta": "Vokabeln wiederholen",
     "vocabDueCount": "{{count}} Vokabeln fällig",
-    "vocabAddCta": "Vokabel hinzufügen",
+    "vocabAddCta": "Vokabel hinzufügen"
+  },
+  "profile": {
+    "title": "Profil",
+    "settingsSectionTitle": "Einstellungen",
+    "languageNames": {
+      "ko": "한국어",
+      "de": "Deutsch",
+      "en": "English"
+    },
     "accountSectionTitle": "Konto",
     "logoutCta": "Abmelden",
     "logoutConfirmTitle": "Abmelden?",
     "logoutConfirmMessage": "Nach dem erneuten Anmelden kannst du direkt weitermachen.",
     "logoutCancel": "Abbrechen",
     "logoutConfirm": "Abmelden",
-    "logoutError": "Abmelden fehlgeschlagen. Bitte versuche es gleich noch einmal."
+    "logoutError": "Abmelden fehlgeschlagen. Bitte versuche es gleich noch einmal.",
+    "languageError": "Sprache konnte nicht geändert werden. Bitte versuche es gleich noch einmal."
   },
   "auth": {
     "tagline": "Kenne dein Ziel → kenne den heutigen Schritt\nKI-gestützter Wachstumskompass",
@@ -165,5 +172,12 @@
     "examplePlaceholder": "Schreib einen Satz mit diesem Wort...",
     "saveCta": "Speichern",
     "errorGeneric": "Speichern fehlgeschlagen. Bitte versuche es gleich noch einmal."
+  },
+  "tilDetail": {
+    "backAccessibilityLabel": "Zurück",
+    "loading": "Wird geladen...",
+    "loadError": "Eintrag konnte nicht geladen werden.",
+    "tilLabel": "Was du gelernt hast",
+    "noTil": "Keine Notizen vorhanden."
   }
 }

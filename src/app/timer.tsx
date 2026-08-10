@@ -122,6 +122,7 @@ const styles = StyleSheet.create({
   },
   clock: {
     fontSize: 56,
+    lineHeight: 64,
     fontWeight: '800',
     color: Colors.text,
     fontVariant: ['tabular-nums'],

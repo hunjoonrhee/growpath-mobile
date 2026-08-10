@@ -2,7 +2,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { OtherGoalRow } from '@/components/roadmap/OtherGoalRow';
 import { ThemedText } from '@/components/themed-text';
-import { Spacing } from '@/constants/theme';
+import { Spacing, Typography } from '@/constants/theme';
 import type { RoadmapSummary } from '@/lib/roadmap';
 
 export type OtherGoalsListProps = {
@@ -38,10 +38,7 @@ const styles = StyleSheet.create({
     marginTop: Spacing.five,
   },
   title: {
-    textTransform: 'uppercase',
-    letterSpacing: 0.4,
-    fontWeight: '700',
-    fontSize: 12,
+    ...Typography.sectionLabel,
     marginBottom: Spacing.two + 2,
   },
 });

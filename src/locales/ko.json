@@ -2,7 +2,7 @@
   "tabs": {
     "today": "오늘",
     "log": "기록",
-    "profile": "나"
+    "profile": "프로필"
   },
   "today": {
     "greeting": "안녕, {{name}} 👋",
@@ -53,21 +53,28 @@
     "relativeDaysAgo": "{{count}}일 전",
     "durationAndDate": "{{minutes}}분 · {{date}}",
     "contextBanner": "방금 {{minutes}}분 타이머 종료 — {{title}}. 아래에서 바로 기록하세요.",
-    "contextBannerDismiss": "배너 닫기"
-  },
-  "profile": {
-    "title": "나",
-    "learningSectionTitle": "학습",
+    "contextBannerDismiss": "배너 닫기",
+    "vocabSectionTitle": "단어장",
     "vocabReviewCta": "단어장 복습",
     "vocabDueCount": "복습할 단어 {{count}}개",
-    "vocabAddCta": "단어 추가",
+    "vocabAddCta": "단어 추가"
+  },
+  "profile": {
+    "title": "프로필",
+    "settingsSectionTitle": "설정",
+    "languageNames": {
+      "ko": "한국어",
+      "de": "Deutsch",
+      "en": "English"
+    },
     "accountSectionTitle": "계정",
     "logoutCta": "로그아웃",
     "logoutConfirmTitle": "로그아웃 하시겠어요?",
     "logoutConfirmMessage": "다시 로그인하면 이어서 사용할 수 있어요.",
     "logoutCancel": "취소",
     "logoutConfirm": "로그아웃",
-    "logoutError": "로그아웃에 실패했어요. 잠시 후 다시 시도해주세요."
+    "logoutError": "로그아웃에 실패했어요. 잠시 후 다시 시도해주세요.",
+    "languageError": "언어를 변경하지 못했어요. 잠시 후 다시 시도해주세요."
   },
   "auth": {
     "tagline": "내 목표가 뭔지 → 오늘 뭘 해야 하는지\nAI 기반 개인 성장 나침반",
@@ -165,5 +172,12 @@
     "examplePlaceholder": "이 단어가 쓰인 문장을 적어보세요...",
     "saveCta": "저장하기",
     "errorGeneric": "저장에 실패했어요. 잠시 후 다시 시도해주세요."
+  },
+  "tilDetail": {
+    "backAccessibilityLabel": "뒤로가기",
+    "loading": "불러오는 중...",
+    "loadError": "기록을 불러오지 못했어요.",
+    "tilLabel": "오늘 배운 것",
+    "noTil": "작성된 내용이 없어요."
   }
 }

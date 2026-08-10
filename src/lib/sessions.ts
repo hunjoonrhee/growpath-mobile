@@ -50,15 +50,44 @@ function startOfIsoWeek(date: Date): Date {
   return monday;
 }
 
-export async function fetchRecentSessions(userId: string, limit = 20): Promise<SessionRecord[]> {
+/**
+ * Scoped to `roadmapId` when given, so switching the active goal shows that
+ * goal's own log instead of every session ever recorded under any goal.
+ * Sessions with no roadmap_id (logged before the user ever adopted a goal)
+ * are goal-less rather than belonging to some *other* goal, so they stay
+ * visible under every scope instead of a plain `.eq()`, which would hide
+ * them the moment any roadmap becomes active and never show them again.
+ * `roadmapId === null` (no active roadmap) falls back to showing everything.
+ */
+export async function fetchRecentSessions(userId: string, roadmapId: string | null, limit = 20): Promise<SessionRecord[]> {
+  let query = supabase
+    .from('sessions')
+    .select('id, title, duration_minutes, date, til, tags, created_at')
+    .eq('user_id', userId);
+  if (roadmapId) {
+    query = query.or(`roadmap_id.eq.${roadmapId},roadmap_id.is.null`);
+  }
+  const { data, error } = await query.order('created_at', { ascending: false }).limit(limit);
+  if (error) throw error;
+  return (data ?? []).map((row) => toSessionRecord(row as SessionRow));
+}
+
+/**
+ * Filters by user_id in addition to id, even though RLS should already
+ * enforce this - `sessions` is a joon-dashboard-owned table with no
+ * migration in this repo to audit its policies against, and `id` here
+ * comes straight from a URL param (/til/[id]), so this is defense in
+ * depth rather than redundant.
+ */
+export async function fetchSessionById(id: string, userId: string): Promise<SessionRecord | null> {
   const { data, error } = await supabase
     .from('sessions')
     .select('id, title, duration_minutes, date, til, tags, created_at')
+    .eq('id', id)
     .eq('user_id', userId)
-    .order('created_at', { ascending: false })
-    .limit(limit);
+    .maybeSingle();
   if (error) throw error;
-  return (data ?? []).map((row) => toSessionRecord(row as SessionRow));
+  return data ? toSessionRecord(data as SessionRow) : null;
 }
 
 /** Ties the new session to the user's active roadmap (if any) for gap-analysis/stats. */

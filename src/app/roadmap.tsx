@@ -39,7 +39,9 @@ export default function RoadmapScreen() {
   const hasAdoptedRoadmap = Boolean(adoptedRoadmapId.data);
   const isLoading =
     adoptedRoadmapId.isLoading || (hasAdoptedRoadmap && (roadmap.isLoading || focusStageLevel.isLoading));
-  const isError = adoptedRoadmapId.isError || roadmap.isError || focusStageLevel.isError || userRoadmaps.isError;
+  // userRoadmaps only feeds the secondary "other goals" list, so its own
+  // failure shouldn't block rendering an already-loaded primary roadmap.
+  const isError = adoptedRoadmapId.isError || roadmap.isError || focusStageLevel.isError;
   const otherRoadmaps = (userRoadmaps.data ?? []).filter((item) => item.id !== adoptedRoadmapId.data);
 
   return (

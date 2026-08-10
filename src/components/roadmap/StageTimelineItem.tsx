@@ -22,7 +22,7 @@ function dotLabelStyle(status: StageStatus) {
 
 export function StageTimelineItem({ stage, status, statusLabel, isLast }: StageTimelineItemProps) {
   return (
-    <View style={styles.row} accessibilityLabel={`${stage.title} — ${statusLabel}`}>
+    <View style={styles.row} accessible accessibilityLabel={`${stage.title} — ${statusLabel}`}>
       <View style={styles.rail}>
         <View style={[styles.dot, status === 'done' && styles.dotDone, status === 'current' && styles.dotCurrent]}>
           <ThemedText type="smallBold" style={dotLabelStyle(status)}>
@@ -34,8 +34,8 @@ export function StageTimelineItem({ stage, status, statusLabel, isLast }: StageT
       <View style={[styles.body, status === 'current' && styles.bodyCurrent]}>
         <ThemedText type="smallBold">{stage.title}</ThemedText>
         <View style={styles.skills}>
-          {stage.skills.map((skill) => (
-            <SkillChip key={skill.name} label={skill.name} />
+          {stage.skills.map((skill, index) => (
+            <SkillChip key={`${index}-${skill.name}`} label={skill.name} />
           ))}
         </View>
       </View>

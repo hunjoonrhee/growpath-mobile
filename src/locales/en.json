@@ -26,5 +26,25 @@
   },
   "profile": {
     "title": "Me"
+  },
+  "auth": {
+    "tagline": "Know your goal → know today's step\nAI-powered personal growth compass",
+    "appleContinue": "Continue with Apple",
+    "googleContinue": "Continue with Google",
+    "githubContinue": "Continue with GitHub",
+    "appleComingSoon": "Apple sign-in is coming soon. Please use another method for now.",
+    "or": "or",
+    "emailPlaceholder": "Email address",
+    "requestOtp": "Get code",
+    "hint": "We'll send a 6-digit code to your email.\nNo password needed.",
+    "errorGeneric": "Sign-in failed. Please try again in a moment.",
+    "otp": {
+      "title": "Enter verification code",
+      "subtitle": "Enter the 6-digit code sent to {{email}}.",
+      "codePlaceholder": "6-digit code",
+      "verify": "Verify",
+      "resend": "Resend code",
+      "resendSent": "Code resent."
+    }
   }
 }

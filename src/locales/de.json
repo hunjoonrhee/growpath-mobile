@@ -26,5 +26,25 @@
   },
   "profile": {
     "title": "Ich"
+  },
+  "auth": {
+    "tagline": "Kenne dein Ziel → kenne den heutigen Schritt\nKI-gestützter Wachstumskompass",
+    "appleContinue": "Weiter mit Apple",
+    "googleContinue": "Weiter mit Google",
+    "githubContinue": "Weiter mit GitHub",
+    "appleComingSoon": "Die Anmeldung mit Apple kommt bald. Bitte nutze vorerst eine andere Methode.",
+    "or": "oder",
+    "emailPlaceholder": "E-Mail-Adresse",
+    "requestOtp": "Code anfordern",
+    "hint": "Wir senden dir einen 6-stelligen Code per E-Mail.\nKein Passwort nötig.",
+    "errorGeneric": "Anmeldung fehlgeschlagen. Bitte versuche es gleich noch einmal.",
+    "otp": {
+      "title": "Bestätigungscode eingeben",
+      "subtitle": "Gib den 6-stelligen Code ein, der an {{email}} gesendet wurde.",
+      "codePlaceholder": "6-stelliger Code",
+      "verify": "Bestätigen",
+      "resend": "Code erneut senden",
+      "resendSent": "Code erneut gesendet."
+    }
   }
 }

@@ -55,11 +55,26 @@
     "loadError": "로드맵을 불러오지 못했어요. 잠시 후 다시 시도해주세요.",
     "emptyTitle": "아직 활성화된 로드맵이 없어요",
     "emptySubtitle": "목표를 설정하면 여기에 로드맵이 표시돼요.",
+    "emptyCta": "목표 설정하기",
     "errorGeneric": "목표 전환에 실패했어요. 잠시 후 다시 시도해주세요.",
     "stageStatus": {
       "done": "완료",
       "current": "진행 중",
       "upcoming": "예정"
     }
+  },
+  "goalSetup": {
+    "title": "어떤 목표로 시작할까요?",
+    "subtitle": "도메인을 고르고, 목표와 현재 수준을 알려주세요.",
+    "backAccessibilityLabel": "뒤로가기",
+    "inputMode": {
+      "text": "✏️ 텍스트",
+      "voice": "🎙️ 음성"
+    },
+    "voiceComingSoon": "음성 입력은 준비 중이에요. 텍스트로 입력해주세요.",
+    "textPlaceholder": "예: 리드 아키텍트가 되고 싶어요. 지금은 시니어 프론트엔드 개발자고, Angular는 실무로 3년 정도 썼어요...",
+    "submitCta": "이 목표로 시작하기",
+    "generationUnavailable": "AI 로드맵 생성은 아직 준비 중이에요. 곧 만나요!",
+    "errorGeneric": "문제가 발생했어요. 잠시 후 다시 시도해주세요."
   }
 }

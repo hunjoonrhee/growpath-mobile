@@ -85,6 +85,15 @@ export default function RoadmapScreen() {
               <ThemedText type="small" themeColor="textDim" style={styles.centerText}>
                 {t('roadmap.emptySubtitle')}
               </ThemedText>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={t('roadmap.emptyCta')}
+                onPress={() => router.push('/goal-setup')}
+                style={styles.emptyCta}>
+                <ThemedText type="smallBold" style={styles.emptyCtaLabel}>
+                  {t('roadmap.emptyCta')}
+                </ThemedText>
+              </Pressable>
             </View>
           )}
 
@@ -144,5 +153,16 @@ const styles = StyleSheet.create({
   emptyState: {
     marginTop: Spacing.six,
     gap: Spacing.two,
+  },
+  emptyCta: {
+    marginTop: Spacing.three,
+    alignSelf: 'center',
+    backgroundColor: Colors.pri,
+    borderRadius: 14,
+    paddingVertical: Spacing.two + 2,
+    paddingHorizontal: Spacing.four,
+  },
+  emptyCtaLabel: {
+    color: '#ffffff',
   },
 });

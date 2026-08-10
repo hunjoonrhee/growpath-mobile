@@ -55,11 +55,26 @@
     "loadError": "Couldn't load your roadmap. Please try again in a moment.",
     "emptyTitle": "No active roadmap yet",
     "emptySubtitle": "Set a goal and your roadmap will show up here.",
+    "emptyCta": "Set a goal",
     "errorGeneric": "Couldn't switch goals. Please try again in a moment.",
     "stageStatus": {
       "done": "Done",
       "current": "In progress",
       "upcoming": "Upcoming"
     }
+  },
+  "goalSetup": {
+    "title": "What goal should we start with?",
+    "subtitle": "Pick a domain and tell us your goal and current level.",
+    "backAccessibilityLabel": "Go back",
+    "inputMode": {
+      "text": "✏️ Text",
+      "voice": "🎙️ Voice"
+    },
+    "voiceComingSoon": "Voice input is coming soon. Please type it in for now.",
+    "textPlaceholder": "e.g. I want to become a lead architect. I'm currently a senior frontend developer with about 3 years of Angular experience...",
+    "submitCta": "Start with this goal",
+    "generationUnavailable": "AI roadmap generation isn't ready yet. Coming soon!",
+    "errorGeneric": "Something went wrong. Please try again in a moment."
   }
 }

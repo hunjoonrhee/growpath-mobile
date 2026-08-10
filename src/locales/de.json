@@ -52,6 +52,7 @@
     "stageProgress": "Stufe {{current}} / {{total}}",
     "otherGoalsTitle": "Andere Ziele",
     "loading": "Roadmap wird geladen...",
+    "loadError": "Roadmap konnte nicht geladen werden. Bitte versuche es gleich noch einmal.",
     "emptyTitle": "Noch keine aktive Roadmap",
     "emptySubtitle": "Sobald du ein Ziel festlegst, erscheint hier deine Roadmap.",
     "errorGeneric": "Zielwechsel fehlgeschlagen. Bitte versuche es gleich noch einmal.",

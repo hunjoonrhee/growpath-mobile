@@ -52,6 +52,7 @@
     "stageProgress": "{{current}}단계 / {{total}}단계",
     "otherGoalsTitle": "다른 목표",
     "loading": "로드맵 불러오는 중...",
+    "loadError": "로드맵을 불러오지 못했어요. 잠시 후 다시 시도해주세요.",
     "emptyTitle": "아직 활성화된 로드맵이 없어요",
     "emptySubtitle": "목표를 설정하면 여기에 로드맵이 표시돼요.",
     "errorGeneric": "목표 전환에 실패했어요. 잠시 후 다시 시도해주세요.",

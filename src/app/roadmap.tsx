@@ -36,7 +36,10 @@ export default function RoadmapScreen() {
     });
   };
 
-  const isLoading = adoptedRoadmapId.isLoading || (Boolean(adoptedRoadmapId.data) && roadmap.isLoading);
+  const hasAdoptedRoadmap = Boolean(adoptedRoadmapId.data);
+  const isLoading =
+    adoptedRoadmapId.isLoading || (hasAdoptedRoadmap && (roadmap.isLoading || focusStageLevel.isLoading));
+  const isError = adoptedRoadmapId.isError || roadmap.isError || focusStageLevel.isError || userRoadmaps.isError;
   const otherRoadmaps = (userRoadmaps.data ?? []).filter((item) => item.id !== adoptedRoadmapId.data);
 
   return (
@@ -59,7 +62,13 @@ export default function RoadmapScreen() {
             </ThemedText>
           )}
 
-          {!isLoading && !adoptedRoadmapId.data && (
+          {!isLoading && isError && (
+            <ThemedText type="small" themeColor="amber" style={styles.centerText}>
+              {t('roadmap.loadError')}
+            </ThemedText>
+          )}
+
+          {!isLoading && !isError && !hasAdoptedRoadmap && (
             <View style={styles.emptyState}>
               <ThemedText type="subtitle" style={styles.centerText}>
                 {t('roadmap.emptyTitle')}
@@ -70,7 +79,7 @@ export default function RoadmapScreen() {
             </View>
           )}
 
-          {!isLoading && roadmap.data && (
+          {!isLoading && !isError && roadmap.data && (
             <>
               <RoadmapHero
                 goal={roadmap.data.goal}

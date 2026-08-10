@@ -1,4 +1,4 @@
-import { supabase, upsertWithUser } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 
 export type RoadmapStageSkill = {
   name: string;
@@ -91,22 +91,14 @@ export async function fetchUserRoadmaps(userId: string): Promise<RoadmapSummary[
   }));
 }
 
-/** Points `settings.adopted_roadmap_id` at the new roadmap and mirrors it onto `ai_roadmaps.adopted`. */
+/**
+ * Points `settings.adopted_roadmap_id` at the new roadmap and mirrors it onto
+ * `ai_roadmaps.adopted`, atomically (via the `set_adopted_roadmap` SQL
+ * function - see supabase/migrations/20260810000001_set_adopted_roadmap_function.sql).
+ * Doing this as separate sequential client-side writes risked a partial
+ * failure leaving the two representations disagreeing.
+ */
 export async function switchActiveRoadmap(userId: string, roadmapId: string): Promise<void> {
-  const { error: upsertError } = await upsertWithUser(
-    'settings',
-    { key: ADOPTED_ROADMAP_ID_KEY, value: roadmapId },
-    { onConflict: 'user_id,key' }
-  );
-  if (upsertError) throw upsertError;
-
-  const { error: clearError } = await supabase
-    .from('ai_roadmaps')
-    .update({ adopted: false })
-    .eq('user_id', userId)
-    .eq('adopted', true);
-  if (clearError) throw clearError;
-
-  const { error: setError } = await supabase.from('ai_roadmaps').update({ adopted: true }).eq('id', roadmapId);
-  if (setError) throw setError;
+  const { error } = await supabase.rpc('set_adopted_roadmap', { p_user_id: userId, p_roadmap_id: roadmapId });
+  if (error) throw error;
 }

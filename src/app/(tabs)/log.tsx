@@ -38,7 +38,7 @@ export default function LogScreen() {
   const handlePressManualEntry = () => {
     router.push(
       hasTimerContext
-        ? { pathname: '/capture-entry', params: { title: timerTitle, minutes: timerMinutes } }
+        ? { pathname: '/capture-entry', params: { title: timerTitle, minutes: timerMinutes, timerSessionId } }
         : '/capture-entry'
     );
   };

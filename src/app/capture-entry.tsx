@@ -25,7 +25,7 @@ export default function CaptureEntryScreen() {
   const router = useRouter();
   const { session } = useAuth();
   const createSession = useCreateSession(session?.user.id);
-  const prefill = useLocalSearchParams<{ title?: string; minutes?: string }>();
+  const prefill = useLocalSearchParams<{ title?: string; minutes?: string; timerSessionId?: string }>();
 
   const [title, setTitle] = useState(prefill.title ?? '');
   const [durationText, setDurationText] = useState(prefill.minutes ?? '');
@@ -46,7 +46,17 @@ export default function CaptureEntryScreen() {
     createSession.mutate(
       { title: title.trim(), durationMinutes, til: til.trim(), tags: parseTags(tagsText) },
       {
-        onSuccess: () => router.back(),
+        onSuccess: () => {
+          // Saving a timer-prefilled entry logs that session - replace
+          // (not back()) into /log with no params so its ContextBanner,
+          // which is keyed on this same timerSessionId, doesn't reappear
+          // and invite logging the same session again.
+          if (prefill.timerSessionId) {
+            router.replace('/log');
+          } else {
+            router.back();
+          }
+        },
         onError: () => Alert.alert(t('captureEntry.errorGeneric')),
       }
     );

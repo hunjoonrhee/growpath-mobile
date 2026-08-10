@@ -7,14 +7,21 @@
   "today": {
     "greeting": "Hi, {{name}} 👋",
     "streak": "🔥 {{count}}-day streak",
-    "dialLabel": "Gap analysis · Tap to see roadmap",
+    "dialLabel": "Progress · Tap to see roadmap",
     "dialAccessibilityLabel": "Go to roadmap",
     "captureAccessibilityLabel": "Record with voice",
-    "stageOfTotal": "Stage {{stage}} / {{total}} · {{sub}}",
+    "stageOfTotal": "Stage {{stage}} / {{total}}",
     "currentStage": "Stage {{stage}} — {{label}}",
     "recommendationTitle": "Today's pick",
+    "recommendationDescription": "A skill worth trying next in {{stage}}.",
     "startCta": "Start",
+    "loading": "Loading...",
+    "loadError": "Couldn't load. Please try again in a moment.",
     "webHandoffComingSoon": "Continuing on the web isn't ready yet. Please use the timer-only option for now.",
+    "quickStats": {
+      "vocabReview": "Vocab review · {{count}}",
+      "weeklyProgress": "This week {{count}}/5"
+    },
     "handoffSheet": {
       "closeAccessibilityLabel": "Close",
       "title": "How do you want to start?",
@@ -53,7 +60,14 @@
     "learningSectionTitle": "Learning",
     "vocabReviewCta": "Vocab review",
     "vocabDueCount": "{{count}} words due",
-    "vocabAddCta": "Add a word"
+    "vocabAddCta": "Add a word",
+    "accountSectionTitle": "Account",
+    "logoutCta": "Log out",
+    "logoutConfirmTitle": "Log out?",
+    "logoutConfirmMessage": "You can pick up right where you left off after signing back in.",
+    "logoutCancel": "Cancel",
+    "logoutConfirm": "Log out",
+    "logoutError": "Couldn't log out. Please try again in a moment."
   },
   "auth": {
     "tagline": "Know your goal → know today's step\nAI-powered personal growth compass",

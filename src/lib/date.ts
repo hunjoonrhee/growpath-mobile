@@ -1,3 +1,11 @@
+/** Formats a local Date as `YYYY-MM-DD`, matching the sessions.date column's format. */
+export function toDateString(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 /** Whole days between a `YYYY-MM-DD` date and today, both in local time. */
 export function daysAgo(dateString: string): number {
   const [year, month, day] = dateString.split('-').map(Number);

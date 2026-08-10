@@ -121,7 +121,9 @@
       "voice": "🎙️ Sprache"
     },
     "voiceComingSoon": "Spracheingabe kommt bald. Bitte tippe es vorerst ein.",
-    "textPlaceholder": "z. B. Ich möchte Lead Architect werden. Ich bin aktuell Senior-Frontend-Entwickler mit ca. 3 Jahren Angular-Erfahrung...",
+    "careerLevelLabel": "Aktuelles Niveau",
+    "careerLevelPlaceholder": "z. B. Senior-Frontend-Entwickler, ca. 3 Jahre Angular in der Praxis",
+    "textPlaceholder": "z. B. Ich möchte Lead Architect werden",
     "submitCta": "Mit diesem Ziel starten",
     "generationUnavailable": "Die KI-Roadmap-Generierung ist noch nicht bereit. Kommt bald!",
     "errorGeneric": "Etwas ist schiefgelaufen. Bitte versuche es gleich noch einmal."

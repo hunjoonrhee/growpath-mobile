@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { MultilineTextInput } from '@/components/forms/MultilineTextInput';
 import { PrimaryButton } from '@/components/forms/PrimaryButton';
+import { TextField } from '@/components/forms/TextField';
 import { DomainChipSelector } from '@/components/goal-setup/DomainChipSelector';
 import { InputModeToggle, type InputMode } from '@/components/goal-setup/InputModeToggle';
 import { VoiceInputPlaceholder } from '@/components/goal-setup/VoiceInputPlaceholder';
@@ -13,17 +14,20 @@ import { BackHeader } from '@/components/navigation/BackHeader';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
+import { useSwitchActiveRoadmap } from '@/hooks/roadmap/use-switch-active-roadmap';
 import { useSubmitGuard } from '@/hooks/use-submit-guard';
 import { useAuth } from '@/lib/auth-context';
 import type { Domain } from '@/lib/domain';
 import { generateRoadmap, RoadmapGenerationUnavailableError } from '@/lib/roadmap-generation';
 
 export default function GoalSetupScreen() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const router = useRouter();
   const { session } = useAuth();
+  const switchRoadmap = useSwitchActiveRoadmap(session?.user.id);
 
   const [domain, setDomain] = useState<Domain | null>(null);
+  const [careerLevel, setCareerLevel] = useState('');
   const [inputMode, setInputMode] = useState<InputMode>('text');
   const [goalText, setGoalText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -31,13 +35,20 @@ export default function GoalSetupScreen() {
 
   if (!session) return <Redirect href="/login" />;
 
-  const canSubmit = domain !== null && goalText.trim().length > 0 && !isSubmitting;
+  const canSubmit = domain !== null && careerLevel.trim().length > 0 && goalText.trim().length > 0 && !isSubmitting;
 
   const handleSubmit = async () => {
     if (!domain || !submitGuard.tryStart()) return;
     setIsSubmitting(true);
     try {
-      await generateRoadmap({ domain, goalText: goalText.trim() });
+      const roadmap = await generateRoadmap({
+        domain,
+        goalText: goalText.trim(),
+        careerLevel: careerLevel.trim(),
+        locale: i18n.language,
+      });
+      await switchRoadmap.mutateAsync(roadmap.id);
+      router.replace('/roadmap');
     } catch (error) {
       const message =
         error instanceof RoadmapGenerationUnavailableError ? t('goalSetup.generationUnavailable') : t('goalSetup.errorGeneric');
@@ -62,6 +73,15 @@ export default function GoalSetupScreen() {
           </ThemedText>
 
           <DomainChipSelector selected={domain} onSelect={setDomain} />
+
+          <View style={styles.careerLevelField}>
+            <TextField
+              label={t('goalSetup.careerLevelLabel')}
+              value={careerLevel}
+              onChangeText={setCareerLevel}
+              placeholder={t('goalSetup.careerLevelPlaceholder')}
+            />
+          </View>
 
           <View style={styles.inputSection}>
             <InputModeToggle
@@ -102,6 +122,9 @@ const styles = StyleSheet.create({
   subtitle: {
     marginTop: Spacing.one,
     marginBottom: Spacing.four,
+  },
+  careerLevelField: {
+    marginTop: Spacing.four,
   },
   inputSection: {
     marginTop: Spacing.four,

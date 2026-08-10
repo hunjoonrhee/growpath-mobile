@@ -46,5 +46,19 @@
       "resend": "코드 다시 받기",
       "resendSent": "코드를 다시 보냈어요."
     }
+  },
+  "roadmap": {
+    "backAccessibilityLabel": "뒤로가기",
+    "stageProgress": "{{current}}단계 / {{total}}단계",
+    "otherGoalsTitle": "다른 목표",
+    "loading": "로드맵 불러오는 중...",
+    "emptyTitle": "아직 활성화된 로드맵이 없어요",
+    "emptySubtitle": "목표를 설정하면 여기에 로드맵이 표시돼요.",
+    "errorGeneric": "목표 전환에 실패했어요. 잠시 후 다시 시도해주세요.",
+    "stageStatus": {
+      "done": "완료",
+      "current": "진행 중",
+      "upcoming": "예정"
+    }
   }
 }

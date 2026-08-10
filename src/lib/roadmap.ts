@@ -1,0 +1,112 @@
+import { supabase, upsertWithUser } from '@/lib/supabase';
+
+export type RoadmapStageSkill = {
+  name: string;
+  tags: string[];
+};
+
+export type RoadmapStage = {
+  level: number;
+  title: string;
+  description: string;
+  skills: RoadmapStageSkill[];
+};
+
+export type Roadmap = {
+  id: string;
+  goal: string;
+  careerLevel: string;
+  stages: RoadmapStage[];
+  adopted: boolean;
+};
+
+export type RoadmapSummary = {
+  id: string;
+  goal: string;
+  careerLevel: string;
+  adopted: boolean;
+};
+
+const ADOPTED_ROADMAP_ID_KEY = 'adopted_roadmap_id';
+
+type AiRoadmapRow = {
+  id: string;
+  goal: string;
+  career_level: string;
+  stages: RoadmapStage[];
+  adopted: boolean;
+};
+
+function toRoadmap(row: AiRoadmapRow): Roadmap {
+  return { id: row.id, goal: row.goal, careerLevel: row.career_level, stages: row.stages, adopted: row.adopted };
+}
+
+/** Reads the user's active roadmap pointer from the `settings` EAV table (see supabase/README.md). */
+export async function fetchAdoptedRoadmapId(userId: string): Promise<string | null> {
+  const { data, error } = await supabase
+    .from('settings')
+    .select('value')
+    .eq('user_id', userId)
+    .eq('key', ADOPTED_ROADMAP_ID_KEY)
+    .maybeSingle();
+  if (error) throw error;
+  return (data?.value as string | undefined) ?? null;
+}
+
+export async function fetchRoadmap(roadmapId: string): Promise<Roadmap | null> {
+  const { data, error } = await supabase
+    .from('ai_roadmaps')
+    .select('id, goal, career_level, stages, adopted')
+    .eq('id', roadmapId)
+    .maybeSingle();
+  if (error) throw error;
+  return data ? toRoadmap(data as AiRoadmapRow) : null;
+}
+
+/** The roadmap stage the AI currently recommends focusing on, if any goal has been marked as such. */
+export async function fetchFocusStageLevel(roadmapId: string): Promise<number | null> {
+  const { data, error } = await supabase
+    .from('goals')
+    .select('stage_level')
+    .eq('roadmap_id', roadmapId)
+    .eq('is_focus', true)
+    .limit(1)
+    .maybeSingle();
+  if (error) throw error;
+  return (data?.stage_level as number | undefined) ?? null;
+}
+
+export async function fetchUserRoadmaps(userId: string): Promise<RoadmapSummary[]> {
+  const { data, error } = await supabase
+    .from('ai_roadmaps')
+    .select('id, goal, career_level, adopted')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false });
+  if (error) throw error;
+  return (data ?? []).map((row) => ({
+    id: row.id as string,
+    goal: row.goal as string,
+    careerLevel: row.career_level as string,
+    adopted: row.adopted as boolean,
+  }));
+}
+
+/** Points `settings.adopted_roadmap_id` at the new roadmap and mirrors it onto `ai_roadmaps.adopted`. */
+export async function switchActiveRoadmap(userId: string, roadmapId: string): Promise<void> {
+  const { error: upsertError } = await upsertWithUser(
+    'settings',
+    { key: ADOPTED_ROADMAP_ID_KEY, value: roadmapId },
+    { onConflict: 'user_id,key' }
+  );
+  if (upsertError) throw upsertError;
+
+  const { error: clearError } = await supabase
+    .from('ai_roadmaps')
+    .update({ adopted: false })
+    .eq('user_id', userId)
+    .eq('adopted', true);
+  if (clearError) throw clearError;
+
+  const { error: setError } = await supabase.from('ai_roadmaps').update({ adopted: true }).eq('id', roadmapId);
+  if (setError) throw setError;
+}

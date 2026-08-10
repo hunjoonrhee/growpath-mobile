@@ -46,5 +46,19 @@
       "resend": "Resend code",
       "resendSent": "Code resent."
     }
+  },
+  "roadmap": {
+    "backAccessibilityLabel": "Go back",
+    "stageProgress": "Stage {{current}} / {{total}}",
+    "otherGoalsTitle": "Other goals",
+    "loading": "Loading roadmap...",
+    "emptyTitle": "No active roadmap yet",
+    "emptySubtitle": "Set a goal and your roadmap will show up here.",
+    "errorGeneric": "Couldn't switch goals. Please try again in a moment.",
+    "stageStatus": {
+      "done": "Done",
+      "current": "In progress",
+      "upcoming": "Upcoming"
+    }
   }
 }

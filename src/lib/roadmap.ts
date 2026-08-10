@@ -96,9 +96,10 @@ export async function fetchUserRoadmaps(userId: string): Promise<RoadmapSummary[
  * `ai_roadmaps.adopted`, atomically (via the `set_adopted_roadmap` SQL
  * function - see supabase/migrations/20260810000001_set_adopted_roadmap_function.sql).
  * Doing this as separate sequential client-side writes risked a partial
- * failure leaving the two representations disagreeing.
+ * failure leaving the two representations disagreeing. The function derives
+ * the user from auth.uid() itself, so there's no user id to pass here.
  */
-export async function switchActiveRoadmap(userId: string, roadmapId: string): Promise<void> {
-  const { error } = await supabase.rpc('set_adopted_roadmap', { p_user_id: userId, p_roadmap_id: roadmapId });
+export async function switchActiveRoadmap(roadmapId: string): Promise<void> {
+  const { error } = await supabase.rpc('set_adopted_roadmap', { p_roadmap_id: roadmapId });
   if (error) throw error;
 }

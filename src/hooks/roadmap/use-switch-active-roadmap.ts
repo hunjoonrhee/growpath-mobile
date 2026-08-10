@@ -6,7 +6,7 @@ export function useSwitchActiveRoadmap(userId: string | undefined) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (roadmapId: string) => switchActiveRoadmap(userId as string, roadmapId),
+    mutationFn: (roadmapId: string) => switchActiveRoadmap(roadmapId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['settings', 'adoptedRoadmapId', userId] });
       queryClient.invalidateQueries({ queryKey: ['roadmaps', userId] });

@@ -41,7 +41,14 @@ export default function RoadmapScreen() {
     adoptedRoadmapId.isLoading || (hasAdoptedRoadmap && (roadmap.isLoading || focusStageLevel.isLoading));
   // userRoadmaps only feeds the secondary "other goals" list, so its own
   // failure shouldn't block rendering an already-loaded primary roadmap.
-  const isError = adoptedRoadmapId.isError || roadmap.isError || focusStageLevel.isError;
+  // The last clause covers settings pointing at a roadmap row that no
+  // longer exists (deleted/regenerated) - fetchRoadmap resolves to null
+  // rather than erroring, so that alone wouldn't otherwise surface here.
+  const isError =
+    adoptedRoadmapId.isError ||
+    roadmap.isError ||
+    focusStageLevel.isError ||
+    (hasAdoptedRoadmap && !roadmap.isLoading && !roadmap.data);
   const otherRoadmaps = (userRoadmaps.data ?? []).filter((item) => item.id !== adoptedRoadmapId.data);
 
   return (

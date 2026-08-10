@@ -104,6 +104,7 @@ export default function TodayScreen() {
       <TimerHandoffSheet
         visible={isHandoffSheetVisible}
         onClose={() => setIsHandoffSheetVisible(false)}
+        closeAccessibilityLabel={t('today.handoffSheet.closeAccessibilityLabel')}
         onSelectWeb={handleSelectWeb}
         onSelectTimer={handleSelectTimer}
         title={t('today.handoffSheet.title')}

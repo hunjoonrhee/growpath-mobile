@@ -16,6 +16,7 @@
     "startCta": "Starten",
     "webHandoffComingSoon": "Weiter im Web ist noch nicht bereit. Bitte nutze vorerst nur den Timer.",
     "handoffSheet": {
+      "closeAccessibilityLabel": "Schließen",
       "title": "Wie möchtest du starten?",
       "subtitle": "Coding-Themen brauchen Deep Work - wechsle ins Web oder starte hier nur den Timer.",
       "webLabel": "Im Web weitermachen",

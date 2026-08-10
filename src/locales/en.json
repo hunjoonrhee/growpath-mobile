@@ -16,6 +16,7 @@
     "startCta": "Start",
     "webHandoffComingSoon": "Continuing on the web isn't ready yet. Please use the timer-only option for now.",
     "handoffSheet": {
+      "closeAccessibilityLabel": "Close",
       "title": "How do you want to start?",
       "subtitle": "Coding topics need deep work - continue on the web, or just run the timer here.",
       "webLabel": "Continue on the web",

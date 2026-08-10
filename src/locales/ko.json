@@ -16,6 +16,7 @@
     "startCta": "시작하기",
     "webHandoffComingSoon": "웹으로 이어가기는 아직 준비 중이에요. 타이머만 켜두기를 이용해주세요.",
     "handoffSheet": {
+      "closeAccessibilityLabel": "닫기",
       "title": "어떻게 시작할까요?",
       "subtitle": "코딩 주제는 딥워크가 필요해요 — 웹으로 넘어가거나, 모바일에서 시간만 잴 수 있어요.",
       "webLabel": "웹에서 이어가기",

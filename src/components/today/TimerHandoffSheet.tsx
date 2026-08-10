@@ -6,6 +6,7 @@ import { Colors, Spacing } from '@/constants/theme';
 export type TimerHandoffSheetProps = {
   visible: boolean;
   onClose: () => void;
+  closeAccessibilityLabel: string;
   onSelectWeb: () => void;
   onSelectTimer: () => void;
   title: string;
@@ -19,6 +20,7 @@ export type TimerHandoffSheetProps = {
 export function TimerHandoffSheet({
   visible,
   onClose,
+  closeAccessibilityLabel,
   onSelectWeb,
   onSelectTimer,
   title,
@@ -30,7 +32,7 @@ export function TimerHandoffSheet({
 }: TimerHandoffSheetProps) {
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-      <Pressable style={styles.scrim} onPress={onClose} accessibilityRole="button" accessibilityLabel={title} />
+      <Pressable style={styles.scrim} onPress={onClose} accessibilityRole="button" accessibilityLabel={closeAccessibilityLabel} />
       <View style={styles.sheet}>
         <View style={styles.grabber} />
         <ThemedText type="smallBold" style={styles.title}>
@@ -40,31 +42,35 @@ export function TimerHandoffSheet({
           {subtitle}
         </ThemedText>
 
+        {/* Timer option is listed first and styled as primary because it's
+            the one that actually works right now - "Continue on the web"
+            only opens a coming-soon alert, so it shouldn't look like the
+            recommended, working path. */}
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel={webOptionLabel}
-          onPress={onSelectWeb}
+          accessibilityLabel={timerOptionLabel}
+          onPress={onSelectTimer}
           style={[styles.option, styles.optionPrimary]}>
           <View style={[styles.icon, styles.iconPrimary]}>
-            <ThemedText style={styles.iconGlyph}>💻</ThemedText>
-          </View>
-          <View style={styles.optionText}>
-            <ThemedText type="smallBold">{webOptionLabel}</ThemedText>
-            <ThemedText type="small" themeColor="textFaint">
-              {webOptionDescription}
-            </ThemedText>
-          </View>
-          <ThemedText themeColor="textFaint">→</ThemedText>
-        </Pressable>
-
-        <Pressable accessibilityRole="button" accessibilityLabel={timerOptionLabel} onPress={onSelectTimer} style={styles.option}>
-          <View style={styles.icon}>
             <ThemedText style={styles.iconGlyph}>⏱️</ThemedText>
           </View>
           <View style={styles.optionText}>
             <ThemedText type="smallBold">{timerOptionLabel}</ThemedText>
             <ThemedText type="small" themeColor="textFaint">
               {timerOptionDescription}
+            </ThemedText>
+          </View>
+          <ThemedText themeColor="textFaint">→</ThemedText>
+        </Pressable>
+
+        <Pressable accessibilityRole="button" accessibilityLabel={webOptionLabel} onPress={onSelectWeb} style={styles.option}>
+          <View style={styles.icon}>
+            <ThemedText style={styles.iconGlyph}>💻</ThemedText>
+          </View>
+          <View style={styles.optionText}>
+            <ThemedText type="smallBold">{webOptionLabel}</ThemedText>
+            <ThemedText type="small" themeColor="textFaint">
+              {webOptionDescription}
             </ThemedText>
           </View>
           <ThemedText themeColor="textFaint">→</ThemedText>

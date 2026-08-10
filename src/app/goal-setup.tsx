@@ -34,10 +34,25 @@ export default function GoalSetupScreen() {
   // Set once generateRoadmap succeeds, so a retry after a failed adopt below
   // doesn't call generateRoadmap again and create a second, orphaned
   // ai_roadmaps row for the same submission - it just retries adoption.
+  // Cleared on any field edit so a retry after changing the goal doesn't
+  // silently adopt a roadmap generated for the old input.
   const [pendingRoadmapId, setPendingRoadmapId] = useState<string | null>(null);
   const submitGuard = useSubmitGuard();
 
   if (!session) return <Redirect href="/login" />;
+
+  const handleDomainSelect = (next: Domain) => {
+    setPendingRoadmapId(null);
+    setDomain(next);
+  };
+  const handleCareerLevelChange = (next: string) => {
+    setPendingRoadmapId(null);
+    setCareerLevel(next);
+  };
+  const handleGoalTextChange = (next: string) => {
+    setPendingRoadmapId(null);
+    setGoalText(next);
+  };
 
   const canSubmit = domain !== null && careerLevel.trim().length > 0 && goalText.trim().length > 0 && !isSubmitting;
 
@@ -81,13 +96,13 @@ export default function GoalSetupScreen() {
             {t('goalSetup.subtitle')}
           </ThemedText>
 
-          <DomainChipSelector selected={domain} onSelect={setDomain} />
+          <DomainChipSelector selected={domain} onSelect={handleDomainSelect} />
 
           <View style={styles.careerLevelField}>
             <TextField
               label={t('goalSetup.careerLevelLabel')}
               value={careerLevel}
-              onChangeText={setCareerLevel}
+              onChangeText={handleCareerLevelChange}
               placeholder={t('goalSetup.careerLevelPlaceholder')}
             />
           </View>
@@ -100,7 +115,7 @@ export default function GoalSetupScreen() {
               voiceLabel={t('goalSetup.inputMode.voice')}
             />
             {inputMode === 'text' ? (
-              <MultilineTextInput value={goalText} onChangeText={setGoalText} placeholder={t('goalSetup.textPlaceholder')} />
+              <MultilineTextInput value={goalText} onChangeText={handleGoalTextChange} placeholder={t('goalSetup.textPlaceholder')} />
             ) : (
               <VoiceInputPlaceholder message={t('goalSetup.voiceComingSoon')} />
             )}

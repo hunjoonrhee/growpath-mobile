@@ -17,7 +17,6 @@ export type Roadmap = {
   goal: string;
   careerLevel: string;
   stages: RoadmapStage[];
-  adopted: boolean;
 };
 
 export type RoadmapSummary = {
@@ -33,11 +32,10 @@ type AiRoadmapRow = {
   goal: string;
   career_level: string;
   stages: RoadmapStage[];
-  adopted: boolean;
 };
 
 function toRoadmap(row: AiRoadmapRow): Roadmap {
-  return { id: row.id, goal: row.goal, careerLevel: row.career_level, stages: row.stages, adopted: row.adopted };
+  return { id: row.id, goal: row.goal, careerLevel: row.career_level, stages: row.stages };
 }
 
 /** Reads the user's active roadmap pointer from the `settings` EAV table (see supabase/README.md). */
@@ -55,7 +53,7 @@ export async function fetchAdoptedRoadmapId(userId: string): Promise<string | nu
 export async function fetchRoadmap(roadmapId: string): Promise<Roadmap | null> {
   const { data, error } = await supabase
     .from('ai_roadmaps')
-    .select('id, goal, career_level, stages, adopted')
+    .select('id, goal, career_level, stages')
     .eq('id', roadmapId)
     .maybeSingle();
   if (error) throw error;

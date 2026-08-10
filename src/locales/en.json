@@ -14,6 +14,16 @@
     "currentStage": "Stage {{stage}} — {{label}}",
     "recommendationTitle": "Today's pick",
     "startCta": "Start",
+    "webHandoffComingSoon": "Continuing on the web isn't ready yet. Please use the timer-only option for now.",
+    "handoffSheet": {
+      "closeAccessibilityLabel": "Close",
+      "title": "How do you want to start?",
+      "subtitle": "Coding topics need deep work - continue on the web, or just run the timer here.",
+      "webLabel": "Continue on the web",
+      "webDescription": "Switch to joon-dashboard with context",
+      "timerLabel": "Just run the timer",
+      "timerDescription": "Track time here on your phone"
+    },
     "domain": {
       "dev": "💻 Dev",
       "language": "🗣️ Language",
@@ -34,7 +44,9 @@
     "relativeToday": "Today",
     "relativeYesterday": "Yesterday",
     "relativeDaysAgo": "{{count}} days ago",
-    "durationAndDate": "{{minutes}} min · {{date}}"
+    "durationAndDate": "{{minutes}} min · {{date}}",
+    "contextBanner": "Just finished a {{minutes}}-min timer — {{title}}. Log it below.",
+    "contextBannerDismiss": "Dismiss banner"
   },
   "profile": {
     "title": "Me"
@@ -102,5 +114,13 @@
     "tagsPlaceholder": "e.g. ngrx, state-management",
     "saveCta": "Save",
     "errorGeneric": "Couldn't save. Please try again in a moment."
+  },
+  "timer": {
+    "backAccessibilityLabel": "Go back",
+    "statusRunning": "Running",
+    "statusPaused": "Paused",
+    "pauseCta": "Pause",
+    "resumeCta": "Resume",
+    "finishCta": "Finish"
   }
 }

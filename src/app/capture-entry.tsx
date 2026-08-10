@@ -1,4 +1,4 @@
-import { Redirect, useRouter } from 'expo-router';
+import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
@@ -25,9 +25,10 @@ export default function CaptureEntryScreen() {
   const router = useRouter();
   const { session } = useAuth();
   const createSession = useCreateSession(session?.user.id);
+  const prefill = useLocalSearchParams<{ title?: string; minutes?: string; timerSessionId?: string }>();
 
-  const [title, setTitle] = useState('');
-  const [durationText, setDurationText] = useState('');
+  const [title, setTitle] = useState(prefill.title ?? '');
+  const [durationText, setDurationText] = useState(prefill.minutes ?? '');
   const [til, setTil] = useState('');
   const [tagsText, setTagsText] = useState('');
 
@@ -45,7 +46,17 @@ export default function CaptureEntryScreen() {
     createSession.mutate(
       { title: title.trim(), durationMinutes, til: til.trim(), tags: parseTags(tagsText) },
       {
-        onSuccess: () => router.back(),
+        onSuccess: () => {
+          // Saving a timer-prefilled entry logs that session - replace
+          // (not back()) into /log with no params so its ContextBanner,
+          // which is keyed on this same timerSessionId, doesn't reappear
+          // and invite logging the same session again.
+          if (prefill.timerSessionId) {
+            router.replace('/log');
+          } else {
+            router.back();
+          }
+        },
         onError: () => Alert.alert(t('captureEntry.errorGeneric')),
       }
     );

@@ -14,6 +14,16 @@
     "currentStage": "현재 {{stage}}단계 — {{label}}",
     "recommendationTitle": "오늘 추천",
     "startCta": "시작하기",
+    "webHandoffComingSoon": "웹으로 이어가기는 아직 준비 중이에요. 타이머만 켜두기를 이용해주세요.",
+    "handoffSheet": {
+      "closeAccessibilityLabel": "닫기",
+      "title": "어떻게 시작할까요?",
+      "subtitle": "코딩 주제는 딥워크가 필요해요 — 웹으로 넘어가거나, 모바일에서 시간만 잴 수 있어요.",
+      "webLabel": "웹에서 이어가기",
+      "webDescription": "joon-dashboard로 컨텍스트와 함께 이동",
+      "timerLabel": "타이머만 켜두기",
+      "timerDescription": "모바일에서 시간만 측정해요"
+    },
     "domain": {
       "dev": "💻 개발",
       "language": "🗣️ 언어",
@@ -34,7 +44,9 @@
     "relativeToday": "오늘",
     "relativeYesterday": "어제",
     "relativeDaysAgo": "{{count}}일 전",
-    "durationAndDate": "{{minutes}}분 · {{date}}"
+    "durationAndDate": "{{minutes}}분 · {{date}}",
+    "contextBanner": "방금 {{minutes}}분 타이머 종료 — {{title}}. 아래에서 바로 기록하세요.",
+    "contextBannerDismiss": "배너 닫기"
   },
   "profile": {
     "title": "나"
@@ -102,5 +114,13 @@
     "tagsPlaceholder": "예: ngrx, 상태관리",
     "saveCta": "저장하기",
     "errorGeneric": "저장에 실패했어요. 잠시 후 다시 시도해주세요."
+  },
+  "timer": {
+    "backAccessibilityLabel": "뒤로가기",
+    "statusRunning": "측정 중",
+    "statusPaused": "일시정지됨",
+    "pauseCta": "일시정지",
+    "resumeCta": "다시 시작",
+    "finishCta": "완료"
   }
 }

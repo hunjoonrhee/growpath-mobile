@@ -1,8 +1,10 @@
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Pressable, ScrollView, StyleSheet } from 'react-native';
 
 import { CaptureButtonsRow } from '@/components/log/CaptureButtonsRow';
+import { ContextBanner } from '@/components/log/ContextBanner';
 import { SessionLogList } from '@/components/log/SessionLogList';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -15,8 +17,31 @@ export default function LogScreen() {
   const router = useRouter();
   const { session } = useAuth();
   const recentSessions = useRecentSessions(session?.user.id);
+  const { timerTitle, timerMinutes, timerSessionId } = useLocalSearchParams<{
+    timerTitle?: string;
+    timerMinutes?: string;
+    timerSessionId?: string;
+  }>();
+  // Tabs keeps this screen mounted across tab switches, so router.replace()
+  // from the timer only updates params rather than remounting - a plain
+  // dismissed boolean would stay true forever after the first dismiss and
+  // hide the banner for every later timer session too. Tracking *which*
+  // session was dismissed instead lets a new one show again. Keyed on
+  // timerSessionId (not title/minutes) since two runs can share a title and
+  // round to the same minute count.
+  const [dismissedSessionId, setDismissedSessionId] = useState<string | null>(null);
 
   if (!session) return null;
+
+  const hasTimerContext = Boolean(timerTitle) && timerSessionId !== undefined && timerSessionId !== dismissedSessionId;
+
+  const handlePressManualEntry = () => {
+    router.push(
+      hasTimerContext
+        ? { pathname: '/capture-entry', params: { title: timerTitle, minutes: timerMinutes, timerSessionId } }
+        : '/capture-entry'
+    );
+  };
 
   return (
     <ThemedView style={styles.screen}>
@@ -24,6 +49,14 @@ export default function LogScreen() {
         <ThemedText type="title" style={styles.title}>
           {t('log.title')}
         </ThemedText>
+
+        {hasTimerContext && (
+          <ContextBanner
+            message={t('log.contextBanner', { minutes: timerMinutes, title: timerTitle })}
+            dismissAccessibilityLabel={t('log.contextBannerDismiss')}
+            onDismiss={() => setDismissedSessionId(timerSessionId ?? null)}
+          />
+        )}
 
         <CaptureButtonsRow
           voiceLabel={t('log.voiceLabel')}
@@ -35,7 +68,7 @@ export default function LogScreen() {
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={t('log.manualEntryCta')}
-          onPress={() => router.push('/capture-entry')}
+          onPress={handlePressManualEntry}
           style={styles.manualEntryButton}>
           <ThemedText type="smallBold" themeColor="pri2">
             {t('log.manualEntryCta')}

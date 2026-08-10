@@ -20,6 +20,14 @@ import { useAuth } from '@/lib/auth-context';
 import type { Domain } from '@/lib/domain';
 import { generateRoadmap, RoadmapGenerationUnavailableError } from '@/lib/roadmap-generation';
 
+/** Wraps a setter so any edit to that field also invalidates a cached pendingRoadmapId (see below). */
+function withPendingReset<T>(setPendingRoadmapId: (id: string | null) => void, setValue: (next: T) => void) {
+  return (next: T) => {
+    setPendingRoadmapId(null);
+    setValue(next);
+  };
+}
+
 export default function GoalSetupScreen() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
@@ -41,35 +49,38 @@ export default function GoalSetupScreen() {
 
   if (!session) return <Redirect href="/login" />;
 
-  const handleDomainSelect = (next: Domain) => {
-    setPendingRoadmapId(null);
-    setDomain(next);
-  };
-  const handleCareerLevelChange = (next: string) => {
-    setPendingRoadmapId(null);
-    setCareerLevel(next);
-  };
-  const handleGoalTextChange = (next: string) => {
-    setPendingRoadmapId(null);
-    setGoalText(next);
-  };
+  const handleDomainSelect = withPendingReset(setPendingRoadmapId, setDomain);
+  const handleCareerLevelChange = withPendingReset(setPendingRoadmapId, setCareerLevel);
+  const handleGoalTextChange = withPendingReset(setPendingRoadmapId, setGoalText);
 
   const canSubmit = domain !== null && careerLevel.trim().length > 0 && goalText.trim().length > 0 && !isSubmitting;
 
   const handleSubmit = async () => {
     if (!domain || !submitGuard.tryStart()) return;
     setIsSubmitting(true);
+    // Snapshot what's being submitted - fields aren't disabled while
+    // isSubmitting, so if the user edits them before generateRoadmap
+    // resolves, the per-field reset above already cleared pendingRoadmapId,
+    // but the unconditional setPendingRoadmapId(roadmapId) below would
+    // otherwise re-cache it anyway. Comparing against this snapshot after
+    // the await catches that race too.
+    const submitted = { domain, careerLevel: careerLevel.trim(), goalText: goalText.trim() };
     try {
       const roadmapId =
         pendingRoadmapId ??
         (
           await generateRoadmap({
-            domain,
-            goalText: goalText.trim(),
-            careerLevel: careerLevel.trim(),
+            domain: submitted.domain,
+            goalText: submitted.goalText,
+            careerLevel: submitted.careerLevel,
             locale: i18n.language,
           })
         ).id;
+
+      const changedMidFlight =
+        domain !== submitted.domain || careerLevel.trim() !== submitted.careerLevel || goalText.trim() !== submitted.goalText;
+      if (changedMidFlight) return;
+
       setPendingRoadmapId(roadmapId);
       await switchRoadmap.mutateAsync(roadmapId);
       router.replace('/roadmap');

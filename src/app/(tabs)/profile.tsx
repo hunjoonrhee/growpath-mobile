@@ -6,7 +6,7 @@ import { NavRow } from '@/components/common/NavRow';
 import { LanguageSelector } from '@/components/profile/LanguageSelector';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Spacing } from '@/constants/theme';
+import { Spacing, Typography } from '@/constants/theme';
 import { setAppLanguage, type SupportedLanguage } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
 
@@ -75,10 +75,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.four,
   },
   sectionTitle: {
-    textTransform: 'uppercase',
-    letterSpacing: 0.4,
-    fontWeight: '700',
-    fontSize: 12,
+    ...Typography.sectionLabel,
     marginTop: Spacing.four,
     marginBottom: Spacing.two + 2,
   },

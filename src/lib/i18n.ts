@@ -57,8 +57,23 @@ AsyncStorage.getItem(LANGUAGE_STORAGE_KEY)
     // Storage read failed - keep the device-detected language already set above.
   });
 
+// Serializes overlapping calls so two rapid picks (e.g. tapping "Deutsch"
+// then "English" before the first write lands) apply in invocation order
+// instead of racing - without this, whichever call's AsyncStorage write
+// happens to resolve last could persist a language other than the one the
+// UI ends up showing, and that mismatch would only surface on next cold
+// start. This promise is a pure "previous call is done" signal (only ever
+// resolved, never rejected) so one call's failure can't fail the next.
+let languageWriteQueue: Promise<void> = Promise.resolve();
+
 export async function setAppLanguage(language: SupportedLanguage): Promise<void> {
   userHasOverriddenLanguage = true;
+  const previous = languageWriteQueue;
+  let release!: () => void;
+  languageWriteQueue = new Promise((resolve) => {
+    release = resolve;
+  });
+  await previous;
   try {
     // Persist before applying, so a storage failure leaves the UI language
     // unchanged - matching the error alert the caller shows on rejection,
@@ -71,6 +86,8 @@ export async function setAppLanguage(language: SupportedLanguage): Promise<void>
     // permanently suppressed - let it still apply if it hasn't resolved yet.
     userHasOverriddenLanguage = false;
     throw error;
+  } finally {
+    release();
   }
 }
 

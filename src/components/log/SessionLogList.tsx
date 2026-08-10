@@ -2,7 +2,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { SessionLogCard } from '@/components/log/SessionLogCard';
 import { ThemedText } from '@/components/themed-text';
-import { Spacing } from '@/constants/theme';
+import { Spacing, Typography } from '@/constants/theme';
 import type { SessionRecord } from '@/lib/sessions';
 
 export type SessionLogListProps = {
@@ -62,10 +62,7 @@ const styles = StyleSheet.create({
     marginTop: Spacing.four,
   },
   title: {
-    textTransform: 'uppercase',
-    letterSpacing: 0.4,
-    fontWeight: '700',
-    fontSize: 12,
+    ...Typography.sectionLabel,
     marginBottom: Spacing.two + 2,
   },
 });

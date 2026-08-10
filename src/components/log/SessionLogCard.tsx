@@ -17,11 +17,13 @@ export function SessionLogCard({ session, onPress }: SessionLogCardProps) {
   const dateLabel = relativeDateLabel(session.date, t);
   const timeLabel =
     session.durationMinutes !== null ? t('log.durationAndDate', { minutes: session.durationMinutes, date: dateLabel }) : dateLabel;
+  const tagsLabel = session.tags.map((tag) => `#${tag}`).join(', ');
+  const accessibilityLabel = [session.title, timeLabel, tagsLabel].filter(Boolean).join(', ');
 
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={session.title}
+      accessibilityLabel={accessibilityLabel}
       onPress={onPress}
       style={({ pressed }) => [styles.card, pressed && styles.pressed]}>
       <View style={styles.top}>
@@ -34,7 +36,7 @@ export function SessionLogCard({ session, onPress }: SessionLogCardProps) {
       </View>
       {session.tags.length > 0 && (
         <View style={styles.tagsRow}>
-          <TagList tags={session.tags.slice(0, 3)} />
+          <TagList tags={session.tags} maxVisible={3} />
         </View>
       )}
     </Pressable>

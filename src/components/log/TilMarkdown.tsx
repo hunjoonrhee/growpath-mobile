@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { StyleSheet } from 'react-native';
 import Markdown from 'react-native-markdown-display';
 
@@ -8,9 +9,9 @@ export type TilMarkdownProps = {
 };
 
 /** TIL entries are written as markdown (joon-dashboard's web editor uses the same convention). */
-export function TilMarkdown({ content }: TilMarkdownProps) {
+export const TilMarkdown = memo(function TilMarkdown({ content }: TilMarkdownProps) {
   return <Markdown style={markdownStyles}>{content}</Markdown>;
-}
+});
 
 const markdownStyles = StyleSheet.create({
   body: { color: Colors.text, fontSize: 15, lineHeight: 22 },

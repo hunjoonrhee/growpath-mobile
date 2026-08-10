@@ -53,8 +53,11 @@ function startOfIsoWeek(date: Date): Date {
 /**
  * Scoped to `roadmapId` when given, so switching the active goal shows that
  * goal's own log instead of every session ever recorded under any goal.
- * `roadmapId === null` (no active roadmap) intentionally falls back to
- * showing everything, rather than an empty list.
+ * Sessions with no roadmap_id (logged before the user ever adopted a goal)
+ * are goal-less rather than belonging to some *other* goal, so they stay
+ * visible under every scope instead of a plain `.eq()`, which would hide
+ * them the moment any roadmap becomes active and never show them again.
+ * `roadmapId === null` (no active roadmap) falls back to showing everything.
  */
 export async function fetchRecentSessions(userId: string, roadmapId: string | null, limit = 20): Promise<SessionRecord[]> {
   let query = supabase
@@ -62,7 +65,7 @@ export async function fetchRecentSessions(userId: string, roadmapId: string | nu
     .select('id, title, duration_minutes, date, til, tags, created_at')
     .eq('user_id', userId);
   if (roadmapId) {
-    query = query.eq('roadmap_id', roadmapId);
+    query = query.or(`roadmap_id.eq.${roadmapId},roadmap_id.is.null`);
   }
   const { data, error } = await query.order('created_at', { ascending: false }).limit(limit);
   if (error) throw error;

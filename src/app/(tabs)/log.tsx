@@ -10,9 +10,8 @@ import { ContextBanner } from '@/components/log/ContextBanner';
 import { SessionLogList } from '@/components/log/SessionLogList';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Colors, Spacing } from '@/constants/theme';
-import { useAdoptedRoadmapId } from '@/hooks/roadmap/use-adopted-roadmap-id';
-import { useRecentSessions } from '@/hooks/sessions/use-recent-sessions';
+import { Colors, Spacing, Typography } from '@/constants/theme';
+import { useActiveRoadmapSessions } from '@/hooks/sessions/use-active-roadmap-sessions';
 import { useDueVocabWordCount } from '@/hooks/vocab/use-due-vocab-word-count';
 import { useAuth } from '@/lib/auth-context';
 
@@ -20,10 +19,9 @@ export default function LogScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { session } = useAuth();
-  const adoptedRoadmapId = useAdoptedRoadmapId(session?.user.id);
   // Scoped to the active goal, so switching goals shows that goal's own log
   // instead of every session ever recorded under any goal.
-  const recentSessions = useRecentSessions(session?.user.id, adoptedRoadmapId.data);
+  const activeRoadmapSessions = useActiveRoadmapSessions(session?.user.id);
   const dueVocabWordCount = useDueVocabWordCount(session?.user.id);
   const { timerTitle, timerMinutes, timerSessionId } = useLocalSearchParams<{
     timerTitle?: string;
@@ -40,16 +38,6 @@ export default function LogScreen() {
   const [dismissedSessionId, setDismissedSessionId] = useState<string | null>(null);
 
   if (!session) return null;
-
-  // recentSessions stays disabled (enabled: false) until adoptedRoadmapId
-  // resolves, and a disabled query's isLoading is false the whole time (only
-  // isPending reflects "no data yet" regardless of enabled) - reading
-  // recentSessions.isLoading directly would flash the empty state before
-  // adoptedRoadmapId even finishes. If adoptedRoadmapId itself errors,
-  // recentSessions never enables and isPending would stay true forever, so
-  // that path routes to the error state instead of an infinite spinner.
-  const isSessionsInitializing = adoptedRoadmapId.isLoading || (!adoptedRoadmapId.isError && recentSessions.isPending);
-  const isSessionsError = adoptedRoadmapId.isError || recentSessions.isError;
 
   const hasTimerContext = Boolean(timerTitle) && timerSessionId !== undefined && timerSessionId !== dismissedSessionId;
 
@@ -107,9 +95,9 @@ export default function LogScreen() {
 
           <SessionLogList
             title={t('log.recentTitle')}
-            sessions={recentSessions.data ?? []}
-            isLoading={isSessionsInitializing}
-            isError={isSessionsError}
+            sessions={activeRoadmapSessions.sessions ?? []}
+            isLoading={activeRoadmapSessions.isLoading}
+            isError={activeRoadmapSessions.isError}
             loadingLabel={t('log.loading')}
             errorLabel={t('log.loadError')}
             emptyLabel={t('log.empty')}
@@ -148,10 +136,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.four,
   },
   sectionTitle: {
-    textTransform: 'uppercase',
-    letterSpacing: 0.4,
-    fontWeight: '700',
-    fontSize: 12,
+    ...Typography.sectionLabel,
     marginTop: Spacing.five,
     marginBottom: Spacing.two + 2,
   },

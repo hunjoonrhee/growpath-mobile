@@ -5,18 +5,28 @@ import { Colors, Spacing } from '@/constants/theme';
 
 export type TagListProps = {
   tags: string[];
+  /** Caps how many tags render before collapsing the rest into a "+N" chip. Omit to show all. */
+  maxVisible?: number;
 };
 
-export function TagList({ tags }: TagListProps) {
+export function TagList({ tags, maxVisible }: TagListProps) {
   if (tags.length === 0) return null;
+
+  const visibleTags = maxVisible !== undefined ? tags.slice(0, maxVisible) : tags;
+  const hiddenCount = tags.length - visibleTags.length;
 
   return (
     <View style={styles.tags}>
-      {tags.map((tag) => (
+      {visibleTags.map((tag) => (
         <ThemedText key={tag} type="small" themeColor="textDim" style={styles.tag}>
           #{tag}
         </ThemedText>
       ))}
+      {hiddenCount > 0 && (
+        <ThemedText type="small" themeColor="textFaint" style={styles.tag}>
+          +{hiddenCount}
+        </ThemedText>
+      )}
     </View>
   );
 }

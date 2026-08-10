@@ -14,7 +14,7 @@ import { QuickStatsRow } from '@/components/today/QuickStatsRow';
 import { RecommendationCard } from '@/components/today/RecommendationCard';
 import { StageProgressBar } from '@/components/today/StageProgressBar';
 import { TimerHandoffSheet } from '@/components/today/TimerHandoffSheet';
-import { Spacing } from '@/constants/theme';
+import { Spacing, Typography } from '@/constants/theme';
 import { useActiveRoadmap } from '@/hooks/roadmap/use-active-roadmap';
 import { useStudyStreak } from '@/hooks/sessions/use-study-streak';
 import { useWeeklySessionCount } from '@/hooks/sessions/use-weekly-session-count';
@@ -169,11 +169,8 @@ const styles = StyleSheet.create({
     marginTop: Spacing.two + 2,
   },
   sectionTitle: {
+    ...Typography.sectionLabel,
     marginTop: Spacing.five,
     marginBottom: Spacing.two + 2,
-    textTransform: 'uppercase',
-    letterSpacing: 0.4,
-    fontWeight: '700',
-    fontSize: 12,
   },
 });

@@ -8,7 +8,7 @@ import { TilMarkdown } from '@/components/log/TilMarkdown';
 import { BackHeader } from '@/components/navigation/BackHeader';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Spacing } from '@/constants/theme';
+import { Spacing, Typography } from '@/constants/theme';
 import { useSession } from '@/hooks/sessions/use-session';
 import { useAuth } from '@/lib/auth-context';
 import { relativeDateLabel } from '@/lib/date';
@@ -17,7 +17,7 @@ export default function TilDetailScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { session: authSession } = useAuth();
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id } = useLocalSearchParams<{ id?: string }>();
   const session = useSession(id, authSession?.user.id);
 
   if (!authSession) return <Redirect href="/login" />;
@@ -99,10 +99,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.three,
   },
   sectionLabel: {
-    textTransform: 'uppercase',
-    letterSpacing: 0.4,
-    fontWeight: '700',
-    fontSize: 12,
+    ...Typography.sectionLabel,
     marginTop: Spacing.four,
     marginBottom: Spacing.two,
   },

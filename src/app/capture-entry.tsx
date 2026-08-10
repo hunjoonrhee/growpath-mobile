@@ -33,10 +33,15 @@ export default function CaptureEntryScreen() {
 
   if (!session) return <Redirect href="/login" />;
 
-  const canSave = title.trim().length > 0 && !createSession.isPending;
+  const trimmedDuration = durationText.trim();
+  // Digits-only on purpose: catches non-numeric input (including a decimal
+  // comma, which German-locale users commonly type) instead of letting
+  // Number() silently turn it into NaN -> null on save.
+  const isDurationValid = trimmedDuration.length === 0 || /^\d+$/.test(trimmedDuration);
+  const canSave = title.trim().length > 0 && isDurationValid && !createSession.isPending;
 
   const handleSave = () => {
-    const durationMinutes = durationText.trim().length > 0 ? Number(durationText) : null;
+    const durationMinutes = trimmedDuration.length > 0 ? Number(trimmedDuration) : null;
     createSession.mutate(
       { title: title.trim(), durationMinutes, til: til.trim(), tags: parseTags(tagsText) },
       {

@@ -12,7 +12,11 @@ export type SessionLogCardProps = {
 
 function relativeDateLabel(dateString: string, t: (key: string, options?: Record<string, unknown>) => string): string {
   const days = daysAgo(dateString);
-  if (days <= 0) return t('log.relativeToday');
+  // A negative diff (session dated in the future relative to the device
+  // clock - skew, or a date recorded in a different timezone) shouldn't be
+  // mislabeled as "today" - fall back to the raw date instead of guessing.
+  if (days < 0) return dateString;
+  if (days === 0) return t('log.relativeToday');
   if (days === 1) return t('log.relativeYesterday');
   return t('log.relativeDaysAgo', { count: days });
 }

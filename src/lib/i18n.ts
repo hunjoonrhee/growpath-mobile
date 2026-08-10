@@ -59,12 +59,19 @@ AsyncStorage.getItem(LANGUAGE_STORAGE_KEY)
 
 export async function setAppLanguage(language: SupportedLanguage): Promise<void> {
   userHasOverriddenLanguage = true;
-  // Persist before applying, so a storage failure leaves the UI language
-  // unchanged - matching the error alert the caller shows on rejection,
-  // instead of visibly switching languages and then reporting failure.
-  await AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, language);
-  // eslint-disable-next-line import/no-named-as-default-member
-  await i18next.changeLanguage(language);
+  try {
+    // Persist before applying, so a storage failure leaves the UI language
+    // unchanged - matching the error alert the caller shows on rejection,
+    // instead of visibly switching languages and then reporting failure.
+    await AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, language);
+    // eslint-disable-next-line import/no-named-as-default-member
+    await i18next.changeLanguage(language);
+  } catch (error) {
+    // The override attempt failed, so don't leave the cold-start restore
+    // permanently suppressed - let it still apply if it hasn't resolved yet.
+    userHasOverriddenLanguage = false;
+    throw error;
+  }
 }
 
 export default i18next;

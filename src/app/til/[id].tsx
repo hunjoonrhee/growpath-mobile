@@ -34,13 +34,13 @@ export default function TilDetailScreen() {
         <BackHeader accessibilityLabel={t('tilDetail.backAccessibilityLabel')} onPress={() => router.back()} />
 
         <ScrollView contentContainerStyle={styles.content}>
-          {session.isLoading && (
+          {session.isPending && (
             <ThemedText type="small" themeColor="textDim" style={styles.centerText}>
               {t('tilDetail.loading')}
             </ThemedText>
           )}
 
-          {!session.isLoading && (session.isError || !session.data) && (
+          {!session.isPending && (session.isError || !session.data) && (
             <ThemedText type="small" themeColor="amber" style={styles.centerText}>
               {t('tilDetail.loadError')}
             </ThemedText>

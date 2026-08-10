@@ -6,7 +6,7 @@ import { ProfileNavRow } from '@/components/profile/ProfileNavRow';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
-import { useDueVocabWords } from '@/hooks/vocab/use-due-vocab-words';
+import { useDueVocabWordCount } from '@/hooks/vocab/use-due-vocab-word-count';
 import { useAuth } from '@/lib/auth-context';
 
 // TODO(phase-3+): avatar upload, stats, career goal summary, settings, logout.
@@ -14,7 +14,7 @@ export default function ProfileScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { session } = useAuth();
-  const dueVocabWords = useDueVocabWords(session?.user.id);
+  const dueVocabWordCount = useDueVocabWordCount(session?.user.id);
 
   return (
     <ThemedView style={styles.screen}>
@@ -29,7 +29,7 @@ export default function ProfileScreen() {
         <ProfileNavRow
           icon="🗂️"
           label={t('profile.vocabReviewCta')}
-          subtitle={t('profile.vocabDueCount', { count: dueVocabWords.data?.length ?? 0 })}
+          subtitle={t('profile.vocabDueCount', { count: dueVocabWordCount.data ?? 0 })}
           onPress={() => router.push('/vocab-review')}
         />
         <ProfileNavRow icon="➕" label={t('profile.vocabAddCta')} onPress={() => router.push('/vocab-add')} />

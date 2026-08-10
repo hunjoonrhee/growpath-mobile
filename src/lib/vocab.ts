@@ -59,6 +59,22 @@ export async function fetchDueVocabWords(userId: string, limit = 20): Promise<Vo
   return (data ?? []).map((row) => toVocabWord(row as VocabWordRow));
 }
 
+/**
+ * True due count, uncapped - unlike fetchDueVocabWords, which limits to the
+ * app's daily review-session size. Profile's badge needs the real number
+ * (e.g. to show a backlog larger than one day's review cap), not the size
+ * of a single review session.
+ */
+export async function fetchDueVocabWordCount(userId: string): Promise<number> {
+  const { count, error } = await supabase
+    .from('vocab_words')
+    .select('id', { count: 'exact', head: true })
+    .eq('user_id', userId)
+    .lte('next_review_at', new Date().toISOString());
+  if (error) throw error;
+  return count ?? 0;
+}
+
 /** Upserts on (user_id, language, word) - re-saving an existing word updates its meaning/example instead of erroring. */
 export async function createVocabWord(input: CreateVocabWordInput): Promise<void> {
   const { error } = await upsertWithUser(

@@ -22,7 +22,19 @@
     }
   },
   "log": {
-    "title": "Log"
+    "title": "Log",
+    "voiceLabel": "Log by voice",
+    "photoLabel": "Log by photo",
+    "captureComingSoon": "This isn't ready yet. Please use manual entry for now.",
+    "manualEntryCta": "Manual entry",
+    "recentTitle": "Recent logs",
+    "loading": "Loading logs...",
+    "loadError": "Couldn't load your logs. Please try again in a moment.",
+    "empty": "No logs yet. Add your first one.",
+    "relativeToday": "Today",
+    "relativeYesterday": "Yesterday",
+    "relativeDaysAgo": "{{count}} days ago",
+    "durationAndDate": "{{minutes}} min · {{date}}"
   },
   "profile": {
     "title": "Me"
@@ -76,5 +88,19 @@
     "submitCta": "Start with this goal",
     "generationUnavailable": "AI roadmap generation isn't ready yet. Coming soon!",
     "errorGeneric": "Something went wrong. Please try again in a moment."
+  },
+  "captureEntry": {
+    "backAccessibilityLabel": "Go back",
+    "title": "Add a log",
+    "titleLabel": "What did you study?",
+    "titlePlaceholder": "e.g. NgRx Effects",
+    "durationLabel": "Duration (minutes)",
+    "durationPlaceholder": "e.g. 25",
+    "tilLabel": "What you learned",
+    "tilPlaceholder": "Jot down a quick summary...",
+    "tagsLabel": "Tags (comma-separated)",
+    "tagsPlaceholder": "e.g. ngrx, state-management",
+    "saveCta": "Save",
+    "errorGeneric": "Couldn't save. Please try again in a moment."
   }
 }

@@ -49,7 +49,11 @@
     "contextBannerDismiss": "Banner schließen"
   },
   "profile": {
-    "title": "Ich"
+    "title": "Ich",
+    "learningSectionTitle": "Lernen",
+    "vocabReviewCta": "Vokabeln wiederholen",
+    "vocabDueCount": "{{count}} Vokabeln fällig",
+    "vocabAddCta": "Vokabel hinzufügen"
   },
   "auth": {
     "tagline": "Kenne dein Ziel → kenne den heutigen Schritt\nKI-gestützter Wachstumskompass",
@@ -122,5 +126,30 @@
     "pauseCta": "Pause",
     "resumeCta": "Fortsetzen",
     "finishCta": "Fertig"
+  },
+  "vocab": {
+    "backAccessibilityLabel": "Zurück",
+    "loading": "Vokabeln werden geladen...",
+    "loadError": "Vokabeln konnten nicht geladen werden. Bitte versuche es gleich noch einmal.",
+    "emptyDeck": "Heute keine Vokabeln zu wiederholen.",
+    "deckComplete": "Du hast die heutige Wiederholung abgeschlossen! 🎉",
+    "exampleHint": "Genau wie beim Speichern angezeigt",
+    "againCta": "Nochmal üben",
+    "knowCta": "Weiß ich",
+    "errorGeneric": "Speichern fehlgeschlagen. Bitte versuche es gleich noch einmal."
+  },
+  "vocabAdd": {
+    "backAccessibilityLabel": "Zurück",
+    "title": "Vokabel hinzufügen",
+    "languageLabel": "Sprache",
+    "languagePlaceholder": "z. B. Deutsch",
+    "wordLabel": "Wort",
+    "wordPlaceholder": "z. B. termingerecht",
+    "meaningLabel": "Bedeutung",
+    "meaningPlaceholder": "z. B. rechtzeitig, pünktlich",
+    "exampleLabel": "Beispielsatz (optional)",
+    "examplePlaceholder": "Schreib einen Satz mit diesem Wort...",
+    "saveCta": "Speichern",
+    "errorGeneric": "Speichern fehlgeschlagen. Bitte versuche es gleich noch einmal."
   }
 }

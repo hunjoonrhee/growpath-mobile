@@ -49,7 +49,11 @@
     "contextBannerDismiss": "배너 닫기"
   },
   "profile": {
-    "title": "나"
+    "title": "나",
+    "learningSectionTitle": "학습",
+    "vocabReviewCta": "단어장 복습",
+    "vocabDueCount": "복습할 단어 {{count}}개",
+    "vocabAddCta": "단어 추가"
   },
   "auth": {
     "tagline": "내 목표가 뭔지 → 오늘 뭘 해야 하는지\nAI 기반 개인 성장 나침반",
@@ -122,5 +126,30 @@
     "pauseCta": "일시정지",
     "resumeCta": "다시 시작",
     "finishCta": "완료"
+  },
+  "vocab": {
+    "backAccessibilityLabel": "뒤로가기",
+    "loading": "단어 불러오는 중...",
+    "loadError": "단어를 불러오지 못했어요. 잠시 후 다시 시도해주세요.",
+    "emptyDeck": "오늘 복습할 단어가 없어요.",
+    "deckComplete": "오늘의 복습을 모두 마쳤어요! 🎉",
+    "exampleHint": "저장 당시 문장 그대로 표시",
+    "againCta": "다시 볼래요",
+    "knowCta": "알고 있어요",
+    "errorGeneric": "저장에 실패했어요. 잠시 후 다시 시도해주세요."
+  },
+  "vocabAdd": {
+    "backAccessibilityLabel": "뒤로가기",
+    "title": "단어 추가",
+    "languageLabel": "언어",
+    "languagePlaceholder": "예: 독일어",
+    "wordLabel": "단어",
+    "wordPlaceholder": "예: termingerecht",
+    "meaningLabel": "뜻",
+    "meaningPlaceholder": "예: 기한에 맞게, 제때",
+    "exampleLabel": "예문 (선택)",
+    "examplePlaceholder": "이 단어가 쓰인 문장을 적어보세요...",
+    "saveCta": "저장하기",
+    "errorGeneric": "저장에 실패했어요. 잠시 후 다시 시도해주세요."
   }
 }

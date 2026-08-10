@@ -1,16 +1,18 @@
 import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { MultilineTextInput } from '@/components/forms/MultilineTextInput';
+import { PrimaryButton } from '@/components/forms/PrimaryButton';
 import { TextField } from '@/components/forms/TextField';
 import { BackHeader } from '@/components/navigation/BackHeader';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
 import { useCreateSession } from '@/hooks/sessions/use-create-session';
+import { useSubmitGuard } from '@/hooks/use-submit-guard';
 import { useAuth } from '@/lib/auth-context';
 
 function parseTags(raw: string): string[] {
@@ -31,6 +33,7 @@ export default function CaptureEntryScreen() {
   const [durationText, setDurationText] = useState(prefill.minutes ?? '');
   const [til, setTil] = useState('');
   const [tagsText, setTagsText] = useState('');
+  const submitGuard = useSubmitGuard();
 
   if (!session) return <Redirect href="/login" />;
 
@@ -42,6 +45,7 @@ export default function CaptureEntryScreen() {
   const canSave = title.trim().length > 0 && isDurationValid && !createSession.isPending;
 
   const handleSave = () => {
+    if (!submitGuard.tryStart()) return;
     const durationMinutes = trimmedDuration.length > 0 ? Number(trimmedDuration) : null;
     createSession.mutate(
       { title: title.trim(), durationMinutes, til: til.trim(), tags: parseTags(tagsText) },
@@ -57,7 +61,10 @@ export default function CaptureEntryScreen() {
             router.back();
           }
         },
-        onError: () => Alert.alert(t('captureEntry.errorGeneric')),
+        onError: () => {
+          submitGuard.release();
+          Alert.alert(t('captureEntry.errorGeneric'));
+        },
       }
     );
   };
@@ -91,16 +98,7 @@ export default function CaptureEntryScreen() {
 
           <TextField label={t('captureEntry.tagsLabel')} value={tagsText} onChangeText={setTagsText} placeholder={t('captureEntry.tagsPlaceholder')} />
 
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={t('captureEntry.saveCta')}
-            onPress={handleSave}
-            disabled={!canSave}
-            style={[styles.saveButton, !canSave && styles.saveButtonDisabled]}>
-            <ThemedText type="smallBold" style={styles.saveLabel}>
-              {t('captureEntry.saveCta')}
-            </ThemedText>
-          </Pressable>
+          <PrimaryButton label={t('captureEntry.saveCta')} onPress={handleSave} disabled={!canSave} style={styles.saveButton} />
         </ScrollView>
       </SafeAreaView>
     </ThemedView>
@@ -129,16 +127,5 @@ const styles = StyleSheet.create({
   },
   saveButton: {
     marginTop: Spacing.three,
-    backgroundColor: Colors.pri,
-    borderRadius: 16,
-    paddingVertical: Spacing.three,
-    alignItems: 'center',
-  },
-  saveButtonDisabled: {
-    opacity: 0.5,
-  },
-  saveLabel: {
-    color: '#ffffff',
-    fontSize: 15,
   },
 });

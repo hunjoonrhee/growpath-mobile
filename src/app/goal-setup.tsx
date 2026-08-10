@@ -1,17 +1,19 @@
 import { Redirect, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { MultilineTextInput } from '@/components/forms/MultilineTextInput';
+import { PrimaryButton } from '@/components/forms/PrimaryButton';
 import { DomainChipSelector } from '@/components/goal-setup/DomainChipSelector';
 import { InputModeToggle, type InputMode } from '@/components/goal-setup/InputModeToggle';
 import { VoiceInputPlaceholder } from '@/components/goal-setup/VoiceInputPlaceholder';
 import { BackHeader } from '@/components/navigation/BackHeader';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
+import { useSubmitGuard } from '@/hooks/use-submit-guard';
 import { useAuth } from '@/lib/auth-context';
 import type { Domain } from '@/lib/domain';
 import { generateRoadmap, RoadmapGenerationUnavailableError } from '@/lib/roadmap-generation';
@@ -25,13 +27,14 @@ export default function GoalSetupScreen() {
   const [inputMode, setInputMode] = useState<InputMode>('text');
   const [goalText, setGoalText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const submitGuard = useSubmitGuard();
 
   if (!session) return <Redirect href="/login" />;
 
   const canSubmit = domain !== null && goalText.trim().length > 0 && !isSubmitting;
 
   const handleSubmit = async () => {
-    if (!domain) return;
+    if (!domain || !submitGuard.tryStart()) return;
     setIsSubmitting(true);
     try {
       await generateRoadmap({ domain, goalText: goalText.trim() });
@@ -40,6 +43,7 @@ export default function GoalSetupScreen() {
         error instanceof RoadmapGenerationUnavailableError ? t('goalSetup.generationUnavailable') : t('goalSetup.errorGeneric');
       Alert.alert(message);
     } finally {
+      submitGuard.release();
       setIsSubmitting(false);
     }
   };
@@ -73,16 +77,7 @@ export default function GoalSetupScreen() {
             )}
           </View>
 
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={t('goalSetup.submitCta')}
-            onPress={handleSubmit}
-            disabled={!canSubmit}
-            style={[styles.submitButton, !canSubmit && styles.submitButtonDisabled]}>
-            <ThemedText type="smallBold" style={styles.submitLabel}>
-              {t('goalSetup.submitCta')}
-            </ThemedText>
-          </Pressable>
+          <PrimaryButton label={t('goalSetup.submitCta')} onPress={handleSubmit} disabled={!canSubmit} style={styles.submitButton} />
         </ScrollView>
       </SafeAreaView>
     </ThemedView>
@@ -114,16 +109,5 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     marginTop: Spacing.five,
-    backgroundColor: Colors.pri,
-    borderRadius: 16,
-    paddingVertical: Spacing.three,
-    alignItems: 'center',
-  },
-  submitButtonDisabled: {
-    opacity: 0.5,
-  },
-  submitLabel: {
-    color: '#ffffff',
-    fontSize: 15,
   },
 });

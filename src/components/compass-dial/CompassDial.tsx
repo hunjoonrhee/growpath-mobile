@@ -5,10 +5,10 @@ import { Colors } from '@/constants/theme';
 import { circumference, computeProgressEndpoint, computeTicks } from './geometry';
 
 export type CompassDialProps = {
-  /** 0-100 gap-analysis percentage. */
+  /** 0-100. What it represents is up to the caller - e.g. gap analysis, stage progress. */
   percent: number;
   size?: number;
-  /** Sub-label under the percentage, e.g. "갭분석" or "탭해서 로드맵 보기". */
+  /** Sub-label under the percentage - should match whatever `percent` actually measures. */
   label?: string;
   showLabel?: boolean;
   colorFrom?: string;

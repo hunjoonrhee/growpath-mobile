@@ -11,9 +11,7 @@ import { StageTimeline } from '@/components/roadmap/StageTimeline';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
-import { useAdoptedRoadmapId } from '@/hooks/roadmap/use-adopted-roadmap-id';
-import { useFocusStageLevel } from '@/hooks/roadmap/use-focus-stage-level';
-import { useRoadmap } from '@/hooks/roadmap/use-roadmap';
+import { useActiveRoadmap } from '@/hooks/roadmap/use-active-roadmap';
 import { useSwitchActiveRoadmap } from '@/hooks/roadmap/use-switch-active-roadmap';
 import { useUserRoadmaps } from '@/hooks/roadmap/use-user-roadmaps';
 import { useAuth } from '@/lib/auth-context';
@@ -24,9 +22,7 @@ export default function RoadmapScreen() {
   const { session } = useAuth();
   const userId = session?.user.id;
 
-  const adoptedRoadmapId = useAdoptedRoadmapId(userId);
-  const roadmap = useRoadmap(adoptedRoadmapId.data);
-  const focusStageLevel = useFocusStageLevel(adoptedRoadmapId.data);
+  const { adoptedRoadmapId, roadmap, focusStageLevel, hasAdoptedRoadmap, isLoading, isError } = useActiveRoadmap(userId);
   const userRoadmaps = useUserRoadmaps(userId);
   const switchRoadmap = useSwitchActiveRoadmap(userId);
 
@@ -38,19 +34,9 @@ export default function RoadmapScreen() {
     });
   };
 
-  const hasAdoptedRoadmap = Boolean(adoptedRoadmapId.data);
-  const isLoading =
-    adoptedRoadmapId.isLoading || (hasAdoptedRoadmap && (roadmap.isLoading || focusStageLevel.isLoading));
   // userRoadmaps only feeds the secondary "other goals" list, so its own
-  // failure shouldn't block rendering an already-loaded primary roadmap.
-  // The last clause covers settings pointing at a roadmap row that no
-  // longer exists (deleted/regenerated) - fetchRoadmap resolves to null
-  // rather than erroring, so that alone wouldn't otherwise surface here.
-  const isError =
-    adoptedRoadmapId.isError ||
-    roadmap.isError ||
-    focusStageLevel.isError ||
-    (hasAdoptedRoadmap && !roadmap.isLoading && !roadmap.data);
+  // failure shouldn't block rendering an already-loaded primary roadmap -
+  // deliberately not folded into useActiveRoadmap's isError.
   const otherRoadmaps = (userRoadmaps.data ?? []).filter((item) => item.id !== adoptedRoadmapId.data);
 
   return (

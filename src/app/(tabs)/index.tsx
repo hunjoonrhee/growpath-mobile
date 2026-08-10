@@ -14,9 +14,7 @@ import { RecommendationCard } from '@/components/today/RecommendationCard';
 import { StageProgressBar } from '@/components/today/StageProgressBar';
 import { TimerHandoffSheet } from '@/components/today/TimerHandoffSheet';
 import { Spacing } from '@/constants/theme';
-import { useAdoptedRoadmapId } from '@/hooks/roadmap/use-adopted-roadmap-id';
-import { useFocusStageLevel } from '@/hooks/roadmap/use-focus-stage-level';
-import { useRoadmap } from '@/hooks/roadmap/use-roadmap';
+import { useActiveRoadmap } from '@/hooks/roadmap/use-active-roadmap';
 import { useStudyStreak } from '@/hooks/sessions/use-study-streak';
 import { useWeeklySessionCount } from '@/hooks/sessions/use-weekly-session-count';
 import { useDueVocabWordCount } from '@/hooks/vocab/use-due-vocab-word-count';
@@ -29,28 +27,24 @@ export default function TodayScreen() {
   const { session } = useAuth();
   const userId = session?.user.id;
 
-  const adoptedRoadmapId = useAdoptedRoadmapId(userId);
-  const roadmap = useRoadmap(adoptedRoadmapId.data);
-  const focusStageLevel = useFocusStageLevel(adoptedRoadmapId.data);
+  const { roadmap, focusStageLevel, hasAdoptedRoadmap, isLoading, isError } = useActiveRoadmap(userId);
   const streak = useStudyStreak(userId);
   const weeklySessionCount = useWeeklySessionCount(userId);
   const dueVocabWordCount = useDueVocabWordCount(userId);
   const [isHandoffSheetVisible, setIsHandoffSheetVisible] = useState(false);
 
-  const hasAdoptedRoadmap = Boolean(adoptedRoadmapId.data);
-  const isLoading =
-    adoptedRoadmapId.isLoading || (hasAdoptedRoadmap && (roadmap.isLoading || focusStageLevel.isLoading));
-  const isError =
-    adoptedRoadmapId.isError ||
-    roadmap.isError ||
-    focusStageLevel.isError ||
-    (hasAdoptedRoadmap && !roadmap.isLoading && !roadmap.data);
-
   const displayName = session?.user.email?.split('@')[0] ?? '';
   const recommendation = roadmap.data ? deriveTodayRecommendation(roadmap.data.stages, focusStageLevel.data ?? null) : null;
   const totalStages = roadmap.data?.stages.length ?? 0;
   const currentStage = focusStageLevel.data ?? 1;
-  const currentStageLabel = roadmap.data?.stages.find((s) => s.level === currentStage)?.title ?? '';
+  // Falls back to the first stage if the focus level doesn't match any
+  // stage (e.g. a stale focus pointer after the roadmap's stages changed),
+  // rather than silently rendering a blank label.
+  const currentStageLabel = roadmap.data ? (roadmap.data.stages.find((s) => s.level === currentStage) ?? roadmap.data.stages[0])?.title ?? '' : '';
+  // Stage-completion percent, not a gap-analysis score - no such formula
+  // exists in the schema (see PR history), and CompassDial's `percent` is
+  // just a 0-100 gauge with no fixed meaning of its own. today.dialLabel is
+  // "진행률"/"Progress"/"Fortschritt" to match, not "갭분석"/"Gap analysis".
   const dialPercent = totalStages > 0 ? Math.round(((currentStage - 1) / totalStages) * 100) : 0;
 
   const handleSelectWeb = () => {

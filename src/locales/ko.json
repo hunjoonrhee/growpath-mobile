@@ -7,7 +7,7 @@
   "today": {
     "greeting": "안녕, {{name}} 👋",
     "streak": "🔥 {{count}}일 연속 기록 중",
-    "dialLabel": "갭분석 · 탭해서 로드맵 보기",
+    "dialLabel": "진행률 · 탭해서 로드맵 보기",
     "dialAccessibilityLabel": "로드맵 화면으로 이동",
     "captureAccessibilityLabel": "음성으로 기록하기",
     "stageOfTotal": "{{stage}}단계 / {{total}}단계",

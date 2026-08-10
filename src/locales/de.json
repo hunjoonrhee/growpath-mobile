@@ -7,7 +7,7 @@
   "today": {
     "greeting": "Hallo, {{name}} 👋",
     "streak": "🔥 {{count}} Tage in Folge",
-    "dialLabel": "Gap-Analyse · Tippen für Roadmap",
+    "dialLabel": "Fortschritt · Tippen für Roadmap",
     "dialAccessibilityLabel": "Zur Roadmap",
     "captureAccessibilityLabel": "Per Sprache aufnehmen",
     "stageOfTotal": "Stufe {{stage}} / {{total}}",

@@ -41,6 +41,16 @@ export default function LogScreen() {
 
   if (!session) return null;
 
+  // recentSessions stays disabled (enabled: false) until adoptedRoadmapId
+  // resolves, and a disabled query's isLoading is false the whole time (only
+  // isPending reflects "no data yet" regardless of enabled) - reading
+  // recentSessions.isLoading directly would flash the empty state before
+  // adoptedRoadmapId even finishes. If adoptedRoadmapId itself errors,
+  // recentSessions never enables and isPending would stay true forever, so
+  // that path routes to the error state instead of an infinite spinner.
+  const isSessionsInitializing = adoptedRoadmapId.isLoading || (!adoptedRoadmapId.isError && recentSessions.isPending);
+  const isSessionsError = adoptedRoadmapId.isError || recentSessions.isError;
+
   const hasTimerContext = Boolean(timerTitle) && timerSessionId !== undefined && timerSessionId !== dismissedSessionId;
 
   const handlePressManualEntry = () => {
@@ -98,8 +108,8 @@ export default function LogScreen() {
           <SessionLogList
             title={t('log.recentTitle')}
             sessions={recentSessions.data ?? []}
-            isLoading={recentSessions.isLoading}
-            isError={recentSessions.isError}
+            isLoading={isSessionsInitializing}
+            isError={isSessionsError}
             loadingLabel={t('log.loading')}
             errorLabel={t('log.loadError')}
             emptyLabel={t('log.empty')}

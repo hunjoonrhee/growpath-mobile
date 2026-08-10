@@ -18,7 +18,7 @@ export default function TilDetailScreen() {
   const router = useRouter();
   const { session: authSession } = useAuth();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const session = useSession(id);
+  const session = useSession(id, authSession?.user.id);
 
   if (!authSession) return <Redirect href="/login" />;
 

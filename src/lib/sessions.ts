@@ -69,11 +69,19 @@ export async function fetchRecentSessions(userId: string, roadmapId: string | nu
   return (data ?? []).map((row) => toSessionRecord(row as SessionRow));
 }
 
-export async function fetchSessionById(id: string): Promise<SessionRecord | null> {
+/**
+ * Filters by user_id in addition to id, even though RLS should already
+ * enforce this - `sessions` is a joon-dashboard-owned table with no
+ * migration in this repo to audit its policies against, and `id` here
+ * comes straight from a URL param (/til/[id]), so this is defense in
+ * depth rather than redundant.
+ */
+export async function fetchSessionById(id: string, userId: string): Promise<SessionRecord | null> {
   const { data, error } = await supabase
     .from('sessions')
     .select('id, title, duration_minutes, date, til, tags, created_at')
     .eq('id', id)
+    .eq('user_id', userId)
     .maybeSingle();
   if (error) throw error;
   return data ? toSessionRecord(data as SessionRow) : null;

@@ -1,15 +1,16 @@
 import { Redirect, useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Pressable, ScrollView, StyleSheet } from 'react-native';
+import { Alert, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { MultilineTextInput } from '@/components/forms/MultilineTextInput';
+import { PrimaryButton } from '@/components/forms/PrimaryButton';
 import { TextField } from '@/components/forms/TextField';
 import { BackHeader } from '@/components/navigation/BackHeader';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
 import { useCreateVocabWord } from '@/hooks/vocab/use-create-vocab-word';
 import { useAuth } from '@/lib/auth-context';
 
@@ -23,17 +24,25 @@ export default function VocabAddScreen() {
   const [word, setWord] = useState('');
   const [meaning, setMeaning] = useState('');
   const [exampleSentence, setExampleSentence] = useState('');
+  // createVocabWord.isPending only feeds `canSave` after a re-render commits,
+  // so a fast double-tap before that lands can still fire mutate() twice.
+  const isSubmittingRef = useRef(false);
 
   if (!session) return <Redirect href="/login" />;
 
   const canSave = language.trim().length > 0 && word.trim().length > 0 && meaning.trim().length > 0 && !createVocabWord.isPending;
 
   const handleSave = () => {
+    if (isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
     createVocabWord.mutate(
       { language: language.trim(), word: word.trim(), meaning: meaning.trim(), exampleSentence: exampleSentence.trim() },
       {
         onSuccess: () => router.back(),
-        onError: () => Alert.alert(t('vocabAdd.errorGeneric')),
+        onError: () => {
+          isSubmittingRef.current = false;
+          Alert.alert(t('vocabAdd.errorGeneric'));
+        },
       }
     );
   };
@@ -62,16 +71,7 @@ export default function VocabAddScreen() {
             minHeight={80}
           />
 
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={t('vocabAdd.saveCta')}
-            onPress={handleSave}
-            disabled={!canSave}
-            style={[styles.saveButton, !canSave && styles.saveButtonDisabled]}>
-            <ThemedText type="smallBold" style={styles.saveLabel}>
-              {t('vocabAdd.saveCta')}
-            </ThemedText>
-          </Pressable>
+          <PrimaryButton label={t('vocabAdd.saveCta')} onPress={handleSave} disabled={!canSave} style={styles.saveButton} />
         </ScrollView>
       </SafeAreaView>
     </ThemedView>
@@ -97,16 +97,5 @@ const styles = StyleSheet.create({
   },
   saveButton: {
     marginTop: Spacing.three,
-    backgroundColor: Colors.pri,
-    borderRadius: 16,
-    paddingVertical: Spacing.three,
-    alignItems: 'center',
-  },
-  saveButtonDisabled: {
-    opacity: 0.5,
-  },
-  saveLabel: {
-    color: '#ffffff',
-    fontSize: 15,
   },
 });

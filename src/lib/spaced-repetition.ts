@@ -9,6 +9,9 @@ export type ReviewResult = ReviewState & {
 };
 
 const MIN_EASE_FACTOR = 1.3;
+// vocab_words.ease_factor is numeric(3,2) - matches the column's actual max,
+// so a long-reviewed word's ever-increasing ease factor can't overflow it.
+const MAX_EASE_FACTOR = 9.99;
 
 /**
  * Simplified SM-2: reviews here are binary (didn't know it / knew it), not
@@ -28,7 +31,7 @@ export function computeNextReview(current: ReviewState, knew: boolean, now: Date
   }
 
   const reviewCount = current.reviewCount + 1;
-  const easeFactor = current.easeFactor + 0.1;
+  const easeFactor = Math.min(MAX_EASE_FACTOR, current.easeFactor + 0.1);
   let intervalDays: number;
   if (reviewCount === 1) {
     intervalDays = 1;

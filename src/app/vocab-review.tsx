@@ -1,5 +1,5 @@
 import { Redirect, useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -28,6 +28,11 @@ export default function VocabReviewScreen() {
   // the deck once, on first load, keeps the session's word order stable
   // regardless of what the query refetches in the background.
   const [deck, setDeck] = useState<VocabWord[] | null>(null);
+  // reviewWord.isPending only reflects in the disabled prop after a
+  // re-render commits, so a fast double-tap before that lands can fire
+  // mutate() twice for the same word and double-advance currentIndex,
+  // silently skipping the next card. This ref-based guard is synchronous.
+  const isSubmittingRef = useRef(false);
   // Set directly during render (React's documented pattern for deriving
   // state from data that just arrived), not in a useEffect - the guard
   // means this only fires once, the first render after dueWords.data
@@ -44,7 +49,8 @@ export default function VocabReviewScreen() {
   const isInitializing = dueWords.isLoading || deck === null;
 
   const handleReview = (knew: boolean) => {
-    if (!currentWord) return;
+    if (!currentWord || isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
     reviewWord.mutate(
       {
         id: currentWord.id,
@@ -52,8 +58,14 @@ export default function VocabReviewScreen() {
         knew,
       },
       {
-        onSuccess: () => setCurrentIndex((index) => index + 1),
-        onError: () => Alert.alert(t('vocab.errorGeneric')),
+        onSuccess: () => {
+          isSubmittingRef.current = false;
+          setCurrentIndex((index) => index + 1);
+        },
+        onError: () => {
+          isSubmittingRef.current = false;
+          Alert.alert(t('vocab.errorGeneric'));
+        },
       }
     );
   };

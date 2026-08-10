@@ -59,7 +59,7 @@ export async function fetchDueVocabWords(userId: string, limit = 20): Promise<Vo
   return (data ?? []).map((row) => toVocabWord(row as VocabWordRow));
 }
 
-/** Upserts on (user_id, language, word) - re-saving an existing word refreshes its example instead of erroring. */
+/** Upserts on (user_id, language, word) - re-saving an existing word updates its meaning/example instead of erroring. */
 export async function createVocabWord(input: CreateVocabWordInput): Promise<void> {
   const { error } = await upsertWithUser(
     'vocab_words',

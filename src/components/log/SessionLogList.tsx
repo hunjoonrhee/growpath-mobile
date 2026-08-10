@@ -13,9 +13,19 @@ export type SessionLogListProps = {
   loadingLabel: string;
   errorLabel: string;
   emptyLabel: string;
+  onPressSession: (id: string) => void;
 };
 
-export function SessionLogList({ title, sessions, isLoading, isError, loadingLabel, errorLabel, emptyLabel }: SessionLogListProps) {
+export function SessionLogList({
+  title,
+  sessions,
+  isLoading,
+  isError,
+  loadingLabel,
+  errorLabel,
+  emptyLabel,
+  onPressSession,
+}: SessionLogListProps) {
   return (
     <View style={styles.container}>
       <ThemedText type="small" themeColor="textFaint" style={styles.title}>
@@ -42,7 +52,7 @@ export function SessionLogList({ title, sessions, isLoading, isError, loadingLab
 
       {!isLoading &&
         !isError &&
-        sessions.map((session) => <SessionLogCard key={session.id} session={session} />)}
+        sessions.map((session) => <SessionLogCard key={session.id} session={session} onPress={() => onPressSession(session.id)} />)}
     </View>
   );
 }

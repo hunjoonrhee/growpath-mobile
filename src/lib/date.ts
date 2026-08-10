@@ -15,3 +15,12 @@ export function daysAgo(dateString: string): number {
   const diffMs = today.getTime() - target.getTime();
   return Math.round(diffMs / (1000 * 60 * 60 * 24));
 }
+
+/** "오늘"/"어제"/"N일 전" (or the raw date for a future-dated entry) - shared by the log list and its detail screen. */
+export function relativeDateLabel(dateString: string, t: (key: string, options?: Record<string, unknown>) => string): string {
+  const days = daysAgo(dateString);
+  if (days < 0) return dateString;
+  if (days === 0) return t('log.relativeToday');
+  if (days === 1) return t('log.relativeYesterday');
+  return t('log.relativeDaysAgo', { count: days });
+}

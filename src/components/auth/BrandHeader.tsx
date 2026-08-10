@@ -38,6 +38,7 @@ const styles = StyleSheet.create({
   },
   markGlyph: {
     fontSize: 28,
+    lineHeight: 34,
   },
   title: {
     fontSize: 24,

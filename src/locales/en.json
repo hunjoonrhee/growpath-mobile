@@ -2,7 +2,7 @@
   "tabs": {
     "today": "Today",
     "log": "Log",
-    "profile": "Me"
+    "profile": "Profile"
   },
   "today": {
     "greeting": "Hi, {{name}} 👋",
@@ -53,21 +53,23 @@
     "relativeDaysAgo": "{{count}} days ago",
     "durationAndDate": "{{minutes}} min · {{date}}",
     "contextBanner": "Just finished a {{minutes}}-min timer — {{title}}. Log it below.",
-    "contextBannerDismiss": "Dismiss banner"
-  },
-  "profile": {
-    "title": "Me",
-    "learningSectionTitle": "Learning",
+    "contextBannerDismiss": "Dismiss banner",
+    "vocabSectionTitle": "Vocab",
     "vocabReviewCta": "Vocab review",
     "vocabDueCount": "{{count}} words due",
-    "vocabAddCta": "Add a word",
+    "vocabAddCta": "Add a word"
+  },
+  "profile": {
+    "title": "Profile",
+    "settingsSectionTitle": "Settings",
     "accountSectionTitle": "Account",
     "logoutCta": "Log out",
     "logoutConfirmTitle": "Log out?",
     "logoutConfirmMessage": "You can pick up right where you left off after signing back in.",
     "logoutCancel": "Cancel",
     "logoutConfirm": "Log out",
-    "logoutError": "Couldn't log out. Please try again in a moment."
+    "logoutError": "Couldn't log out. Please try again in a moment.",
+    "languageError": "Couldn't change the language. Please try again in a moment."
   },
   "auth": {
     "tagline": "Know your goal → know today's step\nAI-powered personal growth compass",
@@ -165,5 +167,12 @@
     "examplePlaceholder": "Write a sentence using this word...",
     "saveCta": "Save",
     "errorGeneric": "Couldn't save. Please try again in a moment."
+  },
+  "tilDetail": {
+    "backAccessibilityLabel": "Go back",
+    "loading": "Loading...",
+    "loadError": "Couldn't load this entry.",
+    "tilLabel": "What you learned",
+    "noTil": "No notes written."
   }
 }

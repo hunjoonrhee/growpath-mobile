@@ -33,6 +33,7 @@ const styles = StyleSheet.create({
   },
   icon: {
     fontSize: 28,
+    lineHeight: 34,
   },
   message: {
     textAlign: 'center',

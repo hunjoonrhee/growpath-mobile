@@ -57,6 +57,7 @@ const styles = StyleSheet.create({
   },
   word: {
     fontSize: 28,
+    lineHeight: 34,
     fontWeight: '800',
     color: Colors.text,
     textAlign: 'center',

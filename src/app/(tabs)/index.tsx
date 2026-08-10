@@ -2,6 +2,7 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Pressable, ScrollView, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CompassDial } from '@/components/compass-dial';
 import { NoActiveRoadmapState } from '@/components/roadmap/NoActiveRoadmapState';
@@ -40,7 +41,7 @@ export default function TodayScreen() {
   // Falls back to the first stage if the focus level doesn't match any
   // stage (e.g. a stale focus pointer after the roadmap's stages changed),
   // rather than silently rendering a blank label.
-  const currentStageLabel = roadmap.data ? (roadmap.data.stages.find((s) => s.level === currentStage) ?? roadmap.data.stages[0])?.title ?? '' : '';
+  const currentStageLabel = roadmap.data ? ((roadmap.data.stages.find((s) => s.level === currentStage) ?? roadmap.data.stages[0])?.title ?? '') : '';
   // Stage-completion percent, not a gap-analysis score - no such formula
   // exists in the schema (see PR history), and CompassDial's `percent` is
   // just a 0-100 gauge with no fixed meaning of its own. today.dialLabel is
@@ -60,63 +61,65 @@ export default function TodayScreen() {
 
   return (
     <ThemedView style={styles.screen}>
-      <ScrollView contentContainerStyle={styles.content}>
-        <GreetingHeader name={displayName} streakDays={streak.data ?? 0} />
+      <SafeAreaView style={styles.safeArea} edges={['top']}>
+        <ScrollView contentContainerStyle={styles.content}>
+          <GreetingHeader name={displayName} streakDays={streak.data ?? 0} />
 
-        {isLoading && (
-          <ThemedText type="small" themeColor="textDim" style={styles.centerText}>
-            {t('today.loading')}
-          </ThemedText>
-        )}
+          {isLoading && (
+            <ThemedText type="small" themeColor="textDim" style={styles.centerText}>
+              {t('today.loading')}
+            </ThemedText>
+          )}
 
-        {!isLoading && isError && (
-          <ThemedText type="small" themeColor="amber" style={styles.centerText}>
-            {t('today.loadError')}
-          </ThemedText>
-        )}
+          {!isLoading && isError && (
+            <ThemedText type="small" themeColor="amber" style={styles.centerText}>
+              {t('today.loadError')}
+            </ThemedText>
+          )}
 
-        {!isLoading && !isError && !hasAdoptedRoadmap && <NoActiveRoadmapState onPressSetGoal={() => router.push('/goal-setup')} />}
+          {!isLoading && !isError && !hasAdoptedRoadmap && <NoActiveRoadmapState onPressSetGoal={() => router.push('/goal-setup')} />}
 
-        {!isLoading && !isError && roadmap.data && (
-          <>
-            <Pressable
-              style={styles.dialWrap}
-              onPress={() => router.push('/roadmap')}
-              accessibilityRole="button"
-              accessibilityLabel={t('today.dialAccessibilityLabel')}>
-              <CompassDial percent={dialPercent} label={t('today.dialLabel')} />
-              <ThemedText type="smallBold" style={styles.goalName}>
-                {roadmap.data.goal}
-              </ThemedText>
-              <ThemedText type="small" themeColor="textDim">
-                {t('today.stageOfTotal', { stage: currentStage, total: totalStages })}
-              </ThemedText>
-            </Pressable>
-
-            <StageProgressBar totalStages={totalStages} currentStage={currentStage} currentStageLabel={currentStageLabel} />
-
-            {recommendation && (
-              <>
-                <ThemedText type="small" themeColor="textFaint" style={styles.sectionTitle}>
-                  {t('today.recommendationTitle')}
+          {!isLoading && !isError && roadmap.data && (
+            <>
+              <Pressable
+                style={styles.dialWrap}
+                onPress={() => router.push('/roadmap')}
+                accessibilityRole="button"
+                accessibilityLabel={t('today.dialAccessibilityLabel')}>
+                <CompassDial percent={dialPercent} label={t('today.dialLabel')} />
+                <ThemedText type="smallBold" style={styles.goalName}>
+                  {roadmap.data.goal}
                 </ThemedText>
-                <RecommendationCard
-                  title={recommendation.title}
-                  description={t('today.recommendationDescription', { stage: recommendation.stageTitle })}
-                  onPressCta={() => setIsHandoffSheetVisible(true)}
-                />
-              </>
-            )}
-          </>
-        )}
+                <ThemedText type="small" themeColor="textDim">
+                  {t('today.stageOfTotal', { stage: currentStage, total: totalStages })}
+                </ThemedText>
+              </Pressable>
 
-        <QuickStatsRow
-          stats={[
-            { id: 'vocab-review', icon: '📚', label: t('today.quickStats.vocabReview', { count: dueVocabWordCount.data ?? 0 }) },
-            { id: 'weekly-progress', icon: '🎯', label: t('today.quickStats.weeklyProgress', { count: weeklySessionCount.data ?? 0 }) },
-          ]}
-        />
-      </ScrollView>
+              <StageProgressBar totalStages={totalStages} currentStage={currentStage} currentStageLabel={currentStageLabel} />
+
+              {recommendation && (
+                <>
+                  <ThemedText type="small" themeColor="textFaint" style={styles.sectionTitle}>
+                    {t('today.recommendationTitle')}
+                  </ThemedText>
+                  <RecommendationCard
+                    title={recommendation.title}
+                    description={t('today.recommendationDescription', { stage: recommendation.stageTitle })}
+                    onPressCta={() => setIsHandoffSheetVisible(true)}
+                  />
+                </>
+              )}
+            </>
+          )}
+
+          <QuickStatsRow
+            stats={[
+              { id: 'vocab-review', icon: '📚', label: t('today.quickStats.vocabReview', { count: dueVocabWordCount.data ?? 0 }) },
+              { id: 'weekly-progress', icon: '🎯', label: t('today.quickStats.weeklyProgress', { count: weeklySessionCount.data ?? 0 }) },
+            ]}
+          />
+        </ScrollView>
+      </SafeAreaView>
 
       {/* Icon/label imply voice capture specifically, so route this to the
           same "not ready yet" messaging as Log's voice button rather than
@@ -144,9 +147,14 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
   },
+  safeArea: {
+    flex: 1,
+  },
   content: {
     paddingHorizontal: Spacing.four,
-    paddingBottom: Spacing.six,
+    // Extra clearance so the last row of quick stats doesn't sit under the
+    // absolutely-positioned CaptureFab (56px tall, 24px from the bottom).
+    paddingBottom: Spacing.six + 56 + Spacing.two,
   },
   centerText: {
     textAlign: 'center',

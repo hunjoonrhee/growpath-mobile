@@ -3,14 +3,14 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { Colors, Spacing } from '@/constants/theme';
 
-export type ProfileNavRowProps = {
+export type NavRowProps = {
   icon: string;
   label: string;
   subtitle?: string;
   onPress: () => void;
 };
 
-export function ProfileNavRow({ icon, label, subtitle, onPress }: ProfileNavRowProps) {
+export function NavRow({ icon, label, subtitle, onPress }: NavRowProps) {
   return (
     <Pressable accessibilityRole="button" accessibilityLabel={label} onPress={onPress} style={({ pressed }) => [styles.row, pressed && styles.pressed]}>
       <ThemedText style={styles.icon}>{icon}</ThemedText>

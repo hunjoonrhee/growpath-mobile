@@ -50,15 +50,33 @@ function startOfIsoWeek(date: Date): Date {
   return monday;
 }
 
-export async function fetchRecentSessions(userId: string, limit = 20): Promise<SessionRecord[]> {
+/**
+ * Scoped to `roadmapId` when given, so switching the active goal shows that
+ * goal's own log instead of every session ever recorded under any goal.
+ * `roadmapId === null` (no active roadmap) intentionally falls back to
+ * showing everything, rather than an empty list.
+ */
+export async function fetchRecentSessions(userId: string, roadmapId: string | null, limit = 20): Promise<SessionRecord[]> {
+  let query = supabase
+    .from('sessions')
+    .select('id, title, duration_minutes, date, til, tags, created_at')
+    .eq('user_id', userId);
+  if (roadmapId) {
+    query = query.eq('roadmap_id', roadmapId);
+  }
+  const { data, error } = await query.order('created_at', { ascending: false }).limit(limit);
+  if (error) throw error;
+  return (data ?? []).map((row) => toSessionRecord(row as SessionRow));
+}
+
+export async function fetchSessionById(id: string): Promise<SessionRecord | null> {
   const { data, error } = await supabase
     .from('sessions')
     .select('id, title, duration_minutes, date, til, tags, created_at')
-    .eq('user_id', userId)
-    .order('created_at', { ascending: false })
-    .limit(limit);
+    .eq('id', id)
+    .maybeSingle();
   if (error) throw error;
-  return (data ?? []).map((row) => toSessionRecord(row as SessionRow));
+  return data ? toSessionRecord(data as SessionRow) : null;
 }
 
 /** Ties the new session to the user's active roadmap (if any) for gap-analysis/stats. */

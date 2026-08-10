@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { BackHeader } from '@/components/navigation/BackHeader';
 import { OtherGoalsList } from '@/components/roadmap/OtherGoalsList';
 import { RoadmapHero } from '@/components/roadmap/RoadmapHero';
 import { StageTimeline } from '@/components/roadmap/StageTimeline';
@@ -54,15 +55,7 @@ export default function RoadmapScreen() {
   return (
     <ThemedView style={styles.screen}>
       <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
-        <View style={styles.navHeader}>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={t('roadmap.backAccessibilityLabel')}
-            onPress={() => router.back()}
-            style={styles.backButton}>
-            <ThemedText type="smallBold">←</ThemedText>
-          </Pressable>
-        </View>
+        <BackHeader accessibilityLabel={t('roadmap.backAccessibilityLabel')} onPress={() => router.back()} />
 
         <ScrollView contentContainerStyle={styles.content}>
           {isLoading && (
@@ -85,6 +78,15 @@ export default function RoadmapScreen() {
               <ThemedText type="small" themeColor="textDim" style={styles.centerText}>
                 {t('roadmap.emptySubtitle')}
               </ThemedText>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={t('roadmap.emptyCta')}
+                onPress={() => router.push('/goal-setup')}
+                style={styles.emptyCta}>
+                <ThemedText type="smallBold" style={styles.emptyCtaLabel}>
+                  {t('roadmap.emptyCta')}
+                </ThemedText>
+              </Pressable>
             </View>
           )}
 
@@ -121,19 +123,6 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
   },
-  navHeader: {
-    height: 52,
-    justifyContent: 'center',
-    paddingHorizontal: Spacing.two + 4,
-  },
-  backButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
-    backgroundColor: Colors.surf2,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   content: {
     paddingHorizontal: Spacing.four,
     paddingBottom: Spacing.six,
@@ -144,5 +133,16 @@ const styles = StyleSheet.create({
   emptyState: {
     marginTop: Spacing.six,
     gap: Spacing.two,
+  },
+  emptyCta: {
+    marginTop: Spacing.three,
+    alignSelf: 'center',
+    backgroundColor: Colors.pri,
+    borderRadius: 14,
+    paddingVertical: Spacing.two + 2,
+    paddingHorizontal: Spacing.four,
+  },
+  emptyCtaLabel: {
+    color: '#ffffff',
   },
 });

@@ -55,11 +55,26 @@
     "loadError": "Roadmap konnte nicht geladen werden. Bitte versuche es gleich noch einmal.",
     "emptyTitle": "Noch keine aktive Roadmap",
     "emptySubtitle": "Sobald du ein Ziel festlegst, erscheint hier deine Roadmap.",
+    "emptyCta": "Ziel festlegen",
     "errorGeneric": "Zielwechsel fehlgeschlagen. Bitte versuche es gleich noch einmal.",
     "stageStatus": {
       "done": "Fertig",
       "current": "In Arbeit",
       "upcoming": "Geplant"
     }
+  },
+  "goalSetup": {
+    "title": "Mit welchem Ziel starten wir?",
+    "subtitle": "Wähle einen Bereich und beschreibe dein Ziel und dein aktuelles Niveau.",
+    "backAccessibilityLabel": "Zurück",
+    "inputMode": {
+      "text": "✏️ Text",
+      "voice": "🎙️ Sprache"
+    },
+    "voiceComingSoon": "Spracheingabe kommt bald. Bitte tippe es vorerst ein.",
+    "textPlaceholder": "z. B. Ich möchte Lead Architect werden. Ich bin aktuell Senior-Frontend-Entwickler mit ca. 3 Jahren Angular-Erfahrung...",
+    "submitCta": "Mit diesem Ziel starten",
+    "generationUnavailable": "Die KI-Roadmap-Generierung ist noch nicht bereit. Kommt bald!",
+    "errorGeneric": "Etwas ist schiefgelaufen. Bitte versuche es gleich noch einmal."
   }
 }

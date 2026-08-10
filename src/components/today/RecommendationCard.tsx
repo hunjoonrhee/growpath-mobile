@@ -3,18 +3,10 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { Colors, Spacing } from '@/constants/theme';
-
-export type RecommendationDomain = 'dev' | 'language' | 'art' | 'other';
-
-const DOMAIN_LABEL_KEY: Record<RecommendationDomain, string> = {
-  dev: 'today.domain.dev',
-  language: 'today.domain.language',
-  art: 'today.domain.art',
-  other: 'today.domain.other',
-};
+import { DOMAIN_LABEL_KEY, type Domain } from '@/lib/domain';
 
 export type RecommendationCardProps = {
-  domain: RecommendationDomain;
+  domain: Domain;
   title: string;
   description: string;
   onPressCta: () => void;

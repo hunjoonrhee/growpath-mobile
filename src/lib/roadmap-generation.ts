@@ -36,7 +36,9 @@ export async function generateRoadmap(input: GenerateRoadmapInput): Promise<Road
     data: { session },
   } = await supabase.auth.getSession();
   if (!session) {
-    throw new RoadmapGenerationUnavailableError('Not authenticated.');
+    // Not the "feature unavailable" case - a plain Error so the caller shows
+    // a generic retry message instead of "not ready yet".
+    throw new Error('Not authenticated.');
   }
 
   const res = await fetch(`${env.roadmapApiUrl}/api/roadmap/generate`, {
@@ -49,7 +51,11 @@ export async function generateRoadmap(input: GenerateRoadmapInput): Promise<Road
   });
 
   if (!res.ok) {
-    throw new RoadmapGenerationUnavailableError(`Roadmap generation failed (${res.status}).`);
+    // A real, likely-transient failure (5xx, expired token, rate limit) -
+    // not "feature unavailable", so this must NOT be
+    // RoadmapGenerationUnavailableError (that maps to a misleading "coming
+    // soon" message in goal-setup.tsx rather than "try again").
+    throw new Error(`Roadmap generation failed (${res.status}).`);
   }
 
   const data = (await res.json()) as GenerateRoadmapApiResponse;

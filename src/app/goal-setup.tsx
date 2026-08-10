@@ -31,6 +31,10 @@ export default function GoalSetupScreen() {
   const [inputMode, setInputMode] = useState<InputMode>('text');
   const [goalText, setGoalText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // Set once generateRoadmap succeeds, so a retry after a failed adopt below
+  // doesn't call generateRoadmap again and create a second, orphaned
+  // ai_roadmaps row for the same submission - it just retries adoption.
+  const [pendingRoadmapId, setPendingRoadmapId] = useState<string | null>(null);
   const submitGuard = useSubmitGuard();
 
   if (!session) return <Redirect href="/login" />;
@@ -41,13 +45,18 @@ export default function GoalSetupScreen() {
     if (!domain || !submitGuard.tryStart()) return;
     setIsSubmitting(true);
     try {
-      const roadmap = await generateRoadmap({
-        domain,
-        goalText: goalText.trim(),
-        careerLevel: careerLevel.trim(),
-        locale: i18n.language,
-      });
-      await switchRoadmap.mutateAsync(roadmap.id);
+      const roadmapId =
+        pendingRoadmapId ??
+        (
+          await generateRoadmap({
+            domain,
+            goalText: goalText.trim(),
+            careerLevel: careerLevel.trim(),
+            locale: i18n.language,
+          })
+        ).id;
+      setPendingRoadmapId(roadmapId);
+      await switchRoadmap.mutateAsync(roadmapId);
       router.replace('/roadmap');
     } catch (error) {
       const message =

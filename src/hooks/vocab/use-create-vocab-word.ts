@@ -9,6 +9,7 @@ export function useCreateVocabWord(userId: string | undefined) {
     mutationFn: (input: CreateVocabWordInput) => createVocabWord(input),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['vocab', 'due', userId] });
+      queryClient.invalidateQueries({ queryKey: ['vocab', 'dueCount', userId] });
     },
   });
 }

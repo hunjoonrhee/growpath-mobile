@@ -46,13 +46,20 @@ function toVocabWord(row: VocabWordRow): VocabWord {
   };
 }
 
+// Single source of truth for "due" so fetchDueVocabWords and
+// fetchDueVocabWordCount can't silently disagree (e.g. if a grace period
+// gets added to the definition later and only one call site is updated).
+function dueCutoffIso(): string {
+  return new Date().toISOString();
+}
+
 /** Due words for today, capped per the app's daily review limit (see supabase/README.md). */
 export async function fetchDueVocabWords(userId: string, limit = 20): Promise<VocabWord[]> {
   const { data, error } = await supabase
     .from('vocab_words')
     .select('id, language, word, meaning, example_sentence, interval_days, ease_factor, review_count, next_review_at')
     .eq('user_id', userId)
-    .lte('next_review_at', new Date().toISOString())
+    .lte('next_review_at', dueCutoffIso())
     .order('next_review_at', { ascending: true })
     .limit(limit);
   if (error) throw error;
@@ -70,7 +77,7 @@ export async function fetchDueVocabWordCount(userId: string): Promise<number> {
     .from('vocab_words')
     .select('id', { count: 'exact', head: true })
     .eq('user_id', userId)
-    .lte('next_review_at', new Date().toISOString());
+    .lte('next_review_at', dueCutoffIso());
   if (error) throw error;
   return count ?? 0;
 }

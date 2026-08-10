@@ -16,6 +16,7 @@ export function useReviewVocabWord(userId: string | undefined) {
     mutationFn: ({ id, current, knew }: ReviewVocabWordInput) => reviewVocabWord(id, current, knew),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['vocab', 'due', userId] });
+      queryClient.invalidateQueries({ queryKey: ['vocab', 'dueCount', userId] });
     },
   });
 }

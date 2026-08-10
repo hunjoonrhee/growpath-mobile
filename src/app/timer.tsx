@@ -53,7 +53,14 @@ export default function TimerScreen() {
   const handleFinish = () => {
     router.replace({
       pathname: '/log',
-      params: { timerTitle: topic ?? '', timerMinutes: String(Math.round(elapsedSeconds / 60)) },
+      params: {
+        timerTitle: topic ?? '',
+        timerMinutes: String(Math.round(elapsedSeconds / 60)),
+        // Identifies this specific session for the banner's dismiss state -
+        // (title, minutes) alone collides whenever two runs share a title
+        // and round to the same minute count.
+        timerSessionId: String(Date.now()),
+      },
     });
   };
 

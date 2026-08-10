@@ -17,18 +17,23 @@ export default function LogScreen() {
   const router = useRouter();
   const { session } = useAuth();
   const recentSessions = useRecentSessions(session?.user.id);
-  const { timerTitle, timerMinutes } = useLocalSearchParams<{ timerTitle?: string; timerMinutes?: string }>();
+  const { timerTitle, timerMinutes, timerSessionId } = useLocalSearchParams<{
+    timerTitle?: string;
+    timerMinutes?: string;
+    timerSessionId?: string;
+  }>();
   // Tabs keeps this screen mounted across tab switches, so router.replace()
   // from the timer only updates params rather than remounting - a plain
   // dismissed boolean would stay true forever after the first dismiss and
   // hide the banner for every later timer session too. Tracking *which*
-  // session was dismissed instead lets a new one show again.
-  const [dismissedContextKey, setDismissedContextKey] = useState<string | null>(null);
+  // session was dismissed instead lets a new one show again. Keyed on
+  // timerSessionId (not title/minutes) since two runs can share a title and
+  // round to the same minute count.
+  const [dismissedSessionId, setDismissedSessionId] = useState<string | null>(null);
 
   if (!session) return null;
 
-  const contextKey = timerTitle ? `${timerTitle}:${timerMinutes ?? ''}` : null;
-  const hasTimerContext = contextKey !== null && contextKey !== dismissedContextKey;
+  const hasTimerContext = Boolean(timerTitle) && timerSessionId !== undefined && timerSessionId !== dismissedSessionId;
 
   const handlePressManualEntry = () => {
     router.push(
@@ -49,7 +54,7 @@ export default function LogScreen() {
           <ContextBanner
             message={t('log.contextBanner', { minutes: timerMinutes, title: timerTitle })}
             dismissAccessibilityLabel={t('log.contextBannerDismiss')}
-            onDismiss={() => setDismissedContextKey(contextKey)}
+            onDismiss={() => setDismissedSessionId(timerSessionId ?? null)}
           />
         )}
 

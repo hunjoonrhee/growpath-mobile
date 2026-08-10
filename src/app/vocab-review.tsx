@@ -1,5 +1,5 @@
 import { Redirect, useRouter } from 'expo-router';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -10,6 +10,7 @@ import { VocabCard } from '@/components/vocab/VocabCard';
 import { VocabProgressHeader } from '@/components/vocab/VocabProgressHeader';
 import { VocabReviewActions } from '@/components/vocab/VocabReviewActions';
 import { Spacing } from '@/constants/theme';
+import { useSubmitGuard } from '@/hooks/use-submit-guard';
 import { useDueVocabWords } from '@/hooks/vocab/use-due-vocab-words';
 import { useReviewVocabWord } from '@/hooks/vocab/use-review-vocab-word';
 import { useAuth } from '@/lib/auth-context';
@@ -28,11 +29,7 @@ export default function VocabReviewScreen() {
   // the deck once, on first load, keeps the session's word order stable
   // regardless of what the query refetches in the background.
   const [deck, setDeck] = useState<VocabWord[] | null>(null);
-  // reviewWord.isPending only reflects in the disabled prop after a
-  // re-render commits, so a fast double-tap before that lands can fire
-  // mutate() twice for the same word and double-advance currentIndex,
-  // silently skipping the next card. This ref-based guard is synchronous.
-  const isSubmittingRef = useRef(false);
+  const submitGuard = useSubmitGuard();
   // Set directly during render (React's documented pattern for deriving
   // state from data that just arrived), not in a useEffect - the guard
   // means this only fires once, the first render after dueWords.data
@@ -49,8 +46,7 @@ export default function VocabReviewScreen() {
   const isInitializing = dueWords.isLoading || deck === null;
 
   const handleReview = (knew: boolean) => {
-    if (!currentWord || isSubmittingRef.current) return;
-    isSubmittingRef.current = true;
+    if (!currentWord || !submitGuard.tryStart()) return;
     reviewWord.mutate(
       {
         id: currentWord.id,
@@ -59,11 +55,11 @@ export default function VocabReviewScreen() {
       },
       {
         onSuccess: () => {
-          isSubmittingRef.current = false;
+          submitGuard.release();
           setCurrentIndex((index) => index + 1);
         },
         onError: () => {
-          isSubmittingRef.current = false;
+          submitGuard.release();
           Alert.alert(t('vocab.errorGeneric'));
         },
       }

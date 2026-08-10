@@ -1,5 +1,5 @@
 import { Redirect, useRouter } from 'expo-router';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -11,6 +11,7 @@ import { BackHeader } from '@/components/navigation/BackHeader';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
+import { useSubmitGuard } from '@/hooks/use-submit-guard';
 import { useCreateVocabWord } from '@/hooks/vocab/use-create-vocab-word';
 import { useAuth } from '@/lib/auth-context';
 
@@ -24,23 +25,20 @@ export default function VocabAddScreen() {
   const [word, setWord] = useState('');
   const [meaning, setMeaning] = useState('');
   const [exampleSentence, setExampleSentence] = useState('');
-  // createVocabWord.isPending only feeds `canSave` after a re-render commits,
-  // so a fast double-tap before that lands can still fire mutate() twice.
-  const isSubmittingRef = useRef(false);
+  const submitGuard = useSubmitGuard();
 
   if (!session) return <Redirect href="/login" />;
 
   const canSave = language.trim().length > 0 && word.trim().length > 0 && meaning.trim().length > 0 && !createVocabWord.isPending;
 
   const handleSave = () => {
-    if (isSubmittingRef.current) return;
-    isSubmittingRef.current = true;
+    if (!submitGuard.tryStart()) return;
     createVocabWord.mutate(
       { language: language.trim(), word: word.trim(), meaning: meaning.trim(), exampleSentence: exampleSentence.trim() },
       {
         onSuccess: () => router.back(),
         onError: () => {
-          isSubmittingRef.current = false;
+          submitGuard.release();
           Alert.alert(t('vocabAdd.errorGeneric'));
         },
       }

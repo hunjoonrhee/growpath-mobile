@@ -1,5 +1,5 @@
 import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -12,6 +12,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import { useCreateSession } from '@/hooks/sessions/use-create-session';
+import { useSubmitGuard } from '@/hooks/use-submit-guard';
 import { useAuth } from '@/lib/auth-context';
 
 function parseTags(raw: string): string[] {
@@ -32,9 +33,7 @@ export default function CaptureEntryScreen() {
   const [durationText, setDurationText] = useState(prefill.minutes ?? '');
   const [til, setTil] = useState('');
   const [tagsText, setTagsText] = useState('');
-  // createSession.isPending only feeds canSave after a re-render commits, so
-  // a fast double-tap before that lands can still fire mutate() twice.
-  const isSubmittingRef = useRef(false);
+  const submitGuard = useSubmitGuard();
 
   if (!session) return <Redirect href="/login" />;
 
@@ -46,8 +45,7 @@ export default function CaptureEntryScreen() {
   const canSave = title.trim().length > 0 && isDurationValid && !createSession.isPending;
 
   const handleSave = () => {
-    if (isSubmittingRef.current) return;
-    isSubmittingRef.current = true;
+    if (!submitGuard.tryStart()) return;
     const durationMinutes = trimmedDuration.length > 0 ? Number(trimmedDuration) : null;
     createSession.mutate(
       { title: title.trim(), durationMinutes, til: til.trim(), tags: parseTags(tagsText) },
@@ -64,7 +62,7 @@ export default function CaptureEntryScreen() {
           }
         },
         onError: () => {
-          isSubmittingRef.current = false;
+          submitGuard.release();
           Alert.alert(t('captureEntry.errorGeneric'));
         },
       }

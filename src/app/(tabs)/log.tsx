@@ -83,7 +83,7 @@ export default function LogScreen() {
           </Pressable>
 
           <ThemedText type="small" themeColor="textFaint" style={styles.sectionTitle}>
-            {t('log.vocabSectionTitle')}
+            {t('log.languageSectionTitle')}
           </ThemedText>
           <NavRow
             icon="🗂️"
@@ -92,6 +92,7 @@ export default function LogScreen() {
             onPress={() => router.push('/vocab-review')}
           />
           <NavRow icon="➕" label={t('log.vocabAddCta')} onPress={() => router.push('/vocab-add')} />
+          <NavRow icon="🎭" label={t('log.roleplayCta')} onPress={() => router.push('/roleplay')} />
 
           <SessionLogList
             title={t('log.recentTitle')}

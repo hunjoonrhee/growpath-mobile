@@ -54,10 +54,11 @@
     "durationAndDate": "{{minutes}}분 · {{date}}",
     "contextBanner": "방금 {{minutes}}분 타이머 종료 — {{title}}. 아래에서 바로 기록하세요.",
     "contextBannerDismiss": "배너 닫기",
-    "vocabSectionTitle": "단어장",
+    "languageSectionTitle": "언어 학습",
     "vocabReviewCta": "단어장 복습",
     "vocabDueCount": "복습할 단어 {{count}}개",
-    "vocabAddCta": "단어 추가"
+    "vocabAddCta": "단어 추가",
+    "roleplayCta": "롤플레이 연습"
   },
   "profile": {
     "title": "프로필",
@@ -179,5 +180,28 @@
     "loadError": "기록을 불러오지 못했어요.",
     "tilLabel": "오늘 배운 것",
     "noTil": "작성된 내용이 없어요."
+  },
+  "roleplay": {
+    "backAccessibilityLabel": "뒤로가기",
+    "setupTitle": "롤플레이 연습",
+    "setupSubtitle": "연습하고 싶은 언어와 상황을 알려주세요.",
+    "languageLabel": "언어",
+    "languagePlaceholder": "예: 독일어",
+    "topicLabel": "연습할 상황",
+    "topicPlaceholder": "예: 카페에서 커피 주문하기",
+    "startCta": "대화 시작하기",
+    "starting": "대화를 준비하고 있어요...",
+    "thinking": "생각 중...",
+    "composerPlaceholder": "메시지를 입력하세요",
+    "sendCta": "전송",
+    "endCta": "대화 종료",
+    "endConfirmTitle": "대화를 종료할까요?",
+    "endConfirmMessage": "지금까지의 대화가 요약되어 기록에 저장돼요.",
+    "endCancel": "취소",
+    "endConfirm": "종료",
+    "errorGeneric": "문제가 발생했어요. 잠시 후 다시 시도해주세요.",
+    "summaryTitle": "오늘의 대화 요약",
+    "summaryTilLabel": "배운 내용",
+    "summaryDoneCta": "완료"
   }
 }

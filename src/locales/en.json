@@ -54,10 +54,11 @@
     "durationAndDate": "{{minutes}} min · {{date}}",
     "contextBanner": "Just finished a {{minutes}}-min timer — {{title}}. Log it below.",
     "contextBannerDismiss": "Dismiss banner",
-    "vocabSectionTitle": "Vocab",
+    "languageSectionTitle": "Language practice",
     "vocabReviewCta": "Vocab review",
     "vocabDueCount": "{{count}} words due",
-    "vocabAddCta": "Add a word"
+    "vocabAddCta": "Add a word",
+    "roleplayCta": "Roleplay practice"
   },
   "profile": {
     "title": "Profile",
@@ -179,5 +180,28 @@
     "loadError": "Couldn't load this entry.",
     "tilLabel": "What you learned",
     "noTil": "No notes written."
+  },
+  "roleplay": {
+    "backAccessibilityLabel": "Go back",
+    "setupTitle": "Roleplay practice",
+    "setupSubtitle": "Tell us the language and situation you want to practice.",
+    "languageLabel": "Language",
+    "languagePlaceholder": "e.g. German",
+    "topicLabel": "Situation to practice",
+    "topicPlaceholder": "e.g. Ordering coffee at a cafe",
+    "startCta": "Start conversation",
+    "starting": "Getting the conversation ready...",
+    "thinking": "Thinking...",
+    "composerPlaceholder": "Type a message",
+    "sendCta": "Send",
+    "endCta": "End conversation",
+    "endConfirmTitle": "End this conversation?",
+    "endConfirmMessage": "This conversation will be summarized and saved to your log.",
+    "endCancel": "Cancel",
+    "endConfirm": "End",
+    "errorGeneric": "Something went wrong. Please try again in a moment.",
+    "summaryTitle": "Conversation summary",
+    "summaryTilLabel": "What you learned",
+    "summaryDoneCta": "Done"
   }
 }

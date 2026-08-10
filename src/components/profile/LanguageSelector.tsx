@@ -1,14 +1,9 @@
+import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { Colors, Spacing } from '@/constants/theme';
 import { SUPPORTED_LANGUAGES, type SupportedLanguage } from '@/lib/i18n';
-
-const LANGUAGE_LABELS: Record<SupportedLanguage, string> = {
-  ko: '한국어',
-  de: 'Deutsch',
-  en: 'English',
-};
 
 export type LanguageSelectorProps = {
   current: string;
@@ -16,20 +11,27 @@ export type LanguageSelectorProps = {
 };
 
 export function LanguageSelector({ current, onSelect }: LanguageSelectorProps) {
+  const { t } = useTranslation();
+
   return (
     <View style={styles.row}>
       {SUPPORTED_LANGUAGES.map((language) => {
         const isActive = language === current;
+        // Language names are each language's own self-name (e.g. "한국어"
+        // stays "한국어" no matter what the app's current language is - the
+        // standard convention for language pickers) - identical across all
+        // three locale files by design, not a translation of one another.
+        const label = t(`profile.languageNames.${language}`);
         return (
           <Pressable
             key={language}
             accessibilityRole="button"
             accessibilityState={{ selected: isActive }}
-            accessibilityLabel={LANGUAGE_LABELS[language]}
+            accessibilityLabel={label}
             onPress={() => onSelect(language)}
             style={[styles.chip, isActive && styles.chipActive]}>
             <ThemedText type="smallBold" themeColor={isActive ? 'pri2' : 'textDim'}>
-              {LANGUAGE_LABELS[language]}
+              {label}
             </ThemedText>
           </Pressable>
         );

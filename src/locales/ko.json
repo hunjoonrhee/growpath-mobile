@@ -62,6 +62,11 @@
   "profile": {
     "title": "프로필",
     "settingsSectionTitle": "설정",
+    "languageNames": {
+      "ko": "한국어",
+      "de": "Deutsch",
+      "en": "English"
+    },
     "accountSectionTitle": "계정",
     "logoutCta": "로그아웃",
     "logoutConfirmTitle": "로그아웃 하시겠어요?",

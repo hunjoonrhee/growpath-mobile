@@ -40,13 +40,17 @@ void i18next.use(initReactI18next).init({
 // A language chosen on the Profile screen overrides the device-detected
 // default once this resolves - async, so there's a brief flash of the
 // device-detected language on cold start before it applies.
-AsyncStorage.getItem(LANGUAGE_STORAGE_KEY).then((stored) => {
-  if (isSupportedLanguage(stored)) {
-    // this is i18next's documented instance API, not a mixed-up named import
-    // eslint-disable-next-line import/no-named-as-default-member
-    void i18next.changeLanguage(stored);
-  }
-});
+AsyncStorage.getItem(LANGUAGE_STORAGE_KEY)
+  .then((stored) => {
+    if (isSupportedLanguage(stored)) {
+      // this is i18next's documented instance API, not a mixed-up named import
+      // eslint-disable-next-line import/no-named-as-default-member
+      void i18next.changeLanguage(stored);
+    }
+  })
+  .catch(() => {
+    // Storage read failed - keep the device-detected language already set above.
+  });
 
 export async function setAppLanguage(language: SupportedLanguage): Promise<void> {
   // eslint-disable-next-line import/no-named-as-default-member

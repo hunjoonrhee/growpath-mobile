@@ -24,7 +24,6 @@ export type RoadmapSummary = {
   id: string;
   goal: string;
   careerLevel: string;
-  adopted: boolean;
 };
 
 const ADOPTED_ROADMAP_ID_KEY = 'adopted_roadmap_id';
@@ -79,7 +78,7 @@ export async function fetchFocusStageLevel(roadmapId: string): Promise<number | 
 export async function fetchUserRoadmaps(userId: string): Promise<RoadmapSummary[]> {
   const { data, error } = await supabase
     .from('ai_roadmaps')
-    .select('id, goal, career_level, adopted')
+    .select('id, goal, career_level')
     .eq('user_id', userId)
     .order('created_at', { ascending: false });
   if (error) throw error;
@@ -87,7 +86,6 @@ export async function fetchUserRoadmaps(userId: string): Promise<RoadmapSummary[
     id: row.id as string,
     goal: row.goal as string,
     careerLevel: row.career_level as string,
-    adopted: row.adopted as boolean,
   }));
 }
 

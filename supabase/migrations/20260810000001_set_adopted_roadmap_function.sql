@@ -31,6 +31,11 @@ begin
     raise exception 'Roadmap % does not belong to the current user', p_roadmap_id;
   end if;
 
+  -- settings has no unique/exclusion constraint defined in this repo's
+  -- migrations (it's an existing joon-dashboard table - see
+  -- supabase/README.md), but a (user_id, key) constraint was confirmed to
+  -- exist by probing it live: two upserts with the same (user_id, key) and
+  -- different values resolved to a single row, not a duplicate.
   insert into settings (key, value, user_id)
   values ('adopted_roadmap_id', p_roadmap_id::text, v_user_id)
   on conflict (user_id, key)

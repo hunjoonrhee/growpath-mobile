@@ -9,9 +9,10 @@ export type TextFieldProps = {
   onChangeText: (text: string) => void;
   placeholder?: string;
   keyboardType?: KeyboardTypeOptions;
+  editable?: boolean;
 };
 
-export function TextField({ label, value, onChangeText, placeholder, keyboardType }: TextFieldProps) {
+export function TextField({ label, value, onChangeText, placeholder, keyboardType, editable = true }: TextFieldProps) {
   return (
     <View>
       <ThemedText type="small" themeColor="textDim" style={styles.label}>
@@ -23,7 +24,8 @@ export function TextField({ label, value, onChangeText, placeholder, keyboardTyp
         placeholder={placeholder}
         placeholderTextColor={Colors.textFaint}
         keyboardType={keyboardType}
-        style={styles.input}
+        editable={editable}
+        style={[styles.input, !editable && styles.inputDisabled]}
       />
     </View>
   );
@@ -42,5 +44,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.three,
     color: Colors.text,
     fontSize: 14,
+  },
+  inputDisabled: {
+    opacity: 0.5,
   },
 });

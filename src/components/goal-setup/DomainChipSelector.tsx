@@ -8,9 +8,10 @@ import { DOMAIN_LABEL_KEY, DOMAINS, type Domain } from '@/lib/domain';
 export type DomainChipSelectorProps = {
   selected: Domain | null;
   onSelect: (domain: Domain) => void;
+  disabled?: boolean;
 };
 
-export function DomainChipSelector({ selected, onSelect }: DomainChipSelectorProps) {
+export function DomainChipSelector({ selected, onSelect, disabled = false }: DomainChipSelectorProps) {
   const { t } = useTranslation();
 
   return (
@@ -21,9 +22,10 @@ export function DomainChipSelector({ selected, onSelect }: DomainChipSelectorPro
           <Pressable
             key={domain}
             accessibilityRole="button"
-            accessibilityState={{ selected: isActive }}
+            accessibilityState={{ selected: isActive, disabled }}
+            disabled={disabled}
             onPress={() => onSelect(domain)}
-            style={[styles.chip, isActive && styles.chipActive]}>
+            style={[styles.chip, isActive && styles.chipActive, disabled && styles.chipDisabled]}>
             <ThemedText type="smallBold" themeColor={isActive ? 'pri2' : 'textDim'}>
               {t(DOMAIN_LABEL_KEY[domain])}
             </ThemedText>
@@ -51,5 +53,8 @@ const styles = StyleSheet.create({
   chipActive: {
     backgroundColor: 'rgba(108,99,255,0.16)',
     borderColor: Colors.pri,
+  },
+  chipDisabled: {
+    opacity: 0.5,
   },
 });

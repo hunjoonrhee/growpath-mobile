@@ -1,5 +1,5 @@
 import { Redirect, useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -47,6 +47,18 @@ export default function GoalSetupScreen() {
   const [pendingRoadmapId, setPendingRoadmapId] = useState<string | null>(null);
   const submitGuard = useSubmitGuard();
 
+  // handleSubmit's async body closes over the domain/careerLevel/goalText
+  // values from the render that invoked it - those bindings never change
+  // for the lifetime of that call, so comparing them against anything
+  // (including a same-render snapshot) after an await can never detect an
+  // edit made while that await was pending. This ref is mutated on every
+  // render instead, so reading it after the await reflects whatever the
+  // fields actually are *right now*, not what they were at invocation time.
+  const latestFieldsRef = useRef({ domain, careerLevel, goalText });
+  useEffect(() => {
+    latestFieldsRef.current = { domain, careerLevel, goalText };
+  });
+
   if (!session) return <Redirect href="/login" />;
 
   const handleDomainSelect = withPendingReset(setPendingRoadmapId, setDomain);
@@ -62,23 +74,26 @@ export default function GoalSetupScreen() {
     // isSubmitting, so if the user edits them before generateRoadmap
     // resolves, the per-field reset above already cleared pendingRoadmapId,
     // but the unconditional setPendingRoadmapId(roadmapId) below would
-    // otherwise re-cache it anyway. Comparing against this snapshot after
-    // the await catches that race too.
+    // otherwise re-cache it anyway. Comparing against latestFieldsRef after
+    // the await catches that race too (see the ref's own comment for why a
+    // plain closure comparison here can't work).
     const submitted = { domain, careerLevel: careerLevel.trim(), goalText: goalText.trim() };
     try {
       const roadmapId =
         pendingRoadmapId ??
         (
           await generateRoadmap({
-            domain: submitted.domain,
             goalText: submitted.goalText,
             careerLevel: submitted.careerLevel,
             locale: i18n.language,
           })
         ).id;
 
+      const latest = latestFieldsRef.current;
       const changedMidFlight =
-        domain !== submitted.domain || careerLevel.trim() !== submitted.careerLevel || goalText.trim() !== submitted.goalText;
+        latest.domain !== submitted.domain ||
+        latest.careerLevel.trim() !== submitted.careerLevel ||
+        latest.goalText.trim() !== submitted.goalText;
       if (changedMidFlight) return;
 
       setPendingRoadmapId(roadmapId);

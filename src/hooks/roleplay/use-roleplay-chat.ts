@@ -46,7 +46,28 @@ type EndProgress = {
 /** Which operation retry() should resume - set alongside errorKind so retry doesn't have to guess from message-array shape (which is ambiguous once ending is involved). */
 type FailedOperation = 'start' | 'send' | 'end' | null;
 
-export function useRoleplayChat({ userId, topic, language, goal, careerLevel, locale, roadmapId }: UseRoleplayChatInput) {
+export type UseRoleplayChatResult = {
+  messages: ChatMessage[];
+  isStarting: boolean;
+  isSending: boolean;
+  isEnding: boolean;
+  summary: RoleplaySummary | null;
+  errorKind: RoleplayErrorKind | null;
+  start: () => Promise<void>;
+  sendMessage: (text: string) => Promise<void>;
+  retry: () => Promise<void>;
+  endSession: () => Promise<void>;
+};
+
+export function useRoleplayChat({
+  userId,
+  topic,
+  language,
+  goal,
+  careerLevel,
+  locale,
+  roadmapId,
+}: UseRoleplayChatInput): UseRoleplayChatResult {
   const queryClient = useQueryClient();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isStarting, setIsStarting] = useState(true);
@@ -143,21 +164,25 @@ export function useRoleplayChat({ userId, topic, language, goal, careerLevel, lo
       }
       const progress = endProgressRef.current;
       const resolvedRoadmapId = roadmapId ?? null;
+      // Both saves can invalidate independently on a partial failure (one
+      // persisted, the other didn't - the Log tab should still refresh for
+      // the row that's actually there), but on the common happy path both
+      // succeed and would otherwise invalidate the same 3 queries twice.
+      let hasInvalidated = false;
+      const invalidateOnce = () => {
+        if (hasInvalidated) return;
+        hasInvalidated = true;
+        invalidateSessionQueries(queryClient, userId);
+      };
 
       // Independent writes to different tables - run concurrently rather
       // than one-after-another. Each still only fires if its own step
       // hasn't completed yet, so a retry after a partial failure doesn't
-      // redo (or double-insert) whichever one already succeeded. Each also
-      // invalidates immediately on its own success (rather than once after
-      // Promise.all settles), so a partial failure - one write persisted,
-      // the other didn't - still refreshes the Log tab for the row that's
-      // actually there instead of leaving it stale until an unrelated
-      // invalidation happens to fire later.
+      // redo (or double-insert) whichever one already succeeded.
       await Promise.all([
         progress.transcriptSaved
           ? undefined
           : saveRoleplayTranscript({
-              userId,
               roadmapId: resolvedRoadmapId,
               scenario: topic,
               language,
@@ -165,13 +190,13 @@ export function useRoleplayChat({ userId, topic, language, goal, careerLevel, lo
               summary: progress.summary,
             }).then(() => {
               progress.transcriptSaved = true;
-              invalidateSessionQueries(queryClient, userId);
+              invalidateOnce();
             }),
         progress.tilSaved
           ? undefined
           : saveRoleplayTilEntry({ userId, roadmapId: resolvedRoadmapId, scenario: topic, summary: progress.summary }).then(() => {
               progress.tilSaved = true;
-              invalidateSessionQueries(queryClient, userId);
+              invalidateOnce();
             }),
       ]);
 
@@ -204,7 +229,7 @@ export function useRoleplayChat({ userId, topic, language, goal, careerLevel, lo
         await start();
       } else if (failedOp === 'end') {
         await endSession();
-      } else if (messages.length > 0 && messages[messages.length - 1].role === 'user') {
+      } else if (failedOp === 'send' && messages.length > 0 && messages[messages.length - 1].role === 'user') {
         if (!sendGuard.tryStart()) return;
         try {
           await requestReply(messages);

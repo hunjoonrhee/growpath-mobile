@@ -1,13 +1,8 @@
-import { env } from '@/lib/env';
+import { API_CALL_TIMEOUT_MS, env } from '@/lib/env';
 import type { Roadmap, RoadmapStage } from '@/lib/roadmap';
 import { supabase } from '@/lib/supabase';
 
 export class RoadmapGenerationUnavailableError extends Error {}
-
-// A generation can involve a retried Gemini call server-side, so this is
-// generous - long enough to not false-positive on a legitimately slow
-// generation, short enough that a dead connection doesn't hang forever.
-const GENERATE_ROADMAP_TIMEOUT_MS = 60_000;
 
 export type GenerateRoadmapInput = {
   goalText: string;
@@ -53,7 +48,7 @@ export async function generateRoadmap(input: GenerateRoadmapInput): Promise<Road
         Authorization: `Bearer ${session.access_token}`,
       },
       body: JSON.stringify({ goal: input.goalText, careerLevel: input.careerLevel, locale: input.locale }),
-      signal: AbortSignal.timeout(GENERATE_ROADMAP_TIMEOUT_MS),
+      signal: AbortSignal.timeout(API_CALL_TIMEOUT_MS),
     });
   } catch (error) {
     // Covers both a network failure and AbortSignal.timeout() firing - either

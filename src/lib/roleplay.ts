@@ -1,4 +1,4 @@
-import { env } from '@/lib/env';
+import { API_CALL_TIMEOUT_MS, env } from '@/lib/env';
 import { createSession } from '@/lib/sessions';
 import { insertWithUser, supabase } from '@/lib/supabase';
 
@@ -18,11 +18,6 @@ type TutorUserContext = {
   goal: string;
   tilHistory: string[];
 };
-
-// A turn can involve a retried Gemini call server-side, so this is generous -
-// long enough to not false-positive on a legitimately slow reply, short
-// enough that a dead connection doesn't hang isSending/isStarting forever.
-const TUTOR_CHAT_TIMEOUT_MS = 60_000;
 
 function toApiMessages(messages: ChatMessage[]): TutorApiMessage[] {
   return messages.map((message) => ({ role: message.role, parts: [{ text: message.text }] }));
@@ -68,7 +63,7 @@ async function callTutorChat(body: Record<string, unknown>): Promise<TutorChatRe
         Authorization: `Bearer ${session.access_token}`,
       },
       body: JSON.stringify(body),
-      signal: AbortSignal.timeout(TUTOR_CHAT_TIMEOUT_MS),
+      signal: AbortSignal.timeout(API_CALL_TIMEOUT_MS),
     });
   } catch (error) {
     // Covers both a network failure and AbortSignal.timeout() firing - a
@@ -163,7 +158,6 @@ export async function endRoleplaySession(
 }
 
 export type SaveRoleplayTranscriptInput = {
-  userId: string;
   roadmapId: string | null;
   scenario: string;
   language: string;

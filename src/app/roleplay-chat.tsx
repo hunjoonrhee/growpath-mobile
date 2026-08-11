@@ -71,11 +71,13 @@ export default function RoleplayChatScreen() {
             <SessionSummaryCard summary={chat.summary} label={t('roleplay.summaryTilLabel')} />
             <PrimaryButton label={t('roleplay.summaryDoneCta')} onPress={() => router.replace('/log')} style={styles.doneButton} />
           </ScrollView>
-        ) : activeRoadmap.isError ? (
-          // Checked after chat.summary so a background refetch failure on
-          // an unrelated roadmap query (adoptedRoadmapId/roadmap/
-          // focusStageLevel, shared across the app) can't silently replace
-          // an already-finished, already-saved summary screen.
+        ) : activeRoadmap.isError && chat.messages.length === 0 ? (
+          // Checked after chat.summary, and only blocks the view before any
+          // messages exist - activeRoadmap.isError is a combined OR of three
+          // queries shared app-wide (including focusStageLevel, which this
+          // screen doesn't even use), so a background refetch failure on any
+          // of them must not lock an already-started conversation out of its
+          // own Send/End UI, or replace an already-finished summary screen.
           <View style={styles.centerContent}>
             <ThemedText type="small" themeColor="amber" style={styles.centerTextNoMargin}>
               {t('roleplay.errorGeneric')}

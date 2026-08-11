@@ -5,10 +5,17 @@ function requireEnv(name: string, value: string | undefined): string {
   return value;
 }
 
+// Strips a trailing slash so callers can safely do `${roadmapApiUrl}/api/...`
+// without risking a double slash (e.g. from a value copied out of a browser
+// address bar) - most hosts 404 on that instead of normalizing it.
+function stripTrailingSlash(value: string | undefined): string | undefined {
+  return value?.replace(/\/+$/, '');
+}
+
 export const env = {
   supabaseUrl: requireEnv('EXPO_PUBLIC_SUPABASE_URL', process.env.EXPO_PUBLIC_SUPABASE_URL),
   supabaseAnonKey: requireEnv('EXPO_PUBLIC_SUPABASE_ANON_KEY', process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY),
-  // Not required yet - joon-dashboard (the web app that hosts this API) isn't
-  // deployed. Goal setup falls back to a "not available yet" state when unset.
-  roadmapApiUrl: process.env.EXPO_PUBLIC_ROADMAP_API_URL,
+  // Not required yet - falls back to a "not available yet" state when unset
+  // (goal setup) or blocks the feature (roleplay).
+  roadmapApiUrl: stripTrailingSlash(process.env.EXPO_PUBLIC_ROADMAP_API_URL),
 } as const;

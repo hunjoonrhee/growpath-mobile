@@ -122,7 +122,9 @@
       "voice": "🎙️ Voice"
     },
     "voiceComingSoon": "Voice input is coming soon. Please type it in for now.",
-    "textPlaceholder": "e.g. I want to become a lead architect. I'm currently a senior frontend developer with about 3 years of Angular experience...",
+    "careerLevelLabel": "Current level",
+    "careerLevelPlaceholder": "e.g. Senior frontend developer, ~3 years of production Angular",
+    "textPlaceholder": "e.g. I want to become a lead architect",
     "submitCta": "Start with this goal",
     "generationUnavailable": "AI roadmap generation isn't ready yet. Coming soon!",
     "errorGeneric": "Something went wrong. Please try again in a moment."

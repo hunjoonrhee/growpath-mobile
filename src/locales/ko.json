@@ -122,7 +122,9 @@
       "voice": "🎙️ 음성"
     },
     "voiceComingSoon": "음성 입력은 준비 중이에요. 텍스트로 입력해주세요.",
-    "textPlaceholder": "예: 리드 아키텍트가 되고 싶어요. 지금은 시니어 프론트엔드 개발자고, Angular는 실무로 3년 정도 썼어요...",
+    "careerLevelLabel": "현재 수준",
+    "careerLevelPlaceholder": "예: 시니어 프론트엔드 개발자, Angular 실무 3년차",
+    "textPlaceholder": "예: 리드 아키텍트가 되고 싶어요",
     "submitCta": "이 목표로 시작하기",
     "generationUnavailable": "AI 로드맵 생성은 아직 준비 중이에요. 곧 만나요!",
     "errorGeneric": "문제가 발생했어요. 잠시 후 다시 시도해주세요."

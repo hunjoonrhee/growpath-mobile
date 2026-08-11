@@ -68,7 +68,19 @@ export default function RoleplayChatScreen() {
       <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
         <BackHeader accessibilityLabel={t('roleplay.backAccessibilityLabel')} onPress={() => router.back()} />
 
-        {activeRoadmap.isError ? (
+        {chat.summary ? (
+          <ScrollView contentContainerStyle={styles.summaryContent}>
+            <ThemedText type="subtitle" style={styles.summaryTitle}>
+              {t('roleplay.summaryTitle')}
+            </ThemedText>
+            <SessionSummaryCard summary={chat.summary} label={t('roleplay.summaryTilLabel')} />
+            <PrimaryButton label={t('roleplay.summaryDoneCta')} onPress={() => router.replace('/log')} style={styles.doneButton} />
+          </ScrollView>
+        ) : activeRoadmap.isError ? (
+          // Checked after chat.summary so a background refetch failure on
+          // an unrelated roadmap query (adoptedRoadmapId/roadmap/
+          // focusStageLevel, shared across the app) can't silently replace
+          // an already-finished, already-saved summary screen.
           <View style={styles.centerContent}>
             <ThemedText type="small" themeColor="amber" style={styles.centerTextNoMargin}>
               {t('roleplay.errorGeneric')}
@@ -86,14 +98,6 @@ export default function RoleplayChatScreen() {
               style={styles.retryButton}
             />
           </View>
-        ) : chat.summary ? (
-          <ScrollView contentContainerStyle={styles.summaryContent}>
-            <ThemedText type="subtitle" style={styles.summaryTitle}>
-              {t('roleplay.summaryTitle')}
-            </ThemedText>
-            <SessionSummaryCard summary={chat.summary} label={t('roleplay.summaryTilLabel')} />
-            <PrimaryButton label={t('roleplay.summaryDoneCta')} onPress={() => router.replace('/log')} style={styles.doneButton} />
-          </ScrollView>
         ) : (
           <KeyboardAvoidingView style={styles.chatArea} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
             <ScrollView
@@ -106,9 +110,23 @@ export default function RoleplayChatScreen() {
                 </ThemedText>
               )}
 
+              {chat.messages.map((message, index) => (
+                <ChatBubble key={index} message={message} />
+              ))}
+
+              {chat.isSending && (
+                <ThemedText type="small" themeColor="textDim">
+                  {t('roleplay.thinking')}
+                </ThemedText>
+              )}
+
+              {/* Rendered after the message list (not before it) so the
+                  ScrollView's auto-scroll-to-bottom on content-size-change
+                  lands on this, not past it - a banner above the messages
+                  would otherwise scroll out of view in a long conversation. */}
               {chat.errorKind && (
-                <>
-                  <ThemedText type="small" themeColor="amber" style={styles.centerText}>
+                <View style={styles.errorBanner}>
+                  <ThemedText type="small" themeColor="amber" style={styles.centerTextNoMargin}>
                     {chat.errorKind === 'unavailable' ? t('roleplay.errorUnavailable') : t('roleplay.errorGeneric')}
                   </ThemedText>
                   {/* 'unavailable' means retrying can't help (see RoleplayErrorKind) - showing Retry there just lets the user repeat a call that's guaranteed to fail identically. */}
@@ -120,17 +138,7 @@ export default function RoleplayChatScreen() {
                       style={styles.retryButton}
                     />
                   )}
-                </>
-              )}
-
-              {chat.messages.map((message, index) => (
-                <ChatBubble key={index} message={message} />
-              ))}
-
-              {chat.isSending && (
-                <ThemedText type="small" themeColor="textDim">
-                  {t('roleplay.thinking')}
-                </ThemedText>
+                </View>
               )}
             </ScrollView>
 
@@ -145,7 +153,9 @@ export default function RoleplayChatScreen() {
 
             <ChatComposer
               onSend={chat.sendMessage}
-              disabled={chat.isStarting || chat.isSending || chat.isEnding || hasUnansweredMessage}
+              disabled={
+                chat.isStarting || chat.isSending || chat.isEnding || hasUnansweredMessage || chat.errorKind === 'unavailable'
+              }
               placeholder={t('roleplay.composerPlaceholder')}
               sendLabel={t('roleplay.sendCta')}
             />
@@ -181,6 +191,10 @@ const styles = StyleSheet.create({
   },
   centerTextNoMargin: {
     textAlign: 'center',
+  },
+  errorBanner: {
+    marginTop: Spacing.two,
+    gap: Spacing.one,
   },
   endButton: {
     marginHorizontal: Spacing.four,

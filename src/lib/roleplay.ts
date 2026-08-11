@@ -52,7 +52,11 @@ async function callTutorChat(body: Record<string, unknown>): Promise<TutorChatRe
     data: { session },
   } = await supabase.auth.getSession();
   if (!session) {
-    throw new RoleplayUnavailableError('Not authenticated.');
+    // A plain Error, not RoleplayUnavailableError - a missing session read
+    // here can be a transient refresh-token hiccup rather than a genuinely
+    // logged-out user, and roadmap-generation.ts's generateRoadmap treats
+    // the identical condition the same way; keeping the two consistent.
+    throw new Error('Not authenticated.');
   }
 
   let res: Response;
@@ -108,7 +112,11 @@ export async function startRoleplayTurn(
   targetLanguage: string
 ): Promise<string> {
   const { text } = await callTutorChat({ topic, messages: [], locale, targetLanguage, userContext: buildUserContext(context) });
-  return text;
+  // Defensive - callTutorChat's response is cast, not runtime-validated, so
+  // a 200 with a missing/malformed `text` field falls back to '' instead of
+  // propagating undefined into chat history (which JSON.stringify would
+  // then silently drop from the next turn's request body entirely).
+  return text ?? '';
 }
 
 /** `messages` must already include the new user turn at the end. */
@@ -126,7 +134,7 @@ export async function sendRoleplayTurn(
     targetLanguage,
     userContext: buildUserContext(context),
   });
-  return text;
+  return text ?? '';
 }
 
 export async function endRoleplaySession(
@@ -145,7 +153,11 @@ export async function endRoleplaySession(
     requestSummary: true,
   });
   if (!summary) {
-    throw new RoleplayUnavailableError('No summary returned.');
+    // A plain Error - a missing summary is far more likely a one-off
+    // Gemini hiccup than a permanent condition, and this is the one call
+    // that, if treated as unretriable, would silently lose an entire
+    // finished-but-unsaved conversation with no way to recover it.
+    throw new Error('No summary returned.');
   }
   return toRoleplaySummary(summary);
 }

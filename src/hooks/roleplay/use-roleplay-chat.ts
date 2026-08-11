@@ -150,7 +150,12 @@ export function useRoleplayChat({ userId, topic, language, goal, careerLevel, lo
       // Independent writes to different tables - run concurrently rather
       // than one-after-another. Each still only fires if its own step
       // hasn't completed yet, so a retry after a partial failure doesn't
-      // redo (or double-insert) whichever one already succeeded.
+      // redo (or double-insert) whichever one already succeeded. Each also
+      // invalidates immediately on its own success (rather than once after
+      // Promise.all settles), so a partial failure - one write persisted,
+      // the other didn't - still refreshes the Log tab for the row that's
+      // actually there instead of leaving it stale until an unrelated
+      // invalidation happens to fire later.
       await Promise.all([
         progress.transcriptSaved
           ? undefined
@@ -163,15 +168,16 @@ export function useRoleplayChat({ userId, topic, language, goal, careerLevel, lo
               summary: progress.summary,
             }).then(() => {
               progress.transcriptSaved = true;
+              invalidateSessionQueries(queryClient, userId);
             }),
         progress.tilSaved
           ? undefined
           : saveRoleplayTilEntry({ userId, scenario: topic, summary: progress.summary }).then(() => {
               progress.tilSaved = true;
+              invalidateSessionQueries(queryClient, userId);
             }),
       ]);
 
-      invalidateSessionQueries(queryClient, userId);
       if (!isMountedRef.current) return;
       setSummary(progress.summary);
     } catch (error) {

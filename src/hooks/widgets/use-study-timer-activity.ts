@@ -43,14 +43,20 @@ export function useStudyTimerActivity({ topic, status, elapsedSeconds, statusLab
       console.warn('Could not start Live Activity', error);
     }
     return () => {
+      // .end() returns a Promise - a synchronous try/catch around the call
+      // only catches failures in building the call itself, not an
+      // asynchronous rejection from the native side, so that needs its own
+      // .catch() to actually reach the console.warn this comment promises.
       try {
-        activityRef.current?.end('default', {
-          topic,
-          statusLabel: latestRef.current.statusLabel,
-          isPaused: true,
-          virtualStartEpochMs: Date.now(),
-          pausedElapsedLabel: formatElapsedSeconds(latestRef.current.elapsedSeconds),
-        });
+        activityRef.current
+          ?.end('default', {
+            topic,
+            statusLabel: latestRef.current.statusLabel,
+            isPaused: true,
+            virtualStartEpochMs: Date.now(),
+            pausedElapsedLabel: formatElapsedSeconds(latestRef.current.elapsedSeconds),
+          })
+          .catch((error) => console.warn('Could not end Live Activity', error));
       } catch (error) {
         console.warn('Could not end Live Activity', error);
       }
@@ -71,14 +77,18 @@ export function useStudyTimerActivity({ topic, status, elapsedSeconds, statusLab
       return;
     }
     if (!activityRef.current) return;
+    // .update() returns a Promise - see the matching note in the cleanup
+    // above, the .catch() is what actually reaches this console.warn.
     try {
-      activityRef.current.update({
-        topic,
-        statusLabel,
-        isPaused: status === 'paused',
-        virtualStartEpochMs: Date.now() - elapsedSeconds * 1000,
-        pausedElapsedLabel: formatElapsedSeconds(elapsedSeconds),
-      });
+      activityRef.current
+        .update({
+          topic,
+          statusLabel,
+          isPaused: status === 'paused',
+          virtualStartEpochMs: Date.now() - elapsedSeconds * 1000,
+          pausedElapsedLabel: formatElapsedSeconds(elapsedSeconds),
+        })
+        .catch((error) => console.warn('Could not update Live Activity', error));
     } catch (error) {
       console.warn('Could not update Live Activity', error);
     }

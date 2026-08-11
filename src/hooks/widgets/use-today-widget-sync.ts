@@ -32,3 +32,12 @@ export function useTodayWidgetSync(input: TodayWidgetSyncInput | null): void {
     TodayProgressWidget.updateSnapshot({ goalTitle, progressLabel, stageLabel, streakLabel, percent });
   }, [goalTitle, progressLabel, stageLabel, streakLabel, percent]);
 }
+
+/**
+ * Resets the home screen widget to a blank snapshot - called on logout so a
+ * different account signing into the same device doesn't see the previous
+ * user's goal/streak until they adopt their own roadmap.
+ */
+export function clearTodayWidgetSnapshot(): void {
+  TodayProgressWidget.updateSnapshot({ goalTitle: '', progressLabel: '', stageLabel: '', streakLabel: '', percent: 0 });
+}

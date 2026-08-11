@@ -7,6 +7,7 @@ import { LanguageSelector } from '@/components/profile/LanguageSelector';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing, Typography } from '@/constants/theme';
+import { clearTodayWidgetSnapshot } from '@/hooks/widgets/use-today-widget-sync';
 import { setAppLanguage, type SupportedLanguage } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
 
@@ -28,6 +29,7 @@ export default function ProfileScreen() {
           // AuthProvider's onAuthStateChange listener picks up the cleared
           // session and the (tabs) layout redirects to /login on its own -
           // no manual navigation needed here.
+          clearTodayWidgetSnapshot();
           supabase.auth.signOut().catch(() => Alert.alert(t('profile.logoutError')));
         },
       },

@@ -200,6 +200,8 @@
     "endCancel": "취소",
     "endConfirm": "종료",
     "errorGeneric": "문제가 발생했어요. 잠시 후 다시 시도해주세요.",
+    "errorUnavailable": "지금은 이 기능을 사용할 수 없어요. 잠시 후 다시 확인해주세요.",
+    "retryCta": "다시 시도",
     "summaryTitle": "오늘의 대화 요약",
     "summaryTilLabel": "배운 내용",
     "summaryDoneCta": "완료"

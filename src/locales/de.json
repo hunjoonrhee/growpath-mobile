@@ -200,6 +200,8 @@
     "endCancel": "Abbrechen",
     "endConfirm": "Beenden",
     "errorGeneric": "Etwas ist schiefgelaufen. Bitte versuche es gleich noch einmal.",
+    "errorUnavailable": "Diese Funktion ist gerade nicht verfügbar. Bitte schau später noch einmal vorbei.",
+    "retryCta": "Erneut versuchen",
     "summaryTitle": "Gesprächszusammenfassung",
     "summaryTilLabel": "Was du gelernt hast",
     "summaryDoneCta": "Fertig"

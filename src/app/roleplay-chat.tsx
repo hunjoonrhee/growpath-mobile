@@ -1,5 +1,5 @@
 import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -24,30 +24,28 @@ export default function RoleplayChatScreen() {
   const scrollRef = useRef<ScrollView>(null);
 
   const activeRoadmap = useActiveRoadmap(session?.user.id);
-  const roadmapGoal = activeRoadmap.roadmap.data?.goal ?? '';
-  const roadmapCareerLevel = activeRoadmap.roadmap.data?.careerLevel ?? '';
-  const context = useMemo(() => ({ goal: roadmapGoal, careerLevel: roadmapCareerLevel }), [roadmapGoal, roadmapCareerLevel]);
 
   const chat = useRoleplayChat({
     userId: session?.user.id ?? '',
     topic: topic ?? '',
     language: language ?? '',
-    context,
+    goal: activeRoadmap.roadmap.data?.goal ?? '',
+    careerLevel: activeRoadmap.roadmap.data?.careerLevel ?? '',
     locale: i18n.language,
   });
+  const { start } = chat;
 
   useEffect(() => {
     // topic/language can be empty on a render that's about to redirect away
     // (the guards below run after all hooks, per Rules of Hooks, so this
     // effect still fires for that render) - skip starting a session with
-    // malformed params in that case.
-    if (!activeRoadmap.isLoading && topic && language) {
-      chat.start();
+    // malformed params in that case. Also skip if the active-roadmap lookup
+    // itself failed - starting anyway would silently open the roleplay with
+    // an empty goal/career-level context instead of surfacing the error.
+    if (!activeRoadmap.isLoading && !activeRoadmap.isError && topic && language) {
+      start();
     }
-    // chat.start is idempotent (see useRoleplayChat) - only activeRoadmap's
-    // loading state and the params should retrigger this effect.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeRoadmap.isLoading, topic, language]);
+  }, [activeRoadmap.isLoading, activeRoadmap.isError, topic, language, start]);
 
   if (!session) return <Redirect href="/login" />;
   if (!topic || !language) return <Redirect href="/roleplay" />;
@@ -64,7 +62,11 @@ export default function RoleplayChatScreen() {
       <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
         <BackHeader accessibilityLabel={t('roleplay.backAccessibilityLabel')} onPress={() => router.back()} />
 
-        {chat.summary ? (
+        {activeRoadmap.isError ? (
+          <ThemedText type="small" themeColor="amber" style={styles.centerText}>
+            {t('roleplay.errorGeneric')}
+          </ThemedText>
+        ) : chat.summary ? (
           <ScrollView contentContainerStyle={styles.summaryContent}>
             <ThemedText type="subtitle" style={styles.summaryTitle}>
               {t('roleplay.summaryTitle')}
@@ -84,10 +86,18 @@ export default function RoleplayChatScreen() {
                 </ThemedText>
               )}
 
-              {chat.error && (
-                <ThemedText type="small" themeColor="amber" style={styles.centerText}>
-                  {t('roleplay.errorGeneric')}
-                </ThemedText>
+              {chat.errorKind && (
+                <>
+                  <ThemedText type="small" themeColor="amber" style={styles.centerText}>
+                    {chat.errorKind === 'unavailable' ? t('roleplay.errorUnavailable') : t('roleplay.errorGeneric')}
+                  </ThemedText>
+                  <PrimaryButton
+                    label={t('roleplay.retryCta')}
+                    onPress={chat.retry}
+                    disabled={chat.isStarting || chat.isSending}
+                    style={styles.retryButton}
+                  />
+                </>
               )}
 
               {chat.messages.map((message, index) => (
@@ -146,6 +156,11 @@ const styles = StyleSheet.create({
     marginHorizontal: Spacing.four,
     marginBottom: Spacing.two,
     backgroundColor: Colors.surf2,
+  },
+  retryButton: {
+    marginTop: Spacing.two,
+    alignSelf: 'center',
+    paddingHorizontal: Spacing.four,
   },
   summaryContent: {
     padding: Spacing.four,

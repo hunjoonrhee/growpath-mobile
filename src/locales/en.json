@@ -200,6 +200,8 @@
     "endCancel": "Cancel",
     "endConfirm": "End",
     "errorGeneric": "Something went wrong. Please try again in a moment.",
+    "errorUnavailable": "This feature isn't available right now. Please check back later.",
+    "retryCta": "Retry",
     "summaryTitle": "Conversation summary",
     "summaryTilLabel": "What you learned",
     "summaryDoneCta": "Done"

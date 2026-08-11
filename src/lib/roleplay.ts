@@ -58,6 +58,15 @@ async function callTutorChat(body: Record<string, unknown>): Promise<TutorChatRe
   return (await res.json()) as TutorChatResponse;
 }
 
+/** Normalizes a possibly-partial API summary so callers never have to null-check its fields. */
+function toRoleplaySummary(raw: RoleplaySummary): RoleplaySummary {
+  return {
+    concepts: raw.concepts ?? [],
+    tags: raw.tags ?? [],
+    tilNote: raw.tilNote ?? '',
+  };
+}
+
 /**
  * First turn - no history yet, the API opens the roleplay based on `topic`.
  * `locale` and `targetLanguage` are deliberately different things: `locale`
@@ -111,10 +120,10 @@ export async function endRoleplaySession(
   if (!summary) {
     throw new RoleplayUnavailableError('No summary returned.');
   }
-  return summary;
+  return toRoleplaySummary(summary);
 }
 
-export type SaveRoleplayInput = {
+export type SaveRoleplayTranscriptInput = {
   userId: string;
   scenario: string;
   language: string;
@@ -122,8 +131,13 @@ export type SaveRoleplayInput = {
   summary: RoleplaySummary;
 };
 
-/** Persists the finished session to roleplay_sessions, and auto-saves a TIL entry (same shape as a manual capture) so it shows up in the Log tab. */
-export async function saveRoleplaySession(input: SaveRoleplayInput): Promise<void> {
+/**
+ * Persists the finished session to roleplay_sessions. Split out from the TIL
+ * save below (rather than one combined function) so a caller that retries
+ * after the TIL save fails doesn't also re-insert this row - roleplay_sessions
+ * has no unique constraint to fall back on, unlike vocab_words.
+ */
+export async function saveRoleplayTranscript(input: SaveRoleplayTranscriptInput): Promise<void> {
   const roadmapId = await fetchAdoptedRoadmapId(input.userId);
 
   const { error } = await insertWithUser('roleplay_sessions', {
@@ -134,7 +148,16 @@ export async function saveRoleplaySession(input: SaveRoleplayInput): Promise<voi
     summary: input.summary.tilNote,
   });
   if (error) throw error;
+}
 
+export type SaveRoleplayTilEntryInput = {
+  userId: string;
+  scenario: string;
+  summary: RoleplaySummary;
+};
+
+/** Auto-saves a TIL entry for the session (same shape as a manual capture) so it shows up in the Log tab. */
+export async function saveRoleplayTilEntry(input: SaveRoleplayTilEntryInput): Promise<void> {
   await createSession(input.userId, {
     title: input.scenario,
     durationMinutes: null,

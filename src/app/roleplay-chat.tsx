@@ -37,13 +37,17 @@ export default function RoleplayChatScreen() {
   });
 
   useEffect(() => {
-    if (!activeRoadmap.isLoading) {
+    // topic/language can be empty on a render that's about to redirect away
+    // (the guards below run after all hooks, per Rules of Hooks, so this
+    // effect still fires for that render) - skip starting a session with
+    // malformed params in that case.
+    if (!activeRoadmap.isLoading && topic && language) {
       chat.start();
     }
     // chat.start is idempotent (see useRoleplayChat) - only activeRoadmap's
-    // loading state should retrigger this effect.
+    // loading state and the params should retrigger this effect.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeRoadmap.isLoading]);
+  }, [activeRoadmap.isLoading, topic, language]);
 
   if (!session) return <Redirect href="/login" />;
   if (!topic || !language) return <Redirect href="/roleplay" />;
@@ -101,7 +105,7 @@ export default function RoleplayChatScreen() {
               <PrimaryButton
                 label={t('roleplay.endCta')}
                 onPress={handleEnd}
-                disabled={chat.isEnding}
+                disabled={chat.isEnding || chat.isSending}
                 style={styles.endButton}
               />
             )}

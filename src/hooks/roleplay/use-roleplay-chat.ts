@@ -2,7 +2,8 @@ import { useCallback, useRef, useState } from 'react';
 
 import {
   endRoleplaySession,
-  saveRoleplaySession,
+  saveRoleplayTilEntry,
+  saveRoleplayTranscript,
   sendRoleplayTurn,
   startRoleplayTurn,
   type ChatMessage,
@@ -29,6 +30,13 @@ export function useRoleplayChat({ userId, topic, language, context, locale }: Us
   // state, which can legitimately re-run - this guards against firing a
   // second opening turn (and a second API call) if that happens.
   const hasStartedRef = useRef(false);
+  // endSession() can be retried after a partial failure (e.g. the TIL save
+  // fails after the transcript save already succeeded) - these cache the
+  // steps that already completed so a retry doesn't re-summarize (wasting
+  // Gemini quota and risking a different summary each time) or re-insert a
+  // second roleplay_sessions row (that table has no unique constraint).
+  const cachedSummaryRef = useRef<RoleplaySummary | null>(null);
+  const transcriptSavedRef = useRef(false);
 
   const start = useCallback(async () => {
     if (hasStartedRef.current) return;
@@ -67,8 +75,15 @@ export function useRoleplayChat({ userId, topic, language, context, locale }: Us
     setIsEnding(true);
     setError(false);
     try {
-      const result = await endRoleplaySession(topic, messages, context, locale, language);
-      await saveRoleplaySession({ userId, scenario: topic, language, messages, summary: result });
+      const result = cachedSummaryRef.current ?? (await endRoleplaySession(topic, messages, context, locale, language));
+      cachedSummaryRef.current = result;
+
+      if (!transcriptSavedRef.current) {
+        await saveRoleplayTranscript({ userId, scenario: topic, language, messages, summary: result });
+        transcriptSavedRef.current = true;
+      }
+
+      await saveRoleplayTilEntry({ userId, scenario: topic, summary: result });
       setSummary(result);
     } catch {
       setError(true);

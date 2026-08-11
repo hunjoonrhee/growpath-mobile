@@ -17,6 +17,12 @@ export type CreateSessionInput = {
   durationMinutes: number | null;
   til: string;
   tags: string[];
+  // Omit to fetch the caller's current active roadmap internally (the
+  // normal case). Pass explicitly when a caller needs this write to agree
+  // with a roadmapId it already resolved for a sibling write of the same
+  // logical action (see roleplay's saveRoleplayTilEntry/saveRoleplayTranscript,
+  // which must not end up tagged with two different roadmaps for one session).
+  roadmapId?: string | null;
 };
 
 type SessionRow = {
@@ -92,7 +98,7 @@ export async function fetchSessionById(id: string, userId: string): Promise<Sess
 
 /** Ties the new session to the user's active roadmap (if any) for gap-analysis/stats. */
 export async function createSession(userId: string, input: CreateSessionInput): Promise<void> {
-  const roadmapId = await fetchAdoptedRoadmapId(userId);
+  const roadmapId = input.roadmapId !== undefined ? input.roadmapId : await fetchAdoptedRoadmapId(userId);
   const { error } = await insertWithUser('sessions', {
     title: input.title,
     duration_minutes: input.durationMinutes,

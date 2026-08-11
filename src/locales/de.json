@@ -54,10 +54,11 @@
     "durationAndDate": "{{minutes}} Min · {{date}}",
     "contextBanner": "Gerade einen {{minutes}}-Min-Timer beendet — {{title}}. Trag ihn unten ein.",
     "contextBannerDismiss": "Banner schließen",
-    "vocabSectionTitle": "Vokabeln",
+    "languageSectionTitle": "Sprachübung",
     "vocabReviewCta": "Vokabeln wiederholen",
     "vocabDueCount": "{{count}} Vokabeln fällig",
-    "vocabAddCta": "Vokabel hinzufügen"
+    "vocabAddCta": "Vokabel hinzufügen",
+    "roleplayCta": "Rollenspiel-Übung"
   },
   "profile": {
     "title": "Profil",
@@ -181,5 +182,30 @@
     "loadError": "Eintrag konnte nicht geladen werden.",
     "tilLabel": "Was du gelernt hast",
     "noTil": "Keine Notizen vorhanden."
+  },
+  "roleplay": {
+    "backAccessibilityLabel": "Zurück",
+    "setupTitle": "Rollenspiel-Übung",
+    "setupSubtitle": "Sag uns, welche Sprache und Situation du üben möchtest.",
+    "languageLabel": "Sprache",
+    "languagePlaceholder": "z. B. Deutsch",
+    "topicLabel": "Situation zum Üben",
+    "topicPlaceholder": "z. B. Kaffee im Café bestellen",
+    "startCta": "Gespräch starten",
+    "starting": "Das Gespräch wird vorbereitet...",
+    "thinking": "Denkt nach...",
+    "composerPlaceholder": "Nachricht eingeben",
+    "sendCta": "Senden",
+    "endCta": "Gespräch beenden",
+    "endConfirmTitle": "Gespräch beenden?",
+    "endConfirmMessage": "Das bisherige Gespräch wird zusammengefasst und in deinem Verlauf gespeichert.",
+    "endCancel": "Abbrechen",
+    "endConfirm": "Beenden",
+    "errorGeneric": "Etwas ist schiefgelaufen. Bitte versuche es gleich noch einmal.",
+    "errorUnavailable": "Diese Funktion ist gerade nicht verfügbar. Bitte schau später noch einmal vorbei.",
+    "retryCta": "Erneut versuchen",
+    "summaryTitle": "Gesprächszusammenfassung",
+    "summaryTilLabel": "Was du gelernt hast",
+    "summaryDoneCta": "Fertig"
   }
 }

@@ -19,3 +19,9 @@ export const env = {
   // (goal setup) or blocks the feature (roleplay).
   roadmapApiUrl: stripTrailingSlash(process.env.EXPO_PUBLIC_ROADMAP_API_URL),
 } as const;
+
+// Shared by every joon-dashboard API call (roadmap generation, tutor chat) -
+// a generous ceiling, since a call can involve a retried Gemini request
+// server-side: long enough to not false-positive on a legitimately slow
+// response, short enough that a dead connection doesn't hang forever.
+export const API_CALL_TIMEOUT_MS = 60_000;

@@ -50,6 +50,12 @@ export default function RoleplayChatScreen() {
   if (!session) return <Redirect href="/login" />;
   if (!topic || !language) return <Redirect href="/roleplay" />;
 
+  // True both while a reply is in flight and after it's failed - either way
+  // the composer must stay disabled, or a new message sent on top of an
+  // unanswered one produces two consecutive user turns in the history sent
+  // to the API.
+  const hasUnansweredMessage = chat.messages.length > 0 && chat.messages[chat.messages.length - 1].role === 'user';
+
   const handleEnd = () => {
     Alert.alert(t('roleplay.endConfirmTitle'), t('roleplay.endConfirmMessage'), [
       { text: t('roleplay.endCancel'), style: 'cancel' },
@@ -105,12 +111,15 @@ export default function RoleplayChatScreen() {
                   <ThemedText type="small" themeColor="amber" style={styles.centerText}>
                     {chat.errorKind === 'unavailable' ? t('roleplay.errorUnavailable') : t('roleplay.errorGeneric')}
                   </ThemedText>
-                  <PrimaryButton
-                    label={t('roleplay.retryCta')}
-                    onPress={chat.retry}
-                    disabled={chat.isStarting || chat.isSending}
-                    style={styles.retryButton}
-                  />
+                  {/* 'unavailable' means retrying can't help (see RoleplayErrorKind) - showing Retry there just lets the user repeat a call that's guaranteed to fail identically. */}
+                  {chat.errorKind === 'transient' && (
+                    <PrimaryButton
+                      label={t('roleplay.retryCta')}
+                      onPress={chat.retry}
+                      disabled={chat.isStarting || chat.isSending}
+                      style={styles.retryButton}
+                    />
+                  )}
                 </>
               )}
 
@@ -136,7 +145,7 @@ export default function RoleplayChatScreen() {
 
             <ChatComposer
               onSend={chat.sendMessage}
-              disabled={chat.isStarting || chat.isSending || chat.isEnding}
+              disabled={chat.isStarting || chat.isSending || chat.isEnding || hasUnansweredMessage}
               placeholder={t('roleplay.composerPlaceholder')}
               sendLabel={t('roleplay.sendCta')}
             />

@@ -33,7 +33,11 @@ function classifyError(error: unknown): RoleplayErrorKind {
 
 type EndProgress = {
   summary: RoleplaySummary;
+  // Fetched separately from the summary (see endSession) and tracked as its
+  // own step, so a failure fetching it can't discard an already-generated
+  // summary and force a redundant, possibly-inconsistent re-summarization.
   roadmapId: string | null;
+  roadmapIdFetched: boolean;
   transcriptSaved: boolean;
   tilSaved: boolean;
 };
@@ -133,13 +137,15 @@ export function useRoleplayChat({ userId, topic, language, goal, careerLevel, lo
     setErrorKind(null);
     try {
       if (!endProgressRef.current) {
-        const [summaryResult, roadmapId] = await Promise.all([
-          endRoleplaySession(topic, messages, { goal, careerLevel }, locale, language),
-          fetchAdoptedRoadmapId(userId),
-        ]);
-        endProgressRef.current = { summary: summaryResult, roadmapId, transcriptSaved: false, tilSaved: false };
+        const summaryResult = await endRoleplaySession(topic, messages, { goal, careerLevel }, locale, language);
+        endProgressRef.current = { summary: summaryResult, roadmapId: null, roadmapIdFetched: false, transcriptSaved: false, tilSaved: false };
       }
       const progress = endProgressRef.current;
+
+      if (!progress.roadmapIdFetched) {
+        progress.roadmapId = await fetchAdoptedRoadmapId(userId);
+        progress.roadmapIdFetched = true;
+      }
 
       // Independent writes to different tables - run concurrently rather
       // than one-after-another. Each still only fires if its own step

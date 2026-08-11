@@ -1,3 +1,10 @@
+/** Formats a whole-seconds duration as `mm:ss` - shared by the timer screen and its Live Activity. */
+export function formatElapsedSeconds(totalSeconds: number): string {
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+}
+
 /** Formats a local Date as `YYYY-MM-DD`, matching the sessions.date column's format. */
 export function toDateString(date: Date): string {
   const year = date.getFullYear();

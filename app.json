@@ -34,7 +34,21 @@
           "imageWidth": 76
         }
       ],
-      "expo-localization"
+      "expo-localization",
+      [
+        "expo-widgets",
+        {
+          "widgets": [
+            {
+              "name": "TodayProgressWidget",
+              "displayName": "Growpath",
+              "description": "Today's stage progress and study streak",
+              "supportedFamilies": ["systemSmall", "systemMedium"]
+            }
+          ]
+        }
+      ],
+      "expo-asset"
     ],
     "experiments": {
       "typedRoutes": true,

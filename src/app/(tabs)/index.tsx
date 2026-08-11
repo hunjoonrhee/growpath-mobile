@@ -19,6 +19,7 @@ import { useActiveRoadmap } from '@/hooks/roadmap/use-active-roadmap';
 import { useStudyStreak } from '@/hooks/sessions/use-study-streak';
 import { useWeeklySessionCount } from '@/hooks/sessions/use-weekly-session-count';
 import { useDueVocabWordCount } from '@/hooks/vocab/use-due-vocab-word-count';
+import { useTodayWidgetSync } from '@/hooks/widgets/use-today-widget-sync';
 import { useAuth } from '@/lib/auth-context';
 import { deriveTodayRecommendation } from '@/lib/today-recommendation';
 
@@ -47,6 +48,18 @@ export default function TodayScreen() {
   // just a 0-100 gauge with no fixed meaning of its own. today.dialLabel is
   // "진행률"/"Progress"/"Fortschritt" to match, not "갭분석"/"Gap analysis".
   const dialPercent = totalStages > 0 ? Math.round(((currentStage - 1) / totalStages) * 100) : 0;
+
+  useTodayWidgetSync(
+    roadmap.data
+      ? {
+          goalTitle: roadmap.data.goal,
+          progressLabel: t('today.dialLabel'),
+          stageLabel: t('today.stageOfTotal', { stage: currentStage, total: totalStages }),
+          streakLabel: t('today.streak', { count: streak.data ?? 0 }),
+          percent: dialPercent,
+        }
+      : null
+  );
 
   const handleSelectWeb = () => {
     setIsHandoffSheetVisible(false);

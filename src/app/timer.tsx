@@ -8,15 +8,11 @@ import { BackHeader } from '@/components/navigation/BackHeader';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Colors, Spacing } from '@/constants/theme';
+import { useStudyTimerActivity } from '@/hooks/widgets/use-study-timer-activity';
 import { useAuth } from '@/lib/auth-context';
+import { formatElapsedSeconds } from '@/lib/date';
 
 type TimerStatus = 'running' | 'paused';
-
-function formatElapsed(totalSeconds: number): string {
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-}
 
 export default function TimerScreen() {
   const { t } = useTranslation();
@@ -38,6 +34,13 @@ export default function TimerScreen() {
     }, 1000);
     return () => clearInterval(interval);
   }, [status]);
+
+  useStudyTimerActivity({
+    topic: topic ?? '',
+    status,
+    elapsedSeconds,
+    statusLabel: status === 'running' ? t('timer.statusRunning') : t('timer.statusPaused'),
+  });
 
   if (!session) return <Redirect href="/login" />;
 
@@ -76,7 +79,7 @@ export default function TimerScreen() {
             </ThemedText>
           ) : null}
 
-          <ThemedText style={styles.clock}>{formatElapsed(elapsedSeconds)}</ThemedText>
+          <ThemedText style={styles.clock}>{formatElapsedSeconds(elapsedSeconds)}</ThemedText>
 
           <ThemedText type="small" themeColor="textDim" style={styles.status}>
             {status === 'running' ? t('timer.statusRunning') : t('timer.statusPaused')}

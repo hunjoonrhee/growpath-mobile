@@ -1,5 +1,4 @@
 import { env } from '@/lib/env';
-import { fetchAdoptedRoadmapId } from '@/lib/roadmap';
 import { createSession } from '@/lib/sessions';
 import { insertWithUser, supabase } from '@/lib/supabase';
 
@@ -10,8 +9,22 @@ export type RoleplaySummary = { concepts: string[]; tags: string[]; tilNote: str
 export type RoleplayContext = { goal: string; careerLevel: string };
 
 type TutorChatResponse = { text: string; quiz: unknown; summary: RoleplaySummary | null };
+type TutorApiMessage = { role: 'user' | 'model'; parts: { text: string }[] };
+type TutorUserContext = {
+  careerLevel: string;
+  recentTags: string[];
+  gapSkills: string[];
+  projects: string[];
+  goal: string;
+  tilHistory: string[];
+};
 
-function toApiMessages(messages: ChatMessage[]) {
+// A turn can involve a retried Gemini call server-side, so this is generous -
+// long enough to not false-positive on a legitimately slow reply, short
+// enough that a dead connection doesn't hang isSending/isStarting forever.
+const TUTOR_CHAT_TIMEOUT_MS = 60_000;
+
+function toApiMessages(messages: ChatMessage[]): TutorApiMessage[] {
   return messages.map((message) => ({ role: message.role, parts: [{ text: message.text }] }));
 }
 
@@ -19,14 +32,14 @@ function toApiMessages(messages: ChatMessage[]) {
 // aggregates client-side for richer tutoring context - mobile doesn't have
 // that aggregation built yet, so these stay empty. The prompt already
 // degrades gracefully for empty context ("None yet"/"Unknown").
-function buildUserContext(context: RoleplayContext) {
+function buildUserContext(context: RoleplayContext): TutorUserContext {
   return {
     careerLevel: context.careerLevel,
-    recentTags: [] as string[],
-    gapSkills: [] as string[],
-    projects: [] as string[],
+    recentTags: [],
+    gapSkills: [],
+    projects: [],
     goal: context.goal,
-    tilHistory: [] as string[],
+    tilHistory: [],
   };
 }
 
@@ -42,14 +55,23 @@ async function callTutorChat(body: Record<string, unknown>): Promise<TutorChatRe
     throw new RoleplayUnavailableError('Not authenticated.');
   }
 
-  const res = await fetch(`${env.roadmapApiUrl}/api/tutor/chat`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${session.access_token}`,
-    },
-    body: JSON.stringify(body),
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${env.roadmapApiUrl}/api/tutor/chat`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(TUTOR_CHAT_TIMEOUT_MS),
+    });
+  } catch (error) {
+    // Covers both a network failure and AbortSignal.timeout() firing - a
+    // dead connection must not hang isSending/isStarting forever with no
+    // error ever surfacing.
+    throw error instanceof Error ? error : new Error('Tutor chat request failed.');
+  }
 
   if (!res.ok) {
     // A real, likely-transient failure (5xx, rate limit) - not "feature
@@ -130,6 +152,7 @@ export async function endRoleplaySession(
 
 export type SaveRoleplayTranscriptInput = {
   userId: string;
+  roadmapId: string | null;
   scenario: string;
   language: string;
   messages: ChatMessage[];
@@ -141,12 +164,15 @@ export type SaveRoleplayTranscriptInput = {
  * save below (rather than one combined function) so a caller that retries
  * after the TIL save fails doesn't also re-insert this row - roleplay_sessions
  * has no unique constraint to fall back on, unlike vocab_words.
+ *
+ * Takes roadmapId as a param rather than fetching it here (createSession,
+ * called by saveRoleplayTilEntry below, fetches its own copy independently -
+ * fetching a third time here would just add a redundant round trip for the
+ * same value without closing that gap).
  */
 export async function saveRoleplayTranscript(input: SaveRoleplayTranscriptInput): Promise<void> {
-  const roadmapId = await fetchAdoptedRoadmapId(input.userId);
-
   const { error } = await insertWithUser('roleplay_sessions', {
-    roadmap_id: roadmapId,
+    roadmap_id: input.roadmapId,
     scenario: input.scenario,
     language: input.language,
     transcript: input.messages,

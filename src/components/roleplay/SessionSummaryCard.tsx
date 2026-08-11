@@ -1,6 +1,7 @@
 import { StyleSheet, View } from 'react-native';
 
 import { TagList } from '@/components/log/TagList';
+import { TilMarkdown } from '@/components/log/TilMarkdown';
 import { ThemedText } from '@/components/themed-text';
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import type { RoleplaySummary } from '@/lib/roleplay';
@@ -16,9 +17,8 @@ export function SessionSummaryCard({ summary, label }: SessionSummaryCardProps) 
       <ThemedText type="small" themeColor="textFaint" style={styles.label}>
         {label}
       </ThemedText>
-      <ThemedText type="small" themeColor="text">
-        {summary.tilNote}
-      </ThemedText>
+      {/* Same field, rendered the same way TilMarkdown renders it when this session is later viewed from the Log tab. */}
+      <TilMarkdown content={summary.tilNote} />
       {summary.tags.length > 0 && (
         <View style={styles.tagsRow}>
           <TagList tags={summary.tags} />

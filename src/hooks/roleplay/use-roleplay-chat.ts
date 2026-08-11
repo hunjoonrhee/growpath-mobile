@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { invalidateSessionQueries } from '@/hooks/sessions/use-create-session';
 import { useSubmitGuard } from '@/hooks/use-submit-guard';
+import { fetchAdoptedRoadmapId } from '@/lib/roadmap';
 import {
   endRoleplaySession,
   saveRoleplayTilEntry,
@@ -32,6 +33,7 @@ function classifyError(error: unknown): RoleplayErrorKind {
 
 type EndProgress = {
   summary: RoleplaySummary;
+  roadmapId: string | null;
   transcriptSaved: boolean;
   tilSaved: boolean;
 };
@@ -69,6 +71,7 @@ export function useRoleplayChat({ userId, topic, language, goal, careerLevel, lo
 
   const sendGuard = useSubmitGuard();
   const endGuard = useSubmitGuard();
+  const retryGuard = useSubmitGuard();
 
   // Shared by sendMessage and retry's "resend the last reply" path - both
   // just need a model reply for a given history, they differ only in
@@ -130,8 +133,11 @@ export function useRoleplayChat({ userId, topic, language, goal, careerLevel, lo
     setErrorKind(null);
     try {
       if (!endProgressRef.current) {
-        const summaryResult = await endRoleplaySession(topic, messages, { goal, careerLevel }, locale, language);
-        endProgressRef.current = { summary: summaryResult, transcriptSaved: false, tilSaved: false };
+        const [summaryResult, roadmapId] = await Promise.all([
+          endRoleplaySession(topic, messages, { goal, careerLevel }, locale, language),
+          fetchAdoptedRoadmapId(userId),
+        ]);
+        endProgressRef.current = { summary: summaryResult, roadmapId, transcriptSaved: false, tilSaved: false };
       }
       const progress = endProgressRef.current;
 
@@ -142,7 +148,14 @@ export function useRoleplayChat({ userId, topic, language, goal, careerLevel, lo
       await Promise.all([
         progress.transcriptSaved
           ? undefined
-          : saveRoleplayTranscript({ userId, scenario: topic, language, messages, summary: progress.summary }).then(() => {
+          : saveRoleplayTranscript({
+              userId,
+              roadmapId: progress.roadmapId,
+              scenario: topic,
+              language,
+              messages,
+              summary: progress.summary,
+            }).then(() => {
               progress.transcriptSaved = true;
             }),
         progress.tilSaved
@@ -169,23 +182,31 @@ export function useRoleplayChat({ userId, topic, language, goal, careerLevel, lo
   // failedOpRef rather than inferred from messages/summary shape - end can
   // fail with the last message still being the model's (the common case),
   // which is indistinguishable from "nothing has failed yet" by shape alone.
+  // Guarded on its own: the 'start' branch resets hasStartedRef so start()
+  // can run again, which means start()'s own re-entry guard can't protect
+  // against two overlapping taps of this function itself.
   const retry = useCallback(async () => {
+    if (!retryGuard.tryStart()) return;
     setErrorKind(null);
-    const failedOp = failedOpRef.current;
-    if (failedOp === 'start') {
-      hasStartedRef.current = false;
-      await start();
-    } else if (failedOp === 'end') {
-      await endSession();
-    } else if (messages.length > 0 && messages[messages.length - 1].role === 'user') {
-      if (!sendGuard.tryStart()) return;
-      try {
-        await requestReply(messages);
-      } finally {
-        sendGuard.release();
+    try {
+      const failedOp = failedOpRef.current;
+      if (failedOp === 'start') {
+        hasStartedRef.current = false;
+        await start();
+      } else if (failedOp === 'end') {
+        await endSession();
+      } else if (messages.length > 0 && messages[messages.length - 1].role === 'user') {
+        if (!sendGuard.tryStart()) return;
+        try {
+          await requestReply(messages);
+        } finally {
+          sendGuard.release();
+        }
       }
+    } finally {
+      retryGuard.release();
     }
-  }, [messages, start, endSession, requestReply, sendGuard]);
+  }, [messages, start, endSession, requestReply, sendGuard, retryGuard]);
 
   return { messages, isStarting, isSending, isEnding, summary, errorKind, start, sendMessage, retry, endSession };
 }

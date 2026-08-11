@@ -69,7 +69,14 @@ export default function RoleplayChatScreen() {
             </ThemedText>
             <PrimaryButton
               label={t('roleplay.retryCta')}
-              onPress={() => activeRoadmap.adoptedRoadmapId.refetch()}
+              onPress={() => {
+                // isError can come from any of the three underlying queries
+                // (see useActiveRoadmap's own comment) - refetching only the
+                // first would leave the other two's failures unrecoverable.
+                activeRoadmap.adoptedRoadmapId.refetch();
+                activeRoadmap.roadmap.refetch();
+                activeRoadmap.focusStageLevel.refetch();
+              }}
               style={styles.retryButton}
             />
           </View>
@@ -82,7 +89,7 @@ export default function RoleplayChatScreen() {
             <PrimaryButton label={t('roleplay.summaryDoneCta')} onPress={() => router.replace('/log')} style={styles.doneButton} />
           </ScrollView>
         ) : (
-          <KeyboardAvoidingView style={styles.chatArea} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+          <KeyboardAvoidingView style={styles.chatArea} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
             <ScrollView
               ref={scrollRef}
               contentContainerStyle={styles.messages}

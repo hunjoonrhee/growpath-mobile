@@ -61,8 +61,11 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.two + 2,
     paddingHorizontal: Spacing.three,
   },
+  // Matches PrimaryButton's disabled opacity for consistency - this button
+  // is a custom shape (compact + inline, unlike PrimaryButton's full-width
+  // block layout) but should still fade the same amount.
   sendButtonDisabled: {
-    opacity: 0.4,
+    opacity: 0.5,
   },
   sendLabel: {
     color: '#ffffff',

@@ -1,7 +1,7 @@
 import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet } from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { PrimaryButton } from '@/components/forms/PrimaryButton';
@@ -63,9 +63,16 @@ export default function RoleplayChatScreen() {
         <BackHeader accessibilityLabel={t('roleplay.backAccessibilityLabel')} onPress={() => router.back()} />
 
         {activeRoadmap.isError ? (
-          <ThemedText type="small" themeColor="amber" style={styles.centerText}>
-            {t('roleplay.errorGeneric')}
-          </ThemedText>
+          <View style={styles.centerContent}>
+            <ThemedText type="small" themeColor="amber" style={styles.centerTextNoMargin}>
+              {t('roleplay.errorGeneric')}
+            </ThemedText>
+            <PrimaryButton
+              label={t('roleplay.retryCta')}
+              onPress={() => activeRoadmap.adoptedRoadmapId.refetch()}
+              style={styles.retryButton}
+            />
+          </View>
         ) : chat.summary ? (
           <ScrollView contentContainerStyle={styles.summaryContent}>
             <ThemedText type="subtitle" style={styles.summaryTitle}>
@@ -148,9 +155,16 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.three,
     gap: Spacing.one,
   },
+  centerContent: {
+    marginTop: Spacing.six,
+    paddingHorizontal: Spacing.four,
+  },
   centerText: {
     textAlign: 'center',
     marginTop: Spacing.six,
+  },
+  centerTextNoMargin: {
+    textAlign: 'center',
   },
   endButton: {
     marginHorizontal: Spacing.four,

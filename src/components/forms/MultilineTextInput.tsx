@@ -7,10 +7,18 @@ export type MultilineTextInputProps = {
   onChangeText: (text: string) => void;
   placeholder: string;
   minHeight?: number;
+  maxHeight?: number;
   editable?: boolean;
 };
 
-export function MultilineTextInput({ value, onChangeText, placeholder, minHeight = 110, editable = true }: MultilineTextInputProps) {
+export function MultilineTextInput({
+  value,
+  onChangeText,
+  placeholder,
+  minHeight = 110,
+  maxHeight,
+  editable = true,
+}: MultilineTextInputProps) {
   return (
     <TextInput
       value={value}
@@ -20,7 +28,7 @@ export function MultilineTextInput({ value, onChangeText, placeholder, minHeight
       multiline
       textAlignVertical="top"
       editable={editable}
-      style={[styles.textarea, { minHeight }, !editable && styles.textareaDisabled]}
+      style={[styles.textarea, { minHeight, maxHeight }, !editable && styles.textareaDisabled]}
     />
   );
 }

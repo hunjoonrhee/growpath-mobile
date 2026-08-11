@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
+import { MultilineTextInput } from '@/components/forms/MultilineTextInput';
 import { ThemedText } from '@/components/themed-text';
 import { Colors, Spacing } from '@/constants/theme';
 
@@ -25,15 +26,9 @@ export function ChatComposer({ onSend, disabled, placeholder, sendLabel }: ChatC
 
   return (
     <View style={styles.row}>
-      <TextInput
-        value={text}
-        onChangeText={setText}
-        placeholder={placeholder}
-        placeholderTextColor={Colors.textFaint}
-        style={styles.input}
-        multiline
-        editable={!disabled}
-      />
+      <View style={styles.inputWrap}>
+        <MultilineTextInput value={text} onChangeText={setText} placeholder={placeholder} minHeight={40} maxHeight={100} editable={!disabled} />
+      </View>
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={sendLabel}
@@ -57,17 +52,8 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: Colors.border,
   },
-  input: {
+  inputWrap: {
     flex: 1,
-    backgroundColor: Colors.surf,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    borderRadius: 18,
-    paddingVertical: Spacing.two,
-    paddingHorizontal: Spacing.three,
-    color: Colors.text,
-    fontSize: 14,
-    maxHeight: 100,
   },
   sendButton: {
     backgroundColor: Colors.pri,

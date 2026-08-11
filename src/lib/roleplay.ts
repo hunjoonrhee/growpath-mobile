@@ -52,7 +52,12 @@ async function callTutorChat(body: Record<string, unknown>): Promise<TutorChatRe
   });
 
   if (!res.ok) {
-    throw new RoleplayUnavailableError(`Tutor chat failed (${res.status}).`);
+    // A real, likely-transient failure (5xx, rate limit) - not "feature
+    // unavailable" (that's reserved for cases retrying can't fix: missing
+    // config, no session, no summary returned), so this must stay a plain
+    // Error or the UI tells the user to stop retrying something that would
+    // probably succeed on the next attempt.
+    throw new Error(`Tutor chat failed (${res.status}).`);
   }
 
   return (await res.json()) as TutorChatResponse;

@@ -1,6 +1,8 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { invalidateSessionQueries } from '@/hooks/sessions/use-create-session';
+import { useSubmitGuard } from '@/hooks/use-submit-guard';
 import {
   endRoleplaySession,
   saveRoleplayTilEntry,
@@ -34,6 +36,9 @@ type EndProgress = {
   tilSaved: boolean;
 };
 
+/** Which operation retry() should resume - set alongside errorKind so retry doesn't have to guess from message-array shape (which is ambiguous once ending is involved). */
+type FailedOperation = 'start' | 'send' | 'end' | null;
+
 export function useRoleplayChat({ userId, topic, language, goal, careerLevel, locale }: UseRoleplayChatInput) {
   const queryClient = useQueryClient();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -42,6 +47,7 @@ export function useRoleplayChat({ userId, topic, language, goal, careerLevel, lo
   const [isEnding, setIsEnding] = useState(false);
   const [summary, setSummary] = useState<RoleplaySummary | null>(null);
   const [errorKind, setErrorKind] = useState<RoleplayErrorKind | null>(null);
+  const failedOpRef = useRef<FailedOperation>(null);
   // start() is triggered from a useEffect keyed on the caller's own loading
   // state, which can legitimately re-run - this guards against firing a
   // second opening turn (and a second API call) if that happens. Reset only
@@ -53,6 +59,38 @@ export function useRoleplayChat({ userId, topic, language, goal, careerLevel, lo
   // quota and risking a different summary each time) or re-insert a
   // duplicate row into a table with no unique constraint to catch it.
   const endProgressRef = useRef<EndProgress | null>(null);
+  const isMountedRef = useRef(true);
+  useEffect(
+    () => () => {
+      isMountedRef.current = false;
+    },
+    []
+  );
+
+  const sendGuard = useSubmitGuard();
+  const endGuard = useSubmitGuard();
+
+  // Shared by sendMessage and retry's "resend the last reply" path - both
+  // just need a model reply for a given history, they differ only in
+  // whether a new user message needs appending first.
+  const requestReply = useCallback(
+    async (history: ChatMessage[]) => {
+      setIsSending(true);
+      setErrorKind(null);
+      try {
+        const reply = await sendRoleplayTurn(topic, history, { goal, careerLevel }, locale, language);
+        if (!isMountedRef.current) return;
+        setMessages((current) => [...current, { role: 'model', text: reply }]);
+      } catch (error) {
+        if (!isMountedRef.current) return;
+        failedOpRef.current = 'send';
+        setErrorKind(classifyError(error));
+      } finally {
+        if (isMountedRef.current) setIsSending(false);
+      }
+    },
+    [topic, goal, careerLevel, locale, language]
+  );
 
   const start = useCallback(async () => {
     if (hasStartedRef.current) return;
@@ -61,56 +99,33 @@ export function useRoleplayChat({ userId, topic, language, goal, careerLevel, lo
     setErrorKind(null);
     try {
       const reply = await startRoleplayTurn(topic, { goal, careerLevel }, locale, language);
+      if (!isMountedRef.current) return;
       setMessages([{ role: 'model', text: reply }]);
     } catch (error) {
+      if (!isMountedRef.current) return;
+      failedOpRef.current = 'start';
       setErrorKind(classifyError(error));
     } finally {
-      setIsStarting(false);
+      if (isMountedRef.current) setIsStarting(false);
     }
   }, [topic, goal, careerLevel, locale, language]);
 
   const sendMessage = useCallback(
     async (text: string) => {
+      if (!sendGuard.tryStart()) return;
       const next: ChatMessage[] = [...messages, { role: 'user', text }];
       setMessages(next);
-      setIsSending(true);
-      setErrorKind(null);
       try {
-        const reply = await sendRoleplayTurn(topic, next, { goal, careerLevel }, locale, language);
-        setMessages((current) => [...current, { role: 'model', text: reply }]);
-      } catch (error) {
-        setErrorKind(classifyError(error));
+        await requestReply(next);
       } finally {
-        setIsSending(false);
+        sendGuard.release();
       }
     },
-    [messages, topic, goal, careerLevel, locale, language]
+    [messages, requestReply, sendGuard]
   );
 
-  // Covers both "the opening turn failed" (no messages yet) and "a reply to
-  // the user's last message failed" (last message has no model reply after
-  // it) with one retry affordance, instead of leaving either as a dead end.
-  const retry = useCallback(async () => {
-    setErrorKind(null);
-    if (messages.length === 0) {
-      hasStartedRef.current = false;
-      await start();
-      return;
-    }
-    if (messages[messages.length - 1].role === 'user') {
-      setIsSending(true);
-      try {
-        const reply = await sendRoleplayTurn(topic, messages, { goal, careerLevel }, locale, language);
-        setMessages((current) => [...current, { role: 'model', text: reply }]);
-      } catch (error) {
-        setErrorKind(classifyError(error));
-      } finally {
-        setIsSending(false);
-      }
-    }
-  }, [messages, topic, goal, careerLevel, locale, language, start]);
-
   const endSession = useCallback(async () => {
+    if (!endGuard.tryStart()) return;
     setIsEnding(true);
     setErrorKind(null);
     try {
@@ -120,33 +135,57 @@ export function useRoleplayChat({ userId, topic, language, goal, careerLevel, lo
       }
       const progress = endProgressRef.current;
 
-      if (!progress.transcriptSaved) {
-        await saveRoleplayTranscript({ userId, scenario: topic, language, messages, summary: progress.summary });
-        progress.transcriptSaved = true;
-      }
+      // Independent writes to different tables - run concurrently rather
+      // than one-after-another. Each still only fires if its own step
+      // hasn't completed yet, so a retry after a partial failure doesn't
+      // redo (or double-insert) whichever one already succeeded.
+      await Promise.all([
+        progress.transcriptSaved
+          ? undefined
+          : saveRoleplayTranscript({ userId, scenario: topic, language, messages, summary: progress.summary }).then(() => {
+              progress.transcriptSaved = true;
+            }),
+        progress.tilSaved
+          ? undefined
+          : saveRoleplayTilEntry({ userId, scenario: topic, summary: progress.summary }).then(() => {
+              progress.tilSaved = true;
+            }),
+      ]);
 
-      if (!progress.tilSaved) {
-        await saveRoleplayTilEntry({ userId, scenario: topic, summary: progress.summary });
-        progress.tilSaved = true;
-      }
-
-      // saveRoleplayTilEntry writes through createSession() directly rather
-      // than the useCreateSession mutation (this hook already has its own
-      // retry/idempotency handling above, which the mutation doesn't offer),
-      // so its usual cache invalidation has to be mirrored here - otherwise
-      // the Log tab, streak, and weekly count keep serving stale data after
-      // router.replace('/log') even though a new session now exists.
-      queryClient.invalidateQueries({ queryKey: ['sessions', 'recent', userId] });
-      queryClient.invalidateQueries({ queryKey: ['sessions', 'streak', userId] });
-      queryClient.invalidateQueries({ queryKey: ['sessions', 'weeklyCount', userId] });
-
+      invalidateSessionQueries(queryClient, userId);
+      if (!isMountedRef.current) return;
       setSummary(progress.summary);
     } catch (error) {
+      if (!isMountedRef.current) return;
+      failedOpRef.current = 'end';
       setErrorKind(classifyError(error));
     } finally {
-      setIsEnding(false);
+      endGuard.release();
+      if (isMountedRef.current) setIsEnding(false);
     }
-  }, [topic, messages, goal, careerLevel, locale, userId, language, queryClient]);
+  }, [topic, messages, goal, careerLevel, locale, userId, language, queryClient, endGuard]);
+
+  // Dispatches to whichever operation actually failed, tracked via
+  // failedOpRef rather than inferred from messages/summary shape - end can
+  // fail with the last message still being the model's (the common case),
+  // which is indistinguishable from "nothing has failed yet" by shape alone.
+  const retry = useCallback(async () => {
+    setErrorKind(null);
+    const failedOp = failedOpRef.current;
+    if (failedOp === 'start') {
+      hasStartedRef.current = false;
+      await start();
+    } else if (failedOp === 'end') {
+      await endSession();
+    } else if (messages.length > 0 && messages[messages.length - 1].role === 'user') {
+      if (!sendGuard.tryStart()) return;
+      try {
+        await requestReply(messages);
+      } finally {
+        sendGuard.release();
+      }
+    }
+  }, [messages, start, endSession, requestReply, sendGuard]);
 
   return { messages, isStarting, isSending, isEnding, summary, errorKind, start, sendMessage, retry, endSession };
 }

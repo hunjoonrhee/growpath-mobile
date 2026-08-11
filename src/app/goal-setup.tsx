@@ -1,5 +1,5 @@
 import { Redirect, useRouter } from 'expo-router';
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -43,21 +43,12 @@ export default function GoalSetupScreen() {
   // doesn't call generateRoadmap again and create a second, orphaned
   // ai_roadmaps row for the same submission - it just retries adoption.
   // Cleared on any field edit so a retry after changing the goal doesn't
-  // silently adopt a roadmap generated for the old input.
+  // silently adopt a roadmap generated for the old input. Fields are
+  // disabled while isSubmitting (below), so an edit can only happen between
+  // submit attempts, never while one is in flight - no snapshot/ref
+  // comparison needed to catch a mid-flight edit, because one can't happen.
   const [pendingRoadmapId, setPendingRoadmapId] = useState<string | null>(null);
   const submitGuard = useSubmitGuard();
-
-  // handleSubmit's async body closes over the domain/careerLevel/goalText
-  // values from the render that invoked it - those bindings never change
-  // for the lifetime of that call, so comparing them against anything
-  // (including a same-render snapshot) after an await can never detect an
-  // edit made while that await was pending. This ref is mutated on every
-  // render instead, so reading it after the await reflects whatever the
-  // fields actually are *right now*, not what they were at invocation time.
-  const latestFieldsRef = useRef({ domain, careerLevel, goalText });
-  useEffect(() => {
-    latestFieldsRef.current = { domain, careerLevel, goalText };
-  });
 
   if (!session) return <Redirect href="/login" />;
 
@@ -70,31 +61,16 @@ export default function GoalSetupScreen() {
   const handleSubmit = async () => {
     if (!domain || !submitGuard.tryStart()) return;
     setIsSubmitting(true);
-    // Snapshot what's being submitted - fields aren't disabled while
-    // isSubmitting, so if the user edits them before generateRoadmap
-    // resolves, the per-field reset above already cleared pendingRoadmapId,
-    // but the unconditional setPendingRoadmapId(roadmapId) below would
-    // otherwise re-cache it anyway. Comparing against latestFieldsRef after
-    // the await catches that race too (see the ref's own comment for why a
-    // plain closure comparison here can't work).
-    const submitted = { domain, careerLevel: careerLevel.trim(), goalText: goalText.trim() };
     try {
       const roadmapId =
         pendingRoadmapId ??
         (
           await generateRoadmap({
-            goalText: submitted.goalText,
-            careerLevel: submitted.careerLevel,
+            goalText: goalText.trim(),
+            careerLevel: careerLevel.trim(),
             locale: i18n.language,
           })
         ).id;
-
-      const latest = latestFieldsRef.current;
-      const changedMidFlight =
-        latest.domain !== submitted.domain ||
-        latest.careerLevel.trim() !== submitted.careerLevel ||
-        latest.goalText.trim() !== submitted.goalText;
-      if (changedMidFlight) return;
 
       setPendingRoadmapId(roadmapId);
       await switchRoadmap.mutateAsync(roadmapId);
@@ -122,7 +98,7 @@ export default function GoalSetupScreen() {
             {t('goalSetup.subtitle')}
           </ThemedText>
 
-          <DomainChipSelector selected={domain} onSelect={handleDomainSelect} />
+          <DomainChipSelector selected={domain} onSelect={handleDomainSelect} disabled={isSubmitting} />
 
           <View style={styles.careerLevelField}>
             <TextField
@@ -130,6 +106,7 @@ export default function GoalSetupScreen() {
               value={careerLevel}
               onChangeText={handleCareerLevelChange}
               placeholder={t('goalSetup.careerLevelPlaceholder')}
+              editable={!isSubmitting}
             />
           </View>
 
@@ -141,7 +118,12 @@ export default function GoalSetupScreen() {
               voiceLabel={t('goalSetup.inputMode.voice')}
             />
             {inputMode === 'text' ? (
-              <MultilineTextInput value={goalText} onChangeText={handleGoalTextChange} placeholder={t('goalSetup.textPlaceholder')} />
+              <MultilineTextInput
+                value={goalText}
+                onChangeText={handleGoalTextChange}
+                placeholder={t('goalSetup.textPlaceholder')}
+                editable={!isSubmitting}
+              />
             ) : (
               <VoiceInputPlaceholder message={t('goalSetup.voiceComingSoon')} />
             )}

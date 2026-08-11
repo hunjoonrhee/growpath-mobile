@@ -3,7 +3,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { invalidateSessionQueries } from '@/hooks/sessions/use-create-session';
 import { useSubmitGuard } from '@/hooks/use-submit-guard';
-import { fetchAdoptedRoadmapId } from '@/lib/roadmap';
 import {
   endRoleplaySession,
   saveRoleplayTilEntry,
@@ -22,6 +21,13 @@ export type UseRoleplayChatInput = {
   goal: string;
   careerLevel: string;
   locale: string;
+  // The caller (roleplay-chat.tsx) already holds this via useActiveRoadmap's
+  // React Query cache - passed in rather than re-fetched here so the
+  // transcript and TIL writes at the end of a session always agree on the
+  // same value instead of each independently reading a possibly-different
+  // one. undefined means "not resolved yet" (caller's own query still
+  // loading); endSession isn't reachable before that.
+  roadmapId: string | null | undefined;
 };
 
 /** 'unavailable' means retrying won't help (missing config, expired session, no summary) - 'transient' means it might (network blip, 5xx). */
@@ -33,11 +39,6 @@ function classifyError(error: unknown): RoleplayErrorKind {
 
 type EndProgress = {
   summary: RoleplaySummary;
-  // Fetched separately from the summary (see endSession) and tracked as its
-  // own step, so a failure fetching it can't discard an already-generated
-  // summary and force a redundant, possibly-inconsistent re-summarization.
-  roadmapId: string | null;
-  roadmapIdFetched: boolean;
   transcriptSaved: boolean;
   tilSaved: boolean;
 };
@@ -45,7 +46,7 @@ type EndProgress = {
 /** Which operation retry() should resume - set alongside errorKind so retry doesn't have to guess from message-array shape (which is ambiguous once ending is involved). */
 type FailedOperation = 'start' | 'send' | 'end' | null;
 
-export function useRoleplayChat({ userId, topic, language, goal, careerLevel, locale }: UseRoleplayChatInput) {
+export function useRoleplayChat({ userId, topic, language, goal, careerLevel, locale, roadmapId }: UseRoleplayChatInput) {
   const queryClient = useQueryClient();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isStarting, setIsStarting] = useState(true);
@@ -138,14 +139,10 @@ export function useRoleplayChat({ userId, topic, language, goal, careerLevel, lo
     try {
       if (!endProgressRef.current) {
         const summaryResult = await endRoleplaySession(topic, messages, { goal, careerLevel }, locale, language);
-        endProgressRef.current = { summary: summaryResult, roadmapId: null, roadmapIdFetched: false, transcriptSaved: false, tilSaved: false };
+        endProgressRef.current = { summary: summaryResult, transcriptSaved: false, tilSaved: false };
       }
       const progress = endProgressRef.current;
-
-      if (!progress.roadmapIdFetched) {
-        progress.roadmapId = await fetchAdoptedRoadmapId(userId);
-        progress.roadmapIdFetched = true;
-      }
+      const resolvedRoadmapId = roadmapId ?? null;
 
       // Independent writes to different tables - run concurrently rather
       // than one-after-another. Each still only fires if its own step
@@ -161,7 +158,7 @@ export function useRoleplayChat({ userId, topic, language, goal, careerLevel, lo
           ? undefined
           : saveRoleplayTranscript({
               userId,
-              roadmapId: progress.roadmapId,
+              roadmapId: resolvedRoadmapId,
               scenario: topic,
               language,
               messages,
@@ -172,7 +169,7 @@ export function useRoleplayChat({ userId, topic, language, goal, careerLevel, lo
             }),
         progress.tilSaved
           ? undefined
-          : saveRoleplayTilEntry({ userId, scenario: topic, summary: progress.summary }).then(() => {
+          : saveRoleplayTilEntry({ userId, roadmapId: resolvedRoadmapId, scenario: topic, summary: progress.summary }).then(() => {
               progress.tilSaved = true;
               invalidateSessionQueries(queryClient, userId);
             }),
@@ -188,7 +185,7 @@ export function useRoleplayChat({ userId, topic, language, goal, careerLevel, lo
       endGuard.release();
       if (isMountedRef.current) setIsEnding(false);
     }
-  }, [topic, messages, goal, careerLevel, locale, userId, language, queryClient, endGuard]);
+  }, [topic, messages, goal, careerLevel, locale, userId, language, roadmapId, queryClient, endGuard]);
 
   // Dispatches to whichever operation actually failed, tracked via
   // failedOpRef rather than inferred from messages/summary shape - end can

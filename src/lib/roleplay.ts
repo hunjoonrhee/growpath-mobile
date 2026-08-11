@@ -177,10 +177,11 @@ export type SaveRoleplayTranscriptInput = {
  * after the TIL save fails doesn't also re-insert this row - roleplay_sessions
  * has no unique constraint to fall back on, unlike vocab_words.
  *
- * Takes roadmapId as a param rather than fetching it here (createSession,
- * called by saveRoleplayTilEntry below, fetches its own copy independently -
- * fetching a third time here would just add a redundant round trip for the
- * same value without closing that gap).
+ * Takes roadmapId as a param, sourced from the same value passed to
+ * saveRoleplayTilEntry below, rather than each independently re-fetching
+ * it - otherwise the roleplay_sessions row and its TIL/sessions row could
+ * end up attributed to two different roadmaps if the active goal changed
+ * between the two reads.
  */
 export async function saveRoleplayTranscript(input: SaveRoleplayTranscriptInput): Promise<void> {
   const { error } = await insertWithUser('roleplay_sessions', {
@@ -195,6 +196,7 @@ export async function saveRoleplayTranscript(input: SaveRoleplayTranscriptInput)
 
 export type SaveRoleplayTilEntryInput = {
   userId: string;
+  roadmapId: string | null;
   scenario: string;
   summary: RoleplaySummary;
 };
@@ -206,5 +208,6 @@ export async function saveRoleplayTilEntry(input: SaveRoleplayTilEntryInput): Pr
     durationMinutes: null,
     til: input.summary.tilNote,
     tags: input.summary.tags,
+    roadmapId: input.roadmapId,
   });
 }

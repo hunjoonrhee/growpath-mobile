@@ -70,6 +70,14 @@ export async function generateRoadmap(input: GenerateRoadmapInput): Promise<Road
     throw new Error(`Roadmap generation failed (${res.status}).`);
   }
 
+  // Known gap: goal-setup.tsx's pendingRoadmapId dedup only latches once
+  // this line resolves. If the server creates the roadmap but the response
+  // body never makes it back intact (dropped connection, truncated body,
+  // AbortSignal.timeout racing an in-flight response), this throws before
+  // that latch is set, and a resubmit creates a second, orphaned row.
+  // Closing this fully needs a client-generated idempotency key honored
+  // server-side (a joon-dashboard change) - not done here, same accepted-risk
+  // class as the TIL-save duplicate-on-timeout gap in the roleplay feature.
   const data = (await res.json()) as GenerateRoadmapApiResponse;
   return { id: data.id, goal: data.goal, careerLevel: data.career_level, stages: data.stages };
 }

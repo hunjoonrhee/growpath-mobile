@@ -139,6 +139,17 @@ export async function deleteSession(id: string, userId: string): Promise<void> {
   if (error) throw error;
 }
 
+/** Tags from every session logged under a roadmap - gap analysis's other "studied" evidence source, alongside goal tags. Not capped at 20 like fetchRecentSessions since it feeds a score, not a display list. */
+export async function fetchSessionTags(userId: string, roadmapId: string | null, limit = 200): Promise<string[]> {
+  let query = supabase.from('sessions').select('tags').eq('user_id', userId);
+  if (roadmapId) {
+    query = query.or(`roadmap_id.eq.${roadmapId},roadmap_id.is.null`);
+  }
+  const { data, error } = await query.limit(limit);
+  if (error) throw error;
+  return (data ?? []).flatMap((row) => (row.tags as string[] | null) ?? []);
+}
+
 /** Distinct session dates, most recent first - used to compute the study streak. */
 export async function fetchStudySessionDates(userId: string, limit = 200): Promise<string[]> {
   const { data, error } = await supabase

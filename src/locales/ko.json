@@ -14,6 +14,7 @@
     "currentStage": "현재 {{stage}}단계 — {{label}}",
     "recommendationTitle": "오늘 추천",
     "recommendationDescription": "{{stage}} 단계에서 다음으로 볼만한 스킬이에요.",
+    "gapHint": "다음 스킬을 보완해보세요: {{skills}}",
     "startCta": "시작하기",
     "loading": "불러오는 중...",
     "loadError": "불러오지 못했어요. 잠시 후 다시 시도해주세요.",

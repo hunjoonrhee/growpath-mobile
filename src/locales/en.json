@@ -14,6 +14,7 @@
     "currentStage": "Stage {{stage}} — {{label}}",
     "recommendationTitle": "Today's pick",
     "recommendationDescription": "A skill worth trying next in {{stage}}.",
+    "gapHint": "Consider strengthening: {{skills}}",
     "startCta": "Start",
     "loading": "Loading...",
     "loadError": "Couldn't load. Please try again in a moment.",

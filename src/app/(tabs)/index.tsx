@@ -16,6 +16,7 @@ import { StageProgressBar } from '@/components/today/StageProgressBar';
 import { TimerHandoffSheet } from '@/components/today/TimerHandoffSheet';
 import { Spacing, Typography } from '@/constants/theme';
 import { useActiveRoadmap } from '@/hooks/roadmap/use-active-roadmap';
+import { useGapAnalysis } from '@/hooks/roadmap/use-gap-analysis';
 import { useStudyStreak } from '@/hooks/sessions/use-study-streak';
 import { useWeeklySessionCount } from '@/hooks/sessions/use-weekly-session-count';
 import { useDueVocabWordCount } from '@/hooks/vocab/use-due-vocab-word-count';
@@ -29,7 +30,8 @@ export default function TodayScreen() {
   const { session } = useAuth();
   const userId = session?.user.id;
 
-  const { roadmap, focusStageLevel, hasAdoptedRoadmap, isLoading, isError } = useActiveRoadmap(userId);
+  const { adoptedRoadmapId, roadmap, focusStageLevel, hasAdoptedRoadmap, isLoading, isError } = useActiveRoadmap(userId);
+  const gapAnalysis = useGapAnalysis(userId, adoptedRoadmapId.data, roadmap.data);
   const streak = useStudyStreak(userId);
   const weeklySessionCount = useWeeklySessionCount(userId);
   const dueVocabWordCount = useDueVocabWordCount(userId);
@@ -43,11 +45,13 @@ export default function TodayScreen() {
   // stage (e.g. a stale focus pointer after the roadmap's stages changed),
   // rather than silently rendering a blank label.
   const currentStageLabel = roadmap.data ? ((roadmap.data.stages.find((s) => s.level === currentStage) ?? roadmap.data.stages[0])?.title ?? '') : '';
-  // Stage-completion percent, not a gap-analysis score - no such formula
-  // exists in the schema (see PR history), and CompassDial's `percent` is
-  // just a 0-100 gauge with no fixed meaning of its own. today.dialLabel is
-  // "진행률"/"Progress"/"Fortschritt" to match, not "갭분석"/"Gap analysis".
-  const dialPercent = totalStages > 0 ? Math.round(((currentStage - 1) / totalStages) * 100) : 0;
+  // The real gap-analysis score (evidence-weighted skill coverage - see
+  // gap-analysis.ts) once its handful of extra queries resolve; a
+  // stage-completion estimate in the meantime so the dial doesn't sit at 0%
+  // during that gap.
+  const stageBasedPercent = totalStages > 0 ? Math.round(((currentStage - 1) / totalStages) * 100) : 0;
+  const dialPercent = gapAnalysis.result ? gapAnalysis.result.gapPct : stageBasedPercent;
+  const missingSkillNames = gapAnalysis.result?.skills.filter((skill) => skill.source === 'none').map((skill) => skill.name) ?? [];
 
   useTodayWidgetSync(
     roadmap.data
@@ -106,6 +110,11 @@ export default function TodayScreen() {
                 <ThemedText type="small" themeColor="textDim">
                   {t('today.stageOfTotal', { stage: currentStage, total: totalStages })}
                 </ThemedText>
+                {missingSkillNames.length > 0 && (
+                  <ThemedText type="small" themeColor="textFaint" style={styles.gapHint}>
+                    {t('today.gapHint', { skills: missingSkillNames.slice(0, 3).join(', ') })}
+                  </ThemedText>
+                )}
               </Pressable>
 
               <StageProgressBar totalStages={totalStages} currentStage={currentStage} currentStageLabel={currentStageLabel} />
@@ -180,6 +189,10 @@ const styles = StyleSheet.create({
   },
   goalName: {
     marginTop: Spacing.two + 2,
+  },
+  gapHint: {
+    marginTop: Spacing.one,
+    textAlign: 'center',
   },
   sectionTitle: {
     ...Typography.sectionLabel,

@@ -60,6 +60,13 @@ export async function fetchRoadmap(roadmapId: string): Promise<Roadmap | null> {
   return data ? toRoadmap(data as AiRoadmapRow) : null;
 }
 
+/** Tags from every goal tracked under a roadmap - one of gap analysis's two "studied" evidence sources (the other is session tags). */
+export async function fetchGoalTags(roadmapId: string): Promise<string[]> {
+  const { data, error } = await supabase.from('goals').select('tags').eq('roadmap_id', roadmapId);
+  if (error) throw error;
+  return (data ?? []).flatMap((row) => (row.tags as string[] | null) ?? []);
+}
+
 /** The roadmap stage the AI currently recommends focusing on, if any goal has been marked as such. */
 export async function fetchFocusStageLevel(roadmapId: string): Promise<number | null> {
   const { data, error } = await supabase

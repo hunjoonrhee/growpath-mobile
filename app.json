@@ -9,7 +9,8 @@
     "userInterfaceStyle": "dark",
     "ios": {
       "icon": "./assets/expo.icon",
-      "bundleIdentifier": "com.anonymous.growpath-mobile"
+      "bundleIdentifier": "com.anonymous.growpath-mobile",
+      "appleTeamId": "ZB27Q6H235"
     },
     "android": {
       "adaptiveIcon": {
@@ -35,6 +36,7 @@
         }
       ],
       "expo-localization",
+      "./plugins/withoutWidgetsPushEntitlement.js",
       [
         "expo-widgets",
         {

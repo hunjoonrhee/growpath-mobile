@@ -36,10 +36,11 @@
         }
       ],
       "expo-localization",
-      "./plugins/withoutWidgetsPushEntitlement.js",
+      ["./plugins/withoutWidgetsPushEntitlement.js", { "enablePushNotifications": false }],
       [
         "expo-widgets",
         {
+          "enablePushNotifications": false,
           "widgets": [
             {
               "name": "TodayProgressWidget",

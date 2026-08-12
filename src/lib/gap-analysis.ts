@@ -27,12 +27,15 @@ export type GapAnalysisResult = {
 };
 
 export function getSkillSource(
-  tags: string[],
+  tags: string[] | null | undefined,
   studiedTags: Set<string>,
   certTags: Set<string>,
   practicalTags: Set<string>
 ): { source: TrustSource; matchedTags: string[] } {
-  if (tags.length === 0) return { source: 'none', matchedTags: [] };
+  // tags is typed as always present, but roadmap rows come from an
+  // AI-generated response cast without runtime validation - a malformed one
+  // shouldn't crash the whole Today screen.
+  if (!tags || tags.length === 0) return { source: 'none', matchedTags: [] };
 
   const certMatched = tags.filter((tag) => certTags.has(tag));
   if (certMatched.length / tags.length >= 0.3) return { source: 'cert', matchedTags: certMatched };

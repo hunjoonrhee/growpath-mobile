@@ -19,25 +19,32 @@ export function useGapAnalysis(
   roadmapId: string | null | undefined,
   roadmap: Roadmap | null | undefined
 ): { result: GapAnalysisResult | null; isLoading: boolean; isError: boolean } {
+  // Without an adopted roadmap there's nothing to score (the `result` below
+  // stays null whenever `roadmap` is falsy) - gating every query on this
+  // instead of just userId means a user with no active goal doesn't pay for
+  // 4 Supabase round trips (including fetchSessionTags, the heaviest one)
+  // on every Today tab mount for a result that's never read.
+  const hasRoadmap = roadmapId !== undefined && roadmapId !== null;
+
   const sessionTags = useQuery({
     queryKey: ['sessions', 'tags', userId, roadmapId],
     queryFn: () => fetchSessionTags(userId as string, roadmapId ?? null),
-    enabled: userId !== undefined && roadmapId !== undefined,
+    enabled: userId !== undefined && hasRoadmap,
   });
   const goalTags = useQuery({
     queryKey: ['roadmap', 'goalTags', roadmapId],
     queryFn: () => fetchGoalTags(roadmapId as string),
-    enabled: roadmapId !== undefined && roadmapId !== null,
+    enabled: hasRoadmap,
   });
   const certTags = useQuery({
     queryKey: ['skillSources', 'certTags', userId],
     queryFn: () => fetchCertTags(userId as string),
-    enabled: userId !== undefined,
+    enabled: userId !== undefined && hasRoadmap,
   });
   const practicalTags = useQuery({
     queryKey: ['skillSources', 'practicalTags', userId],
     queryFn: () => fetchPracticalTags(userId as string),
-    enabled: userId !== undefined,
+    enabled: userId !== undefined && hasRoadmap,
   });
 
   const isLoading = sessionTags.isLoading || goalTags.isLoading || certTags.isLoading || practicalTags.isLoading;

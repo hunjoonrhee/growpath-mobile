@@ -51,7 +51,11 @@ export default function TodayScreen() {
   // during that gap.
   const stageBasedPercent = totalStages > 0 ? Math.round(((currentStage - 1) / totalStages) * 100) : 0;
   const dialPercent = gapAnalysis.result ? gapAnalysis.result.gapPct : stageBasedPercent;
-  const missingSkillNames = gapAnalysis.result?.skills.filter((skill) => skill.source === 'none').map((skill) => skill.name) ?? [];
+  // Same skill name can appear in multiple stages (e.g. a recurring "Git"
+  // prerequisite) - dedupe so the hint doesn't burn its 3 slots on repeats.
+  const missingSkillNames = Array.from(
+    new Set(gapAnalysis.result?.skills.filter((skill) => skill.source === 'none').map((skill) => skill.name) ?? [])
+  );
 
   useTodayWidgetSync(
     roadmap.data

@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase';
+import { flattenTagsColumn } from '@/lib/tags';
 
 export type RoadmapStageSkill = {
   name: string;
@@ -64,7 +65,7 @@ export async function fetchRoadmap(roadmapId: string): Promise<Roadmap | null> {
 export async function fetchGoalTags(roadmapId: string): Promise<string[]> {
   const { data, error } = await supabase.from('goals').select('tags').eq('roadmap_id', roadmapId);
   if (error) throw error;
-  return (data ?? []).flatMap((row) => (row.tags as string[] | null) ?? []);
+  return flattenTagsColumn((data ?? []) as { tags: string[] | null }[]);
 }
 
 /** The roadmap stage the AI currently recommends focusing on, if any goal has been marked as such. */

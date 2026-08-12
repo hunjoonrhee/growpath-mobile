@@ -58,7 +58,9 @@
     "vocabReviewCta": "Vocab review",
     "vocabDueCount": "{{count}} words due",
     "vocabAddCta": "Add a word",
-    "roleplayCta": "Roleplay practice"
+    "roleplayCta": "Roleplay practice",
+    "deleteCta": "Delete",
+    "deleteError": "Couldn't delete. Please try again in a moment."
   },
   "profile": {
     "title": "Profile",
@@ -132,6 +134,7 @@
   "captureEntry": {
     "backAccessibilityLabel": "Go back",
     "title": "Add a log",
+    "editTitle": "Edit log",
     "titleLabel": "What did you study?",
     "titlePlaceholder": "e.g. NgRx Effects",
     "durationLabel": "Duration (minutes)",
@@ -141,6 +144,8 @@
     "tagsLabel": "Tags (comma-separated)",
     "tagsPlaceholder": "e.g. ngrx, state-management",
     "saveCta": "Save",
+    "loading": "Loading...",
+    "loadError": "Couldn't load this entry. Please try again in a moment.",
     "errorGeneric": "Couldn't save. Please try again in a moment."
   },
   "timer": {
@@ -181,7 +186,14 @@
     "loading": "Loading...",
     "loadError": "Couldn't load this entry.",
     "tilLabel": "What you learned",
-    "noTil": "No notes written."
+    "noTil": "No notes written.",
+    "editCta": "Edit",
+    "deleteCta": "Delete",
+    "deleteConfirmTitle": "Delete this entry?",
+    "deleteConfirmMessage": "This can't be undone.",
+    "deleteCancel": "Cancel",
+    "deleteConfirm": "Delete",
+    "deleteError": "Couldn't delete. Please try again in a moment."
   },
   "roleplay": {
     "backAccessibilityLabel": "Go back",

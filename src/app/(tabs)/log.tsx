@@ -12,6 +12,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useActiveRoadmapSessions } from '@/hooks/sessions/use-active-roadmap-sessions';
+import { useDeleteSession } from '@/hooks/sessions/use-delete-session';
 import { useDueVocabWordCount } from '@/hooks/vocab/use-due-vocab-word-count';
 import { useAuth } from '@/lib/auth-context';
 
@@ -23,6 +24,7 @@ export default function LogScreen() {
   // instead of every session ever recorded under any goal.
   const activeRoadmapSessions = useActiveRoadmapSessions(session?.user.id);
   const dueVocabWordCount = useDueVocabWordCount(session?.user.id);
+  const deleteSession = useDeleteSession(session?.user.id);
   const { timerTitle, timerMinutes, timerSessionId } = useLocalSearchParams<{
     timerTitle?: string;
     timerMinutes?: string;
@@ -103,6 +105,7 @@ export default function LogScreen() {
             errorLabel={t('log.loadError')}
             emptyLabel={t('log.empty')}
             onPressSession={(id) => router.push(`/til/${id}`)}
+            onDeleteSession={(id) => deleteSession.mutate(id, { onError: () => Alert.alert(t('log.deleteError')) })}
           />
         </ScrollView>
       </SafeAreaView>

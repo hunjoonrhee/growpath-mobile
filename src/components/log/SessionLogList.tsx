@@ -1,6 +1,6 @@
 import { StyleSheet, View } from 'react-native';
 
-import { SessionLogCard } from '@/components/log/SessionLogCard';
+import { SwipeableSessionLogCard } from '@/components/log/SwipeableSessionLogCard';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing, Typography } from '@/constants/theme';
 import type { SessionRecord } from '@/lib/sessions';
@@ -14,6 +14,7 @@ export type SessionLogListProps = {
   errorLabel: string;
   emptyLabel: string;
   onPressSession: (id: string) => void;
+  onDeleteSession: (id: string) => void;
 };
 
 export function SessionLogList({
@@ -25,6 +26,7 @@ export function SessionLogList({
   errorLabel,
   emptyLabel,
   onPressSession,
+  onDeleteSession,
 }: SessionLogListProps) {
   return (
     <View style={styles.container}>
@@ -52,7 +54,14 @@ export function SessionLogList({
 
       {!isLoading &&
         !isError &&
-        sessions.map((session) => <SessionLogCard key={session.id} session={session} onPress={() => onPressSession(session.id)} />)}
+        sessions.map((session) => (
+          <SwipeableSessionLogCard
+            key={session.id}
+            session={session}
+            onPress={() => onPressSession(session.id)}
+            onDelete={() => onDeleteSession(session.id)}
+          />
+        ))}
     </View>
   );
 }

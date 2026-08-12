@@ -30,7 +30,12 @@ export default function CaptureEntryScreen() {
   if (!session) return <Redirect href="/login" />;
 
   const isSaving = createSession.isPending || updateSession.isPending;
-  const isLoadingExisting = isEditing && !existingSession.data;
+  const isLoadingExisting = isEditing && existingSession.isPending;
+  // Distinct from isLoadingExisting - covers both a real fetch error and a
+  // successful-but-empty result (row deleted elsewhere, or hidden by RLS),
+  // which !existingSession.data alone can't tell apart from "still
+  // loading" once isPending has already settled to false.
+  const hasLoadError = isEditing && !existingSession.isPending && (existingSession.isError || !existingSession.data);
 
   const handleSave = (values: CaptureEntryFormValues) => {
     if (!submitGuard.tryStart()) return;
@@ -64,19 +69,19 @@ export default function CaptureEntryScreen() {
       <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
         <BackHeader accessibilityLabel={t('captureEntry.backAccessibilityLabel')} onPress={() => router.back()} />
 
-        {isLoadingExisting && !existingSession.isError && (
+        {isLoadingExisting && (
           <ThemedText type="small" themeColor="textDim" style={styles.centerText}>
             {t('captureEntry.loading')}
           </ThemedText>
         )}
 
-        {isEditing && existingSession.isError && (
+        {hasLoadError && (
           <ThemedText type="small" themeColor="amber" style={styles.centerText}>
             {t('captureEntry.loadError')}
           </ThemedText>
         )}
 
-        {!isLoadingExisting && !(isEditing && existingSession.isError) && (
+        {!isLoadingExisting && !hasLoadError && (
           <CaptureEntryForm
             // Forces a fresh mount (and fresh useState initializers) once the
             // record to edit has actually loaded, instead of syncing an

@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase';
+import { flattenTagsColumn } from '@/lib/tags';
 
 export type RoadmapStageSkill = {
   name: string;
@@ -58,6 +59,13 @@ export async function fetchRoadmap(roadmapId: string): Promise<Roadmap | null> {
     .maybeSingle();
   if (error) throw error;
   return data ? toRoadmap(data as AiRoadmapRow) : null;
+}
+
+/** Tags from every goal tracked under a roadmap - one of gap analysis's two "studied" evidence sources (the other is session tags). */
+export async function fetchGoalTags(roadmapId: string): Promise<string[]> {
+  const { data, error } = await supabase.from('goals').select('tags').eq('roadmap_id', roadmapId);
+  if (error) throw error;
+  return flattenTagsColumn((data ?? []) as { tags: string[] | null }[]);
 }
 
 /** The roadmap stage the AI currently recommends focusing on, if any goal has been marked as such. */

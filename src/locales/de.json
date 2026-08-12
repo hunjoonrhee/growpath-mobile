@@ -14,6 +14,7 @@
     "currentStage": "Stufe {{stage}} — {{label}}",
     "recommendationTitle": "Heutige Empfehlung",
     "recommendationDescription": "Ein Skill, den du in {{stage}} als Nächstes ausprobieren könntest.",
+    "gapHint": "Das könntest du noch vertiefen: {{skills}}",
     "startCta": "Starten",
     "loading": "Wird geladen...",
     "loadError": "Konnte nicht geladen werden. Bitte versuche es gleich noch einmal.",

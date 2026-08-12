@@ -1,6 +1,7 @@
 import { toDateString } from '@/lib/date';
 import { fetchAdoptedRoadmapId } from '@/lib/roadmap';
 import { insertWithUser, supabase } from '@/lib/supabase';
+import { flattenTagsColumn } from '@/lib/tags';
 
 export type SessionRecord = {
   id: string;
@@ -137,6 +138,29 @@ export async function updateSession(id: string, userId: string, input: UpdateSes
 export async function deleteSession(id: string, userId: string): Promise<void> {
   const { error } = await supabase.from('sessions').delete().eq('id', id).eq('user_id', userId);
   if (error) throw error;
+}
+
+/**
+ * Tags from every session logged under a roadmap - gap analysis's other
+ * "studied" evidence source, alongside goal tags. Not capped at 20 like
+ * fetchRecentSessions since it feeds a score, not a display list, and
+ * ordered (unlike fetchRecentSessions doesn't need to be, since it isn't
+ * limited) so which 200 rows come back is deterministic instead of
+ * whatever Postgres happens to return.
+ *
+ * Strictly scoped to roadmapId (no fetchRecentSessions-style fallback to
+ * goal-less sessions) - that fallback exists there so untagged sessions
+ * stay visible in the log UI under any roadmap, but for scoring it would
+ * let sessions logged before adopting this goal count as evidence for it.
+ */
+export async function fetchSessionTags(userId: string, roadmapId: string | null, limit = 200): Promise<string[]> {
+  let query = supabase.from('sessions').select('tags').eq('user_id', userId);
+  if (roadmapId) {
+    query = query.eq('roadmap_id', roadmapId);
+  }
+  const { data, error } = await query.order('created_at', { ascending: false }).limit(limit);
+  if (error) throw error;
+  return flattenTagsColumn((data ?? []) as { tags: string[] | null }[]);
 }
 
 /** Distinct session dates, most recent first - used to compute the study streak. */

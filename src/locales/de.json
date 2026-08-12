@@ -58,7 +58,9 @@
     "vocabReviewCta": "Vokabeln wiederholen",
     "vocabDueCount": "{{count}} Vokabeln fällig",
     "vocabAddCta": "Vokabel hinzufügen",
-    "roleplayCta": "Rollenspiel-Übung"
+    "roleplayCta": "Rollenspiel-Übung",
+    "deleteCta": "Löschen",
+    "deleteError": "Löschen fehlgeschlagen. Bitte versuche es gleich noch einmal."
   },
   "profile": {
     "title": "Profil",
@@ -132,6 +134,7 @@
   "captureEntry": {
     "backAccessibilityLabel": "Zurück",
     "title": "Eintrag hinzufügen",
+    "editTitle": "Eintrag bearbeiten",
     "titleLabel": "Was hast du gelernt?",
     "titlePlaceholder": "z. B. NgRx Effects",
     "durationLabel": "Dauer (Minuten)",
@@ -141,6 +144,8 @@
     "tagsLabel": "Tags (kommagetrennt)",
     "tagsPlaceholder": "z. B. ngrx, state-management",
     "saveCta": "Speichern",
+    "loading": "Wird geladen...",
+    "loadError": "Eintrag konnte nicht geladen werden. Bitte versuche es gleich noch einmal.",
     "errorGeneric": "Speichern fehlgeschlagen. Bitte versuche es gleich noch einmal."
   },
   "timer": {
@@ -181,7 +186,14 @@
     "loading": "Wird geladen...",
     "loadError": "Eintrag konnte nicht geladen werden.",
     "tilLabel": "Was du gelernt hast",
-    "noTil": "Keine Notizen vorhanden."
+    "noTil": "Keine Notizen vorhanden.",
+    "editCta": "Bearbeiten",
+    "deleteCta": "Löschen",
+    "deleteConfirmTitle": "Eintrag löschen?",
+    "deleteConfirmMessage": "Das kann nicht rückgängig gemacht werden.",
+    "deleteCancel": "Abbrechen",
+    "deleteConfirm": "Löschen",
+    "deleteError": "Löschen fehlgeschlagen. Bitte versuche es gleich noch einmal."
   },
   "roleplay": {
     "backAccessibilityLabel": "Zurück",

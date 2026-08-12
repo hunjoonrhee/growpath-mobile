@@ -1,6 +1,6 @@
 import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, StyleSheet } from 'react-native';
+import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { TagList } from '@/components/log/TagList';
@@ -8,7 +8,8 @@ import { TilMarkdown } from '@/components/log/TilMarkdown';
 import { BackHeader } from '@/components/navigation/BackHeader';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Spacing, Typography } from '@/constants/theme';
+import { Colors, Spacing, Typography } from '@/constants/theme';
+import { useDeleteSession } from '@/hooks/sessions/use-delete-session';
 import { useSession } from '@/hooks/sessions/use-session';
 import { useAuth } from '@/lib/auth-context';
 import { relativeDateLabel } from '@/lib/date';
@@ -19,8 +20,31 @@ export default function TilDetailScreen() {
   const { session: authSession } = useAuth();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const session = useSession(id, authSession?.user.id);
+  const deleteSession = useDeleteSession(authSession?.user.id);
 
   if (!authSession) return <Redirect href="/login" />;
+
+  const handleEdit = () => {
+    if (!id) return;
+    router.push({ pathname: '/capture-entry', params: { id } });
+  };
+
+  const handleDelete = () => {
+    if (!id) return;
+    Alert.alert(t('tilDetail.deleteConfirmTitle'), t('tilDetail.deleteConfirmMessage'), [
+      { text: t('tilDetail.deleteCancel'), style: 'cancel' },
+      {
+        text: t('tilDetail.deleteConfirm'),
+        style: 'destructive',
+        onPress: () => {
+          deleteSession.mutate(id, {
+            onSuccess: () => router.back(),
+            onError: () => Alert.alert(t('tilDetail.deleteError')),
+          });
+        },
+      },
+    ]);
+  };
 
   const dateLabel = session.data ? relativeDateLabel(session.data.date, t) : '';
   const timeLabel =
@@ -67,6 +91,22 @@ export default function TilDetailScreen() {
                   {t('tilDetail.noTil')}
                 </ThemedText>
               )}
+
+              <View style={styles.actions}>
+                <Pressable accessibilityRole="button" accessibilityLabel={t('tilDetail.editCta')} onPress={handleEdit} style={styles.actionButton}>
+                  <ThemedText type="smallBold">{t('tilDetail.editCta')}</ThemedText>
+                </Pressable>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={t('tilDetail.deleteCta')}
+                  onPress={handleDelete}
+                  disabled={deleteSession.isPending}
+                  style={[styles.actionButton, deleteSession.isPending && styles.actionButtonDisabled]}>
+                  <ThemedText type="smallBold" themeColor="amber">
+                    {t('tilDetail.deleteCta')}
+                  </ThemedText>
+                </Pressable>
+              </View>
             </>
           )}
         </ScrollView>
@@ -102,5 +142,22 @@ const styles = StyleSheet.create({
     ...Typography.sectionLabel,
     marginTop: Spacing.four,
     marginBottom: Spacing.two,
+  },
+  actions: {
+    flexDirection: 'row',
+    gap: Spacing.two + 2,
+    marginTop: Spacing.five,
+  },
+  actionButton: {
+    flex: 1,
+    backgroundColor: Colors.surf2,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    borderRadius: 16,
+    paddingVertical: Spacing.three,
+    alignItems: 'center',
+  },
+  actionButtonDisabled: {
+    opacity: 0.5,
   },
 });

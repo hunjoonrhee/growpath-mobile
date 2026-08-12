@@ -25,6 +25,15 @@ export type CreateSessionInput = {
   roadmapId?: string | null;
 };
 
+// Doesn't include date/roadmapId - editing a log shouldn't move it to a
+// different day or re-tag it under whichever goal happens to be active now.
+export type UpdateSessionInput = {
+  title: string;
+  durationMinutes: number | null;
+  til: string;
+  tags: string[];
+};
+
 type SessionRow = {
   id: string;
   title: string;
@@ -107,6 +116,26 @@ export async function createSession(userId: string, input: CreateSessionInput): 
     date: toDateString(new Date()),
     roadmap_id: roadmapId,
   });
+  if (error) throw error;
+}
+
+/** See fetchSessionById's note on the redundant .eq('user_id', ...) - same reasoning applies here. */
+export async function updateSession(id: string, userId: string, input: UpdateSessionInput): Promise<void> {
+  const { error } = await supabase
+    .from('sessions')
+    .update({
+      title: input.title,
+      duration_minutes: input.durationMinutes,
+      til: input.til || null,
+      tags: input.tags,
+    })
+    .eq('id', id)
+    .eq('user_id', userId);
+  if (error) throw error;
+}
+
+export async function deleteSession(id: string, userId: string): Promise<void> {
+  const { error } = await supabase.from('sessions').delete().eq('id', id).eq('user_id', userId);
   if (error) throw error;
 }
 

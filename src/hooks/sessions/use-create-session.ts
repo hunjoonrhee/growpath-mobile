@@ -7,6 +7,10 @@ export function invalidateSessionQueries(queryClient: QueryClient, userId: strin
   queryClient.invalidateQueries({ queryKey: ['sessions', 'recent', userId] });
   queryClient.invalidateQueries({ queryKey: ['sessions', 'streak', userId] });
   queryClient.invalidateQueries({ queryKey: ['sessions', 'weeklyCount', userId] });
+  // gap-analysis's session-tags evidence source (see use-gap-analysis.ts) -
+  // without this, the Today tab's dial keeps showing a score computed from
+  // sessions that no longer exist after a create/update/delete.
+  queryClient.invalidateQueries({ queryKey: ['sessions', 'tags', userId] });
 }
 
 export function useCreateSession(userId: string | undefined) {

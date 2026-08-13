@@ -61,9 +61,28 @@ export async function fetchRoadmap(roadmapId: string): Promise<Roadmap | null> {
   return data ? toRoadmap(data as AiRoadmapRow) : null;
 }
 
-/** Tags from every goal tracked under a roadmap - one of gap analysis's two "studied" evidence sources (the other is session tags). */
+/**
+ * Tags from every *user-managed* goal tracked under a roadmap - one of gap
+ * analysis's two "studied" evidence sources (the other is session tags).
+ *
+ * Excludes is_auto_generated goals on purpose: joon-dashboard's roadmap
+ * adoption flow (RoadmapTab.tsx handleAdopt) creates one goal per stage and
+ * copies that entire stage's skill tags onto it verbatim, which would make
+ * every skill read as "studied" the instant a roadmap is adopted - before
+ * the user has actually done anything. Only goals the user (or the AI
+ * recommendation flow acting on their behalf) explicitly created should
+ * count as real evidence.
+ */
 export async function fetchGoalTags(roadmapId: string): Promise<string[]> {
-  const { data, error } = await supabase.from('goals').select('tags').eq('roadmap_id', roadmapId);
+  // .neq('is_auto_generated', true) would silently drop rows where the
+  // column is NULL too (SQL's `<> true` is NULL, not true, for a NULL
+  // operand) - .or() here explicitly keeps null/false and excludes only
+  // an explicit true.
+  const { data, error } = await supabase
+    .from('goals')
+    .select('tags')
+    .eq('roadmap_id', roadmapId)
+    .or('is_auto_generated.is.null,is_auto_generated.eq.false');
   if (error) throw error;
   return flattenTagsColumn((data ?? []) as { tags: string[] | null }[]);
 }

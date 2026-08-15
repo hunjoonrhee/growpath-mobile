@@ -36,7 +36,12 @@
         }
       ],
       "expo-localization",
-      ["./plugins/withoutWidgetsPushEntitlement.js", { "enablePushNotifications": false }],
+      [
+        "./plugins/withoutWidgetsPushEntitlement.js",
+        {
+          "enablePushNotifications": false
+        }
+      ],
       [
         "expo-widgets",
         {
@@ -46,12 +51,21 @@
               "name": "TodayProgressWidget",
               "displayName": "Growpath",
               "description": "Today's stage progress and study streak",
-              "supportedFamilies": ["systemSmall", "systemMedium"]
+              "supportedFamilies": [
+                "systemSmall",
+                "systemMedium"
+              ]
             }
           ]
         }
       ],
-      "expo-asset"
+      "expo-asset",
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "Growpath uses your microphone to record what you say for voice input."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

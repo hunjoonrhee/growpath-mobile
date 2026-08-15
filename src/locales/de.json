@@ -59,6 +59,7 @@
     "vocabReviewCta": "Vokabeln wiederholen",
     "vocabDueCount": "{{count}} Vokabeln fällig",
     "vocabAddCta": "Vokabel hinzufügen",
+    "vocabAllCta": "Alle Vokabeln ansehen",
     "roleplayCta": "Rollenspiel-Übung",
     "deleteCta": "Löschen",
     "deleteError": "Löschen fehlgeschlagen. Bitte versuche es gleich noch einmal."
@@ -124,7 +125,10 @@
       "text": "✏️ Text",
       "voice": "🎙️ Sprache"
     },
-    "voiceComingSoon": "Spracheingabe kommt bald. Bitte tippe es vorerst ein.",
+    "voiceIdle": "Zum Sprechen tippen",
+    "voiceRecording": "Ich höre zu...",
+    "voiceTranscribing": "Wird umgewandelt...",
+    "voiceError": "Spracherkennung fehlgeschlagen. Bitte versuche es noch einmal.",
     "careerLevelLabel": "Aktuelles Niveau",
     "careerLevelPlaceholder": "z. B. Senior-Frontend-Entwickler, ca. 3 Jahre Angular in der Praxis",
     "textPlaceholder": "z. B. Ich möchte Lead Architect werden",
@@ -182,6 +186,15 @@
     "saveCta": "Speichern",
     "errorGeneric": "Speichern fehlgeschlagen. Bitte versuche es gleich noch einmal."
   },
+  "vocabList": {
+    "backAccessibilityLabel": "Zurück",
+    "title": "Vokabeln",
+    "loading": "Vokabeln werden geladen...",
+    "loadError": "Vokabeln konnten nicht geladen werden. Bitte versuche es gleich noch einmal.",
+    "empty": "Noch keine gespeicherten Vokabeln.",
+    "deleteCta": "Löschen",
+    "deleteError": "Löschen fehlgeschlagen. Bitte versuche es gleich noch einmal."
+  },
   "tilDetail": {
     "backAccessibilityLabel": "Zurück",
     "loading": "Wird geladen...",
@@ -208,6 +221,13 @@
     "starting": "Das Gespräch wird vorbereitet...",
     "thinking": "Denkt nach...",
     "composerPlaceholder": "Nachricht eingeben",
+    "voiceIdle": "Zum Sprechen tippen",
+    "voiceRecording": "Ich höre zu...",
+    "voiceTranscribing": "Wird umgewandelt...",
+    "voiceAssessingPronunciation": "Aussprache wird analysiert...",
+    "playAccessibilityLabel": "Anhören",
+    "stopAccessibilityLabel": "Wiedergabe stoppen",
+    "pronunciationScore": "Aussprache {{score}}/100",
     "sendCta": "Senden",
     "endCta": "Gespräch beenden",
     "endConfirmTitle": "Gespräch beenden?",
@@ -219,6 +239,18 @@
     "retryCta": "Erneut versuchen",
     "summaryTitle": "Gesprächszusammenfassung",
     "summaryTilLabel": "Was du gelernt hast",
+    "summaryVocabAdded": "Zu deinen Vokabeln hinzugefügt",
     "summaryDoneCta": "Fertig"
+  },
+  "voiceCapture": {
+    "backAccessibilityLabel": "Zurück",
+    "title": "Per Sprache erfassen",
+    "placeholder": "Tippe aufs Mikrofon und sprich",
+    "idle": "Zum Sprechen tippen",
+    "listening": "Ich höre zu...",
+    "transcribing": "Wird umgewandelt...",
+    "error": "Spracherkennung fehlgeschlagen. Bitte versuche es noch einmal.",
+    "retryCta": "Erneut aufnehmen",
+    "continueCta": "Weiter"
   }
 }

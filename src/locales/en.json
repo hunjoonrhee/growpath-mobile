@@ -59,6 +59,7 @@
     "vocabReviewCta": "Vocab review",
     "vocabDueCount": "{{count}} words due",
     "vocabAddCta": "Add a word",
+    "vocabAllCta": "View all words",
     "roleplayCta": "Roleplay practice",
     "deleteCta": "Delete",
     "deleteError": "Couldn't delete. Please try again in a moment."
@@ -124,7 +125,10 @@
       "text": "✏️ Text",
       "voice": "🎙️ Voice"
     },
-    "voiceComingSoon": "Voice input is coming soon. Please type it in for now.",
+    "voiceIdle": "Tap to speak",
+    "voiceRecording": "Listening...",
+    "voiceTranscribing": "Transcribing...",
+    "voiceError": "Speech recognition failed. Please try again.",
     "careerLevelLabel": "Current level",
     "careerLevelPlaceholder": "e.g. Senior frontend developer, ~3 years of production Angular",
     "textPlaceholder": "e.g. I want to become a lead architect",
@@ -182,6 +186,15 @@
     "saveCta": "Save",
     "errorGeneric": "Couldn't save. Please try again in a moment."
   },
+  "vocabList": {
+    "backAccessibilityLabel": "Go back",
+    "title": "Vocabulary",
+    "loading": "Loading words...",
+    "loadError": "Couldn't load your words. Please try again in a moment.",
+    "empty": "No saved words yet.",
+    "deleteCta": "Delete",
+    "deleteError": "Couldn't delete. Please try again in a moment."
+  },
   "tilDetail": {
     "backAccessibilityLabel": "Go back",
     "loading": "Loading...",
@@ -208,6 +221,13 @@
     "starting": "Getting the conversation ready...",
     "thinking": "Thinking...",
     "composerPlaceholder": "Type a message",
+    "voiceIdle": "Tap to speak",
+    "voiceRecording": "Listening...",
+    "voiceTranscribing": "Transcribing...",
+    "voiceAssessingPronunciation": "Analyzing pronunciation...",
+    "playAccessibilityLabel": "Listen",
+    "stopAccessibilityLabel": "Stop playback",
+    "pronunciationScore": "Pronunciation {{score}}/100",
     "sendCta": "Send",
     "endCta": "End conversation",
     "endConfirmTitle": "End this conversation?",
@@ -219,6 +239,18 @@
     "retryCta": "Retry",
     "summaryTitle": "Conversation summary",
     "summaryTilLabel": "What you learned",
+    "summaryVocabAdded": "Added to your vocabulary",
     "summaryDoneCta": "Done"
+  },
+  "voiceCapture": {
+    "backAccessibilityLabel": "Go back",
+    "title": "Log by voice",
+    "placeholder": "Tap the mic and start talking",
+    "idle": "Tap to speak",
+    "listening": "Listening...",
+    "transcribing": "Transcribing...",
+    "error": "Speech recognition failed. Please try again.",
+    "retryCta": "Record again",
+    "continueCta": "Continue"
   }
 }

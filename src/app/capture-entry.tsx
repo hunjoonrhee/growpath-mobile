@@ -18,7 +18,7 @@ export default function CaptureEntryScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { session } = useAuth();
-  const params = useLocalSearchParams<{ title?: string; minutes?: string; timerSessionId?: string; id?: string }>();
+  const params = useLocalSearchParams<{ title?: string; minutes?: string; til?: string; timerSessionId?: string; id?: string }>();
   const editingId = params.id;
   const isEditing = editingId !== undefined;
 
@@ -96,7 +96,12 @@ export default function CaptureEntryScreen() {
                     til: existingSession.data.til ?? '',
                     tags: existingSession.data.tags,
                   }
-                : { title: params.title ?? '', durationMinutes: params.minutes ? Number(params.minutes) : null, til: '', tags: [] }
+                : {
+                    title: params.title ?? '',
+                    durationMinutes: params.minutes ? Number(params.minutes) : null,
+                    til: params.til ?? '',
+                    tags: [],
+                  }
             }
             isSaving={isSaving}
             onSave={handleSave}

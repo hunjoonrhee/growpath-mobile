@@ -3,10 +3,12 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { invalidateSessionQueries } from '@/hooks/sessions/use-create-session';
 import { useSubmitGuard } from '@/hooks/use-submit-guard';
+import type { PronunciationResult } from '@/lib/speech-transcription';
 import {
   endRoleplaySession,
   saveRoleplayTilEntry,
   saveRoleplayTranscript,
+  saveRoleplayVocabWords,
   sendRoleplayTurn,
   startRoleplayTurn,
   RoleplayUnavailableError,
@@ -41,6 +43,7 @@ type EndProgress = {
   summary: RoleplaySummary;
   transcriptSaved: boolean;
   tilSaved: boolean;
+  vocabSaved: boolean;
 };
 
 /** Which operation retry() should resume - set alongside errorKind so retry doesn't have to guess from message-array shape (which is ambiguous once ending is involved). */
@@ -54,7 +57,7 @@ export type UseRoleplayChatResult = {
   summary: RoleplaySummary | null;
   errorKind: RoleplayErrorKind | null;
   start: () => Promise<void>;
-  sendMessage: (text: string) => Promise<void>;
+  sendMessage: (text: string, pronunciation?: PronunciationResult) => Promise<void>;
   retry: () => Promise<void>;
   endSession: () => Promise<void>;
 };
@@ -109,7 +112,7 @@ export function useRoleplayChat({
       try {
         const reply = await sendRoleplayTurn(topic, history, { goal, careerLevel }, locale, language);
         if (!isMountedRef.current) return;
-        setMessages((current) => [...current, { role: 'model', text: reply }]);
+        setMessages((current) => [...current, { role: 'model', text: reply.text, dialogueText: reply.dialogueText }]);
       } catch (error) {
         if (!isMountedRef.current) return;
         failedOpRef.current = 'send';
@@ -129,7 +132,7 @@ export function useRoleplayChat({
     try {
       const reply = await startRoleplayTurn(topic, { goal, careerLevel }, locale, language);
       if (!isMountedRef.current) return;
-      setMessages([{ role: 'model', text: reply }]);
+      setMessages([{ role: 'model', text: reply.text, dialogueText: reply.dialogueText }]);
     } catch (error) {
       if (!isMountedRef.current) return;
       failedOpRef.current = 'start';
@@ -140,9 +143,9 @@ export function useRoleplayChat({
   }, [topic, goal, careerLevel, locale, language]);
 
   const sendMessage = useCallback(
-    async (text: string) => {
+    async (text: string, pronunciation?: PronunciationResult) => {
       if (!sendGuard.tryStart()) return;
-      const next: ChatMessage[] = [...messages, { role: 'user', text }];
+      const next: ChatMessage[] = [...messages, { role: 'user', text, pronunciation }];
       setMessages(next);
       try {
         await requestReply(next);
@@ -160,7 +163,7 @@ export function useRoleplayChat({
     try {
       if (!endProgressRef.current) {
         const summaryResult = await endRoleplaySession(topic, messages, { goal, careerLevel }, locale, language);
-        endProgressRef.current = { summary: summaryResult, transcriptSaved: false, tilSaved: false };
+        endProgressRef.current = { summary: summaryResult, transcriptSaved: false, tilSaved: false, vocabSaved: false };
       }
       const progress = endProgressRef.current;
       const resolvedRoadmapId = roadmapId ?? null;
@@ -173,6 +176,16 @@ export function useRoleplayChat({
         if (hasInvalidated) return;
         hasInvalidated = true;
         invalidateSessionQueries(queryClient, userId);
+      };
+      // Separate guard from invalidateOnce - vocab queries are unrelated to
+      // the session/log queries above and shouldn't be conflated with them.
+      let hasInvalidatedVocab = false;
+      const invalidateVocabOnce = () => {
+        if (hasInvalidatedVocab) return;
+        hasInvalidatedVocab = true;
+        queryClient.invalidateQueries({ queryKey: ['vocab', 'due', userId] });
+        queryClient.invalidateQueries({ queryKey: ['vocab', 'dueCount', userId] });
+        queryClient.invalidateQueries({ queryKey: ['vocab', 'all', userId] });
       };
 
       // Independent writes to different tables - run concurrently rather
@@ -197,6 +210,15 @@ export function useRoleplayChat({
           : saveRoleplayTilEntry({ userId, roadmapId: resolvedRoadmapId, scenario: topic, summary: progress.summary }).then(() => {
               progress.tilSaved = true;
               invalidateOnce();
+            }),
+        // No-op when the summary had no vocabWords (non-language sessions,
+        // or the model found nothing worth flagging) - still marked saved
+        // so a retry after a different step's failure doesn't redo it.
+        progress.vocabSaved || progress.summary.vocabWords.length === 0
+          ? undefined
+          : saveRoleplayVocabWords({ language, words: progress.summary.vocabWords }).then(() => {
+              progress.vocabSaved = true;
+              invalidateVocabOnce();
             }),
       ]);
 

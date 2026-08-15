@@ -1,16 +1,16 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { createVocabWord, type CreateVocabWordInput } from '@/lib/vocab';
+import { deleteVocabWord } from '@/lib/vocab';
 
-export function useCreateVocabWord(userId: string | undefined) {
+export function useDeleteVocabWord(userId: string | undefined) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (input: CreateVocabWordInput) => createVocabWord(input),
+    mutationFn: (id: string) => deleteVocabWord(id),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['vocab', 'all', userId] });
       queryClient.invalidateQueries({ queryKey: ['vocab', 'due', userId] });
       queryClient.invalidateQueries({ queryKey: ['vocab', 'dueCount', userId] });
-      queryClient.invalidateQueries({ queryKey: ['vocab', 'all', userId] });
     },
   });
 }

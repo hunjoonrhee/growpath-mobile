@@ -1,7 +1,7 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Pressable, ScrollView, StyleSheet } from 'react-native';
+import { Alert, Pressable, RefreshControl, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { NavRow } from '@/components/common/NavRow';
@@ -13,6 +13,7 @@ import { ThemedView } from '@/components/themed-view';
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useActiveRoadmapSessions } from '@/hooks/sessions/use-active-roadmap-sessions';
 import { useDeleteSession } from '@/hooks/sessions/use-delete-session';
+import { usePullToRefresh } from '@/hooks/use-pull-to-refresh';
 import { useDueVocabWordCount } from '@/hooks/vocab/use-due-vocab-word-count';
 import { useAuth } from '@/lib/auth-context';
 
@@ -38,6 +39,7 @@ export default function LogScreen() {
   // timerSessionId (not title/minutes) since two runs can share a title and
   // round to the same minute count.
   const [dismissedSessionId, setDismissedSessionId] = useState<string | null>(null);
+  const { refreshing, onRefresh } = usePullToRefresh();
 
   if (!session) return null;
 
@@ -54,7 +56,9 @@ export default function LogScreen() {
   return (
     <ThemedView style={styles.screen}>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
-        <ScrollView contentContainerStyle={styles.content}>
+        <ScrollView
+          contentContainerStyle={styles.content}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.pri2} />}>
           <ThemedText type="title" style={styles.title}>
             {t('log.title')}
           </ThemedText>
@@ -70,7 +74,7 @@ export default function LogScreen() {
           <CaptureButtonsRow
             voiceLabel={t('log.voiceLabel')}
             photoLabel={t('log.photoLabel')}
-            onPressVoice={() => Alert.alert(t('log.captureComingSoon'))}
+            onPressVoice={() => router.push('/voice-capture')}
             onPressPhoto={() => Alert.alert(t('log.captureComingSoon'))}
           />
 
@@ -94,6 +98,7 @@ export default function LogScreen() {
             onPress={() => router.push('/vocab-review')}
           />
           <NavRow icon="➕" label={t('log.vocabAddCta')} onPress={() => router.push('/vocab-add')} />
+          <NavRow icon="📖" label={t('log.vocabAllCta')} onPress={() => router.push('/vocab-list')} />
           <NavRow icon="🎭" label={t('log.roleplayCta')} onPress={() => router.push('/roleplay')} />
 
           <SessionLogList

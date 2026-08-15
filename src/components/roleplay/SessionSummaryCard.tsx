@@ -9,9 +9,10 @@ import type { RoleplaySummary } from '@/lib/roleplay';
 export type SessionSummaryCardProps = {
   summary: RoleplaySummary;
   label: string;
+  vocabAddedLabel: string;
 };
 
-export function SessionSummaryCard({ summary, label }: SessionSummaryCardProps) {
+export function SessionSummaryCard({ summary, label, vocabAddedLabel }: SessionSummaryCardProps) {
   return (
     <View style={styles.card}>
       <ThemedText type="small" themeColor="textFaint" style={styles.label}>
@@ -22,6 +23,16 @@ export function SessionSummaryCard({ summary, label }: SessionSummaryCardProps) 
       {summary.tags.length > 0 && (
         <View style={styles.tagsRow}>
           <TagList tags={summary.tags} />
+        </View>
+      )}
+      {summary.vocabWords.length > 0 && (
+        <View style={styles.vocabSection}>
+          <ThemedText type="small" themeColor="ok">
+            {vocabAddedLabel}
+          </ThemedText>
+          <ThemedText type="small" themeColor="textDim">
+            {summary.vocabWords.map((word) => word.word).join(', ')}
+          </ThemedText>
         </View>
       )}
     </View>
@@ -42,5 +53,9 @@ const styles = StyleSheet.create({
   },
   tagsRow: {
     marginTop: Spacing.one,
+  },
+  vocabSection: {
+    marginTop: Spacing.one,
+    gap: 2,
   },
 });

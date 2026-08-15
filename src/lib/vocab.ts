@@ -82,6 +82,22 @@ export async function fetchDueVocabWordCount(userId: string): Promise<number> {
   return count ?? 0;
 }
 
+/** Every saved word regardless of review schedule, newest first - unlike fetchDueVocabWords this isn't meant to be paged through in a single sitting, so it isn't capped. */
+export async function fetchAllVocabWords(userId: string): Promise<VocabWord[]> {
+  const { data, error } = await supabase
+    .from('vocab_words')
+    .select('id, language, word, meaning, example_sentence, interval_days, ease_factor, review_count, next_review_at')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false });
+  if (error) throw error;
+  return (data ?? []).map((row) => toVocabWord(row as VocabWordRow));
+}
+
+export async function deleteVocabWord(id: string): Promise<void> {
+  const { error } = await supabase.from('vocab_words').delete().eq('id', id);
+  if (error) throw error;
+}
+
 /** Upserts on (user_id, language, word) - re-saving an existing word updates its meaning/example instead of erroring. */
 export async function createVocabWord(input: CreateVocabWordInput): Promise<void> {
   const { error } = await upsertWithUser(

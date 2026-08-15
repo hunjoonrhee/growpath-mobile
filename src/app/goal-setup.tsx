@@ -9,7 +9,7 @@ import { PrimaryButton } from '@/components/forms/PrimaryButton';
 import { TextField } from '@/components/forms/TextField';
 import { DomainChipSelector } from '@/components/goal-setup/DomainChipSelector';
 import { InputModeToggle, type InputMode } from '@/components/goal-setup/InputModeToggle';
-import { VoiceInputPlaceholder } from '@/components/goal-setup/VoiceInputPlaceholder';
+import { VoiceDictationField } from '@/components/voice/VoiceDictationField';
 import { BackHeader } from '@/components/navigation/BackHeader';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -18,6 +18,7 @@ import { useSwitchActiveRoadmap } from '@/hooks/roadmap/use-switch-active-roadma
 import { useSubmitGuard } from '@/hooks/use-submit-guard';
 import { useAuth } from '@/lib/auth-context';
 import type { Domain } from '@/lib/domain';
+import { toBcp47 } from '@/lib/locale-bcp47';
 import { generateRoadmap, RoadmapGenerationUnavailableError } from '@/lib/roadmap-generation';
 
 /** Wraps a setter so any edit to that field also invalidates a cached pendingRoadmapId (see below). */
@@ -125,7 +126,14 @@ export default function GoalSetupScreen() {
                 editable={!isSubmitting}
               />
             ) : (
-              <VoiceInputPlaceholder message={t('goalSetup.voiceComingSoon')} />
+              <VoiceDictationField
+                language={toBcp47(i18n.language)}
+                onTranscript={(text) => handleGoalTextChange(goalText ? `${goalText} ${text}` : text)}
+                idleLabel={t('goalSetup.voiceIdle')}
+                recordingLabel={t('goalSetup.voiceRecording')}
+                transcribingLabel={t('goalSetup.voiceTranscribing')}
+                errorLabel={t('goalSetup.voiceError')}
+              />
             )}
           </View>
 

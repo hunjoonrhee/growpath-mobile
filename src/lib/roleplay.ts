@@ -1,14 +1,24 @@
 import { API_CALL_TIMEOUT_MS, env } from '@/lib/env';
 import { createSession } from '@/lib/sessions';
+import type { PronunciationResult } from '@/lib/speech-transcription';
 import { insertWithUser, supabase } from '@/lib/supabase';
+import { createVocabWord } from '@/lib/vocab';
 
 export class RoleplayUnavailableError extends Error {}
 
-export type ChatMessage = { role: 'user' | 'model'; text: string };
-export type RoleplaySummary = { concepts: string[]; tags: string[]; tilNote: string };
+export type ChatMessage = {
+  role: 'user' | 'model';
+  text: string;
+  /** In-character roleplay dialogue only, extracted server-side from [DIALOGUE] tags - null for user messages and for model replies outside a roleplay session (or the rare formatting miss). TTS playback should read this instead of `text`, which mixes it with meta-commentary in a different language. */
+  dialogueText?: string | null;
+  /** Only set for user messages sent via voice input, scored against their own transcript (see ChatComposer's pendingPronunciation) - undefined for typed messages and for model replies. */
+  pronunciation?: PronunciationResult;
+};
+export type RoleplayVocabWord = { word: string; meaning: string; example: string };
+export type RoleplaySummary = { concepts: string[]; tags: string[]; tilNote: string; vocabWords: RoleplayVocabWord[] };
 export type RoleplayContext = { goal: string; careerLevel: string };
 
-type TutorChatResponse = { text: string; quiz: unknown; summary: RoleplaySummary | null };
+type TutorChatResponse = { text: string; quiz: unknown; summary: RoleplaySummary | null; dialogueText: string | null };
 type TutorApiMessage = { role: 'user' | 'model'; parts: { text: string }[] };
 type TutorUserContext = {
   careerLevel: string;
@@ -90,6 +100,13 @@ function toRoleplaySummary(raw: RoleplaySummary): RoleplaySummary {
     concepts: raw.concepts ?? [],
     tags: raw.tags ?? [],
     tilNote: raw.tilNote ?? '',
+    // The model can omit the word/meaning/example fields it was asked for,
+    // or send an empty string - filtered out here rather than left for
+    // saveRoleplayVocabWords to discover, since vocab_words requires both
+    // word and meaning to be non-empty.
+    vocabWords: (raw.vocabWords ?? [])
+      .filter((entry) => entry.word?.trim() && entry.meaning?.trim())
+      .map((entry) => ({ word: entry.word.trim(), meaning: entry.meaning.trim(), example: entry.example?.trim() ?? '' })),
   };
 }
 
@@ -100,18 +117,20 @@ function toRoleplaySummary(raw: RoleplaySummary): RoleplaySummary {
  * `targetLanguage` is the language being practiced (the roleplay dialogue
  * itself goes there) - see joon-dashboard's tutor/chat route.
  */
+export type RoleplayReply = { text: string; dialogueText: string | null };
+
 export async function startRoleplayTurn(
   topic: string,
   context: RoleplayContext,
   locale: string,
   targetLanguage: string
-): Promise<string> {
-  const { text } = await callTutorChat({ topic, messages: [], locale, targetLanguage, userContext: buildUserContext(context) });
+): Promise<RoleplayReply> {
+  const { text, dialogueText } = await callTutorChat({ topic, messages: [], locale, targetLanguage, userContext: buildUserContext(context) });
   // Defensive - callTutorChat's response is cast, not runtime-validated, so
   // a 200 with a missing/malformed `text` field falls back to '' instead of
   // propagating undefined into chat history (which JSON.stringify would
   // then silently drop from the next turn's request body entirely).
-  return text ?? '';
+  return { text: text ?? '', dialogueText: dialogueText ?? null };
 }
 
 /** `messages` must already include the new user turn at the end. */
@@ -121,15 +140,15 @@ export async function sendRoleplayTurn(
   context: RoleplayContext,
   locale: string,
   targetLanguage: string
-): Promise<string> {
-  const { text } = await callTutorChat({
+): Promise<RoleplayReply> {
+  const { text, dialogueText } = await callTutorChat({
     topic,
     messages: toApiMessages(messages),
     locale,
     targetLanguage,
     userContext: buildUserContext(context),
   });
-  return text ?? '';
+  return { text: text ?? '', dialogueText: dialogueText ?? null };
 }
 
 export async function endRoleplaySession(
@@ -204,4 +223,24 @@ export async function saveRoleplayTilEntry(input: SaveRoleplayTilEntryInput): Pr
     tags: input.summary.tags,
     roadmapId: input.roadmapId,
   });
+}
+
+export type SaveRoleplayVocabWordsInput = {
+  language: string;
+  words: RoleplayVocabWord[];
+};
+
+/**
+ * Auto-registers the session's key vocab words so they show up for spaced-
+ * repetition review, same as a manually-added word. Reuses createVocabWord's
+ * upsert-on-(user_id,language,word) behavior, so re-encountering a word in a
+ * later session refreshes its meaning/example rather than duplicating it or
+ * resetting review progress (those columns aren't touched by the upsert).
+ */
+export async function saveRoleplayVocabWords(input: SaveRoleplayVocabWordsInput): Promise<void> {
+  await Promise.all(
+    input.words.map((word) =>
+      createVocabWord({ language: input.language, word: word.word, meaning: word.meaning, exampleSentence: word.example })
+    )
+  );
 }

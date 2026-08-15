@@ -59,6 +59,7 @@
     "vocabReviewCta": "단어장 복습",
     "vocabDueCount": "복습할 단어 {{count}}개",
     "vocabAddCta": "단어 추가",
+    "vocabAllCta": "단어장 전체 보기",
     "roleplayCta": "롤플레이 연습",
     "deleteCta": "삭제",
     "deleteError": "삭제에 실패했어요. 잠시 후 다시 시도해주세요."
@@ -124,7 +125,10 @@
       "text": "✏️ 텍스트",
       "voice": "🎙️ 음성"
     },
-    "voiceComingSoon": "음성 입력은 준비 중이에요. 텍스트로 입력해주세요.",
+    "voiceIdle": "눌러서 말하기",
+    "voiceRecording": "듣고 있어요...",
+    "voiceTranscribing": "변환 중...",
+    "voiceError": "음성 인식에 실패했어요. 다시 시도해주세요.",
     "careerLevelLabel": "현재 수준",
     "careerLevelPlaceholder": "예: 시니어 프론트엔드 개발자, Angular 실무 3년차",
     "textPlaceholder": "예: 리드 아키텍트가 되고 싶어요",
@@ -182,6 +186,15 @@
     "saveCta": "저장하기",
     "errorGeneric": "저장에 실패했어요. 잠시 후 다시 시도해주세요."
   },
+  "vocabList": {
+    "backAccessibilityLabel": "뒤로가기",
+    "title": "단어장",
+    "loading": "단어 불러오는 중...",
+    "loadError": "단어를 불러오지 못했어요. 잠시 후 다시 시도해주세요.",
+    "empty": "아직 저장된 단어가 없어요.",
+    "deleteCta": "삭제",
+    "deleteError": "삭제에 실패했어요. 잠시 후 다시 시도해주세요."
+  },
   "tilDetail": {
     "backAccessibilityLabel": "뒤로가기",
     "loading": "불러오는 중...",
@@ -208,6 +221,13 @@
     "starting": "대화를 준비하고 있어요...",
     "thinking": "생각 중...",
     "composerPlaceholder": "메시지를 입력하세요",
+    "voiceIdle": "눌러서 말하기",
+    "voiceRecording": "듣고 있어요...",
+    "voiceTranscribing": "변환 중...",
+    "voiceAssessingPronunciation": "발음 분석 중...",
+    "playAccessibilityLabel": "음성으로 듣기",
+    "stopAccessibilityLabel": "재생 멈추기",
+    "pronunciationScore": "발음 {{score}}점",
     "sendCta": "전송",
     "endCta": "대화 종료",
     "endConfirmTitle": "대화를 종료할까요?",
@@ -219,6 +239,18 @@
     "retryCta": "다시 시도",
     "summaryTitle": "오늘의 대화 요약",
     "summaryTilLabel": "배운 내용",
+    "summaryVocabAdded": "단어장에 추가됨",
     "summaryDoneCta": "완료"
+  },
+  "voiceCapture": {
+    "backAccessibilityLabel": "뒤로가기",
+    "title": "음성으로 기록",
+    "placeholder": "마이크를 눌러 말해보세요",
+    "idle": "눌러서 말하기",
+    "listening": "듣고 있어요...",
+    "transcribing": "변환 중...",
+    "error": "음성 인식에 실패했어요. 다시 시도해주세요.",
+    "retryCta": "다시 녹음",
+    "continueCta": "다음"
   }
 }

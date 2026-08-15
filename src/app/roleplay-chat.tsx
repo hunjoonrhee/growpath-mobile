@@ -14,7 +14,9 @@ import { ThemedView } from '@/components/themed-view';
 import { Colors, Spacing } from '@/constants/theme';
 import { useActiveRoadmap } from '@/hooks/roadmap/use-active-roadmap';
 import { useRoleplayChat } from '@/hooks/roleplay/use-roleplay-chat';
+import { useRoleplayTts } from '@/hooks/roleplay/use-roleplay-tts';
 import { useAuth } from '@/lib/auth-context';
+import { roleplayLanguageToBcp47 } from '@/lib/roleplay-language-bcp47';
 
 export default function RoleplayChatScreen() {
   const { t, i18n } = useTranslation();
@@ -35,6 +37,8 @@ export default function RoleplayChatScreen() {
     roadmapId: activeRoadmap.adoptedRoadmapId.data,
   });
   const { start } = chat;
+  const voiceLanguage = roleplayLanguageToBcp47(language ?? '');
+  const tts = useRoleplayTts(voiceLanguage);
 
   useEffect(() => {
     // topic/language can be empty on a render that's about to redirect away
@@ -68,7 +72,7 @@ export default function RoleplayChatScreen() {
             <ThemedText type="subtitle" style={styles.summaryTitle}>
               {t('roleplay.summaryTitle')}
             </ThemedText>
-            <SessionSummaryCard summary={chat.summary} label={t('roleplay.summaryTilLabel')} />
+            <SessionSummaryCard summary={chat.summary} label={t('roleplay.summaryTilLabel')} vocabAddedLabel={t('roleplay.summaryVocabAdded')} />
             <PrimaryButton label={t('roleplay.summaryDoneCta')} onPress={() => router.replace('/log')} style={styles.doneButton} />
           </ScrollView>
         ) : activeRoadmap.isError && chat.messages.length === 0 ? (
@@ -108,7 +112,27 @@ export default function RoleplayChatScreen() {
               )}
 
               {chat.messages.map((message, index) => (
-                <ChatBubble key={index} message={message} />
+                <ChatBubble
+                  key={index}
+                  message={message}
+                  formatPronunciationLabel={(score) => t('roleplay.pronunciationScore', { score })}
+                  playback={
+                    // Model messages: always offered (reads the in-character
+                    // dialogue line). User messages: only when there's a
+                    // pronunciation score to reference - reads their own
+                    // transcript back as a "how this should sound" reference,
+                    // reusing the same TTS pipeline.
+                    voiceLanguage && (message.role === 'model' || message.pronunciation)
+                      ? {
+                          isPlaying: tts.playingIndex === index,
+                          isLoading: tts.isLoading && tts.playingIndex === index,
+                          onPress: () => tts.play(index, message.dialogueText ?? message.text),
+                          playAccessibilityLabel: t('roleplay.playAccessibilityLabel'),
+                          stopAccessibilityLabel: t('roleplay.stopAccessibilityLabel'),
+                        }
+                      : undefined
+                  }
+                />
               ))}
 
               {chat.isSending && (
@@ -157,6 +181,11 @@ export default function RoleplayChatScreen() {
               disabled={chat.isStarting || chat.isSending || chat.isEnding || chat.errorKind !== null}
               placeholder={t('roleplay.composerPlaceholder')}
               sendLabel={t('roleplay.sendCta')}
+              voiceLanguage={voiceLanguage}
+              voiceIdleLabel={t('roleplay.voiceIdle')}
+              voiceRecordingLabel={t('roleplay.voiceRecording')}
+              voiceTranscribingLabel={t('roleplay.voiceTranscribing')}
+              voiceAssessingPronunciationLabel={t('roleplay.voiceAssessingPronunciation')}
             />
           </KeyboardAvoidingView>
         )}

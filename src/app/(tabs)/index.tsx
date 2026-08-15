@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Pressable, ScrollView, StyleSheet } from 'react-native';
+import { Alert, Pressable, RefreshControl, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CompassDial } from '@/components/compass-dial';
@@ -14,11 +14,12 @@ import { QuickStatsRow } from '@/components/today/QuickStatsRow';
 import { RecommendationCard } from '@/components/today/RecommendationCard';
 import { StageProgressBar } from '@/components/today/StageProgressBar';
 import { TimerHandoffSheet } from '@/components/today/TimerHandoffSheet';
-import { Spacing, Typography } from '@/constants/theme';
+import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useActiveRoadmap } from '@/hooks/roadmap/use-active-roadmap';
 import { useGapAnalysis } from '@/hooks/roadmap/use-gap-analysis';
 import { useStudyStreak } from '@/hooks/sessions/use-study-streak';
 import { useWeeklySessionCount } from '@/hooks/sessions/use-weekly-session-count';
+import { usePullToRefresh } from '@/hooks/use-pull-to-refresh';
 import { useDueVocabWordCount } from '@/hooks/vocab/use-due-vocab-word-count';
 import { useTodayWidgetSync } from '@/hooks/widgets/use-today-widget-sync';
 import { useAuth } from '@/lib/auth-context';
@@ -36,6 +37,7 @@ export default function TodayScreen() {
   const weeklySessionCount = useWeeklySessionCount(userId);
   const dueVocabWordCount = useDueVocabWordCount(userId);
   const [isHandoffSheetVisible, setIsHandoffSheetVisible] = useState(false);
+  const { refreshing, onRefresh } = usePullToRefresh();
 
   const displayName = session?.user.email?.split('@')[0] ?? '';
   const recommendation = roadmap.data ? deriveTodayRecommendation(roadmap.data.stages, focusStageLevel.data ?? null) : null;
@@ -83,7 +85,9 @@ export default function TodayScreen() {
   return (
     <ThemedView style={styles.screen}>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
-        <ScrollView contentContainerStyle={styles.content}>
+        <ScrollView
+          contentContainerStyle={styles.content}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.pri2} />}>
           <GreetingHeader name={displayName} streakDays={streak.data ?? 0} />
 
           {isLoading && (
@@ -147,10 +151,7 @@ export default function TodayScreen() {
         </ScrollView>
       </SafeAreaView>
 
-      {/* Icon/label imply voice capture specifically, so route this to the
-          same "not ready yet" messaging as Log's voice button rather than
-          silently opening the text-only manual entry flow instead. */}
-      <CaptureFab onPress={() => Alert.alert(t('log.captureComingSoon'))} />
+      <CaptureFab onPress={() => router.push('/voice-capture')} />
 
       <TimerHandoffSheet
         visible={isHandoffSheetVisible}

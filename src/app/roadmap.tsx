@@ -1,6 +1,6 @@
 import { Redirect, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Alert, ScrollView, StyleSheet } from 'react-native';
+import { Alert, RefreshControl, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BackHeader } from '@/components/navigation/BackHeader';
@@ -10,10 +10,11 @@ import { RoadmapHero } from '@/components/roadmap/RoadmapHero';
 import { StageTimeline } from '@/components/roadmap/StageTimeline';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Spacing } from '@/constants/theme';
+import { Colors, Spacing } from '@/constants/theme';
 import { useActiveRoadmap } from '@/hooks/roadmap/use-active-roadmap';
 import { useSwitchActiveRoadmap } from '@/hooks/roadmap/use-switch-active-roadmap';
 import { useUserRoadmaps } from '@/hooks/roadmap/use-user-roadmaps';
+import { usePullToRefresh } from '@/hooks/use-pull-to-refresh';
 import { useAuth } from '@/lib/auth-context';
 
 export default function RoadmapScreen() {
@@ -25,6 +26,7 @@ export default function RoadmapScreen() {
   const { adoptedRoadmapId, roadmap, focusStageLevel, hasAdoptedRoadmap, isLoading, isError } = useActiveRoadmap(userId);
   const userRoadmaps = useUserRoadmaps(userId);
   const switchRoadmap = useSwitchActiveRoadmap(userId);
+  const { refreshing, onRefresh } = usePullToRefresh();
 
   if (!session) return <Redirect href="/login" />;
 
@@ -44,7 +46,9 @@ export default function RoadmapScreen() {
       <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
         <BackHeader accessibilityLabel={t('roadmap.backAccessibilityLabel')} onPress={() => router.back()} />
 
-        <ScrollView contentContainerStyle={styles.content}>
+        <ScrollView
+          contentContainerStyle={styles.content}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.pri2} />}>
           {isLoading && (
             <ThemedText type="small" themeColor="textDim" style={styles.centerText}>
               {t('roadmap.loading')}

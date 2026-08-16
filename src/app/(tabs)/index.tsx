@@ -106,7 +106,12 @@ export default function TodayScreen() {
             </ThemedText>
           )}
 
-          {!isLoading && !isError && !hasAdoptedRoadmap && <NoActiveRoadmapState onPressSetGoal={() => router.push('/goal-setup')} />}
+          {/* Routes to /roadmap, not straight to /goal-setup - if the user has
+              other (dormant/unadopted) roadmaps, that screen lists them to
+              reactivate via OtherGoalsList; jumping straight to a blank
+              creation form would hide those and push the user toward
+              generating a duplicate. */}
+          {!isLoading && !isError && !hasAdoptedRoadmap && <NoActiveRoadmapState onPressSetGoal={() => router.push('/roadmap')} />}
 
           {!isLoading && !isError && roadmap.data && (
             <>

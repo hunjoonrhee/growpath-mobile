@@ -118,6 +118,7 @@
     "editCareerLevelLabel": "현재 수준",
     "editSaveCta": "저장하기",
     "editCancelCta": "취소",
+    "editGenerating": "AI가 로드맵을 다시 만들고 있어요...",
     "deleteConfirmTitle": "이 목표를 삭제할까요?",
     "deleteConfirmMessage": "로드맵과 이 목표에 연결된 학습 계획이 삭제돼요. 기록/롤플레이 기록은 남아있지만 목표 연결이 해제돼요.",
     "deleteCancel": "취소",

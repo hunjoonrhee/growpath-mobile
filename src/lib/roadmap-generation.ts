@@ -8,6 +8,8 @@ export type GenerateRoadmapInput = {
   goalText: string;
   careerLevel: string;
   locale: string;
+  /** Regenerates this existing roadmap in place (same id, fresh stages/domain/targetLanguage) instead of creating a new one - see the roadmap edit screen. */
+  roadmapId?: string;
 };
 
 type GenerateRoadmapApiResponse = {
@@ -51,7 +53,7 @@ export async function generateRoadmap(input: GenerateRoadmapInput): Promise<Road
         'Content-Type': 'application/json',
         Authorization: `Bearer ${session.access_token}`,
       },
-      body: JSON.stringify({ goal: input.goalText, careerLevel: input.careerLevel, locale: input.locale }),
+      body: JSON.stringify({ goal: input.goalText, careerLevel: input.careerLevel, locale: input.locale, roadmapId: input.roadmapId }),
       signal: AbortSignal.timeout(API_CALL_TIMEOUT_MS),
     });
   } catch (error) {

@@ -17,14 +17,14 @@ import { ThemedView } from '@/components/themed-view';
 import { Colors, Spacing } from '@/constants/theme';
 import { useActiveRoadmap } from '@/hooks/roadmap/use-active-roadmap';
 import { useDeleteRoadmap } from '@/hooks/roadmap/use-delete-roadmap';
+import { useRegenerateRoadmap } from '@/hooks/roadmap/use-regenerate-roadmap';
 import { useSwitchActiveRoadmap } from '@/hooks/roadmap/use-switch-active-roadmap';
-import { useUpdateRoadmap } from '@/hooks/roadmap/use-update-roadmap';
 import { useUserRoadmaps } from '@/hooks/roadmap/use-user-roadmaps';
 import { usePullToRefresh } from '@/hooks/use-pull-to-refresh';
 import { useAuth } from '@/lib/auth-context';
 
 export default function RoadmapScreen() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const router = useRouter();
   const { session } = useAuth();
   const userId = session?.user.id;
@@ -32,7 +32,7 @@ export default function RoadmapScreen() {
   const { adoptedRoadmapId, roadmap, focusStageLevel, hasAdoptedRoadmap, isLoading, isError } = useActiveRoadmap(userId);
   const userRoadmaps = useUserRoadmaps(userId);
   const switchRoadmap = useSwitchActiveRoadmap(userId);
-  const updateRoadmap = useUpdateRoadmap(userId);
+  const regenerateRoadmap = useRegenerateRoadmap(userId);
   const deleteRoadmap = useDeleteRoadmap(userId);
   const { refreshing, onRefresh } = usePullToRefresh();
   const [isEditing, setIsEditing] = useState(false);
@@ -46,8 +46,8 @@ export default function RoadmapScreen() {
   };
 
   const handleSaveEdit = (roadmapId: string, input: { goal: string; careerLevel: string }) => {
-    updateRoadmap.mutate(
-      { roadmapId, input },
+    regenerateRoadmap.mutate(
+      { goalText: input.goal, careerLevel: input.careerLevel, locale: i18n.language, roadmapId },
       {
         onSuccess: () => setIsEditing(false),
         onError: () => Alert.alert(t('roadmap.errorGeneric')),
@@ -103,7 +103,8 @@ export default function RoadmapScreen() {
                   careerLevelLabel={t('roadmap.editCareerLevelLabel')}
                   saveLabel={t('roadmap.editSaveCta')}
                   cancelLabel={t('roadmap.editCancelCta')}
-                  isSaving={updateRoadmap.isPending}
+                  isSaving={regenerateRoadmap.isPending}
+                  savingLabel={t('roadmap.editGenerating')}
                   onSave={(input) => handleSaveEdit(roadmap.data!.id, input)}
                   onCancel={() => setIsEditing(false)}
                 />

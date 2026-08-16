@@ -118,6 +118,7 @@
     "editCareerLevelLabel": "Current level",
     "editSaveCta": "Save",
     "editCancelCta": "Cancel",
+    "editGenerating": "AI is rebuilding your roadmap...",
     "deleteConfirmTitle": "Delete this goal?",
     "deleteConfirmMessage": "The roadmap and this goal's learning plan will be deleted. Your logs/roleplay history stay, just unlinked from this goal.",
     "deleteCancel": "Cancel",

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
 import { PrimaryButton } from '@/components/forms/PrimaryButton';
 import { TextField } from '@/components/forms/TextField';
@@ -14,11 +14,13 @@ export type RoadmapEditFormProps = {
   saveLabel: string;
   cancelLabel: string;
   isSaving: boolean;
+  /** Shown next to a spinner while isSaving - regenerating calls the same AI roadmap generation as creating a goal, so it isn't instant. */
+  savingLabel: string;
   onSave: (input: { goal: string; careerLevel: string }) => void;
   onCancel: () => void;
 };
 
-/** Edits the goal text/career level only - the AI-generated stages, domain, and targetLanguage stay as originally generated (a full re-classify would need a fresh /api/roadmap/generate call, not a plain field edit). */
+/** Edits the goal text/career level and regenerates the roadmap's stages/domain/targetLanguage to match (same AI call as creating a goal) - see useRegenerateRoadmap. */
 export function RoadmapEditForm({
   goal,
   careerLevel,
@@ -27,6 +29,7 @@ export function RoadmapEditForm({
   saveLabel,
   cancelLabel,
   isSaving,
+  savingLabel,
   onSave,
   onCancel,
 }: RoadmapEditFormProps) {
@@ -38,6 +41,14 @@ export function RoadmapEditForm({
     <View style={styles.container}>
       <TextField label={goalLabel} value={editedGoal} onChangeText={setEditedGoal} editable={!isSaving} />
       <TextField label={careerLevelLabel} value={editedCareerLevel} onChangeText={setEditedCareerLevel} editable={!isSaving} />
+      {isSaving && (
+        <View style={styles.savingRow}>
+          <ActivityIndicator size="small" color={Colors.pri2} />
+          <ThemedText type="small" themeColor="textDim">
+            {savingLabel}
+          </ThemedText>
+        </View>
+      )}
       <View style={styles.actions}>
         <PrimaryButton
           label={saveLabel}
@@ -63,6 +74,12 @@ const styles = StyleSheet.create({
   container: {
     gap: Spacing.three - 2,
     paddingVertical: Spacing.two,
+  },
+  savingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.two,
   },
   actions: {
     flexDirection: 'row',

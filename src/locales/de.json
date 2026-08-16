@@ -118,6 +118,7 @@
     "editCareerLevelLabel": "Aktuelles Niveau",
     "editSaveCta": "Speichern",
     "editCancelCta": "Abbrechen",
+    "editGenerating": "Die KI erstellt deine Roadmap neu...",
     "deleteConfirmTitle": "Dieses Ziel löschen?",
     "deleteConfirmMessage": "Die Roadmap und der Lernplan dieses Ziels werden gelöscht. Deine Einträge/Rollenspiel-Verläufe bleiben erhalten, nur die Verknüpfung zu diesem Ziel wird entfernt.",
     "deleteCancel": "Abbrechen",

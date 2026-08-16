@@ -140,17 +140,6 @@ export async function switchActiveRoadmap(roadmapId: string): Promise<void> {
   if (error) throw error;
 }
 
-export type UpdateRoadmapInput = { goal: string; careerLevel: string };
-
-/** Edits the goal text/career level only - doesn't regenerate stages, domain, or targetLanguage. */
-export async function updateRoadmap(roadmapId: string, input: UpdateRoadmapInput): Promise<void> {
-  const { error } = await supabase
-    .from('ai_roadmaps')
-    .update({ goal: input.goal, career_level: input.careerLevel })
-    .eq('id', roadmapId);
-  if (error) throw error;
-}
-
 /**
  * Deletes a roadmap and detaches (rather than cascade-deletes) records that
  * reference it - ai_roadmaps has no FK back to it from any migration in

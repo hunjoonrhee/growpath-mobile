@@ -3,20 +3,33 @@ import { Alert, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { NavRow } from '@/components/common/NavRow';
+import { CertificationsSection } from '@/components/profile/CertificationsSection';
 import { LanguageSelector } from '@/components/profile/LanguageSelector';
+import { ProfileInfoForm } from '@/components/profile/ProfileInfoForm';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing, Typography } from '@/constants/theme';
+import { useProfileInfo } from '@/hooks/profile/use-profile-info';
+import { useSaveProfileInfo } from '@/hooks/profile/use-save-profile-info';
 import { clearTodayWidgetSnapshot } from '@/hooks/widgets/use-today-widget-sync';
+import { useAuth } from '@/lib/auth-context';
 import { setAppLanguage, type SupportedLanguage } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
 
-// TODO(phase-3+): avatar upload, stats, career goal summary.
+// TODO(phase-3+): avatar upload, stats.
 export default function ProfileScreen() {
   const { t, i18n } = useTranslation();
+  const { session } = useAuth();
+  const userId = session?.user.id;
+  const profileInfo = useProfileInfo(userId);
+  const saveProfileInfo = useSaveProfileInfo(userId);
 
   const handleSelectLanguage = (language: SupportedLanguage) => {
     setAppLanguage(language).catch(() => Alert.alert(t('profile.languageError')));
+  };
+
+  const handleSaveInfo = (info: { name: string; bio: string }) => {
+    saveProfileInfo.mutate(info, { onError: () => Alert.alert(t('profile.saveError')) });
   };
 
   const handleLogout = () => {
@@ -43,6 +56,36 @@ export default function ProfileScreen() {
           <ThemedText type="title" style={styles.title}>
             {t('profile.title')}
           </ThemedText>
+
+          <ThemedText type="small" themeColor="textFaint" style={styles.sectionTitle}>
+            {t('profile.infoSectionTitle')}
+          </ThemedText>
+          {profileInfo.isLoading && (
+            <ThemedText type="small" themeColor="textDim">
+              {t('profile.loading')}
+            </ThemedText>
+          )}
+          {!profileInfo.isLoading && profileInfo.isError && (
+            <ThemedText type="small" themeColor="amber">
+              {t('profile.loadError')}
+            </ThemedText>
+          )}
+          {profileInfo.data && (
+            <ProfileInfoForm
+              name={profileInfo.data.name}
+              bio={profileInfo.data.bio}
+              nameLabel={t('profile.nameLabel')}
+              namePlaceholder={t('profile.namePlaceholder')}
+              bioLabel={t('profile.bioLabel')}
+              bioPlaceholder={t('profile.bioPlaceholder')}
+              saveLabel={t('profile.saveCta')}
+              savingLabel={t('profile.saving')}
+              isSaving={saveProfileInfo.isPending}
+              onSave={handleSaveInfo}
+            />
+          )}
+
+          <CertificationsSection userId={userId} />
 
           <ThemedText type="small" themeColor="textFaint" style={styles.sectionTitle}>
             {t('profile.settingsSectionTitle')}

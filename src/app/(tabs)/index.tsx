@@ -15,6 +15,7 @@ import { RecommendationCard } from '@/components/today/RecommendationCard';
 import { StageProgressBar } from '@/components/today/StageProgressBar';
 import { TimerHandoffSheet } from '@/components/today/TimerHandoffSheet';
 import { Colors, Spacing, Typography } from '@/constants/theme';
+import { useProfileInfo } from '@/hooks/profile/use-profile-info';
 import { useActiveRoadmap } from '@/hooks/roadmap/use-active-roadmap';
 import { useGapAnalysis } from '@/hooks/roadmap/use-gap-analysis';
 import { useStudyStreak } from '@/hooks/sessions/use-study-streak';
@@ -32,6 +33,7 @@ export default function TodayScreen() {
   const userId = session?.user.id;
 
   const { adoptedRoadmapId, roadmap, focusStageLevel, hasAdoptedRoadmap, isLoading, isError } = useActiveRoadmap(userId);
+  const profileInfo = useProfileInfo(userId);
   const gapAnalysis = useGapAnalysis(userId, adoptedRoadmapId.data, roadmap.data);
   const streak = useStudyStreak(userId);
   const weeklySessionCount = useWeeklySessionCount(userId);
@@ -43,7 +45,10 @@ export default function TodayScreen() {
   const [isHandoffSheetVisible, setIsHandoffSheetVisible] = useState(false);
   const { refreshing, onRefresh } = usePullToRefresh();
 
-  const displayName = session?.user.email?.split('@')[0] ?? '';
+  // Prefers the profile's saved name (Profile tab) over the email prefix -
+  // falls back to the latter until the user sets one, so the greeting is
+  // never blank.
+  const displayName = profileInfo.data?.name || session?.user.email?.split('@')[0] || '';
   const recommendation = roadmap.data ? deriveTodayRecommendation(roadmap.data.stages, focusStageLevel.data ?? null) : null;
   const totalStages = roadmap.data?.stages.length ?? 0;
   const currentStage = focusStageLevel.data ?? 1;

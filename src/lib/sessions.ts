@@ -67,13 +67,16 @@ function startOfIsoWeek(date: Date): Date {
 }
 
 /**
- * Scoped to `roadmapId` when given, so switching the active goal shows that
- * goal's own log instead of every session ever recorded under any goal.
- * Sessions with no roadmap_id (logged before the user ever adopted a goal)
- * are goal-less rather than belonging to some *other* goal, so they stay
- * visible under every scope instead of a plain `.eq()`, which would hide
- * them the moment any roadmap becomes active and never show them again.
- * `roadmapId === null` (no active roadmap) falls back to showing everything.
+ * Strictly scoped to `roadmapId` when given, so switching the active goal
+ * shows only that goal's own log. Previously fell back to also showing
+ * roadmap_id-null ("goal-less") sessions under every roadmap, on the theory
+ * that they belong to no *other* goal in particular - in practice that made
+ * the same pre-goal entries bleed into every goal's log simultaneously,
+ * which read as the data being mixed up rather than cleanly separated
+ * (reported directly: switching goals didn't actually separate the log).
+ * `roadmapId === null` (no active roadmap at all) still shows everything -
+ * there's only one log to show in that case, so there's no cross-goal
+ * mixing to avoid.
  */
 export async function fetchRecentSessions(userId: string, roadmapId: string | null, limit = 20): Promise<SessionRecord[]> {
   let query = supabase
@@ -81,7 +84,7 @@ export async function fetchRecentSessions(userId: string, roadmapId: string | nu
     .select('id, title, duration_minutes, date, til, tags, created_at')
     .eq('user_id', userId);
   if (roadmapId) {
-    query = query.or(`roadmap_id.eq.${roadmapId},roadmap_id.is.null`);
+    query = query.eq('roadmap_id', roadmapId);
   }
   const { data, error } = await query.order('created_at', { ascending: false }).limit(limit);
   if (error) throw error;
@@ -148,10 +151,8 @@ export async function deleteSession(id: string, userId: string): Promise<void> {
  * limited) so which 200 rows come back is deterministic instead of
  * whatever Postgres happens to return.
  *
- * Strictly scoped to roadmapId (no fetchRecentSessions-style fallback to
- * goal-less sessions) - that fallback exists there so untagged sessions
- * stay visible in the log UI under any roadmap, but for scoring it would
- * let sessions logged before adopting this goal count as evidence for it.
+ * Strictly scoped to roadmapId, same as fetchRecentSessions now - sessions
+ * logged before adopting this goal must not count as evidence for it.
  */
 export async function fetchSessionTags(userId: string, roadmapId: string | null, limit = 200): Promise<string[]> {
   let query = supabase.from('sessions').select('tags').eq('user_id', userId);

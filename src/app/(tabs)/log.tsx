@@ -10,11 +10,12 @@ import { ContextBanner } from '@/components/log/ContextBanner';
 import { SessionLogList } from '@/components/log/SessionLogList';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Colors, Spacing, Typography } from '@/constants/theme';
+import { Spacing, Typography } from '@/constants/theme';
 import { useActiveRoadmap } from '@/hooks/roadmap/use-active-roadmap';
 import { useActiveRoadmapSessions } from '@/hooks/sessions/use-active-roadmap-sessions';
 import { useDeleteSession } from '@/hooks/sessions/use-delete-session';
 import { usePullToRefresh } from '@/hooks/use-pull-to-refresh';
+import { useTheme } from '@/hooks/use-theme';
 import { useDueVocabWordCount } from '@/hooks/vocab/use-due-vocab-word-count';
 import { useAuth } from '@/lib/auth-context';
 
@@ -22,6 +23,7 @@ export default function LogScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { session } = useAuth();
+  const colors = useTheme();
   // Scoped to the active goal, so switching goals shows that goal's own log
   // instead of every session ever recorded under any goal.
   const activeRoadmapSessions = useActiveRoadmapSessions(session?.user.id);
@@ -66,7 +68,7 @@ export default function LogScreen() {
       <SafeAreaView style={styles.safeArea} edges={['top']}>
         <ScrollView
           contentContainerStyle={styles.content}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.pri2} />}>
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.pri2} />}>
           <ThemedText type="title" style={styles.title}>
             {t('log.title')}
           </ThemedText>
@@ -90,7 +92,7 @@ export default function LogScreen() {
             accessibilityRole="button"
             accessibilityLabel={t('log.manualEntryCta')}
             onPress={handlePressManualEntry}
-            style={styles.manualEntryButton}>
+            style={[styles.manualEntryButton, { borderColor: colors.border }]}>
             <ThemedText type="smallBold" themeColor="pri2">
               {t('log.manualEntryCta')}
             </ThemedText>
@@ -151,7 +153,6 @@ const styles = StyleSheet.create({
     marginTop: Spacing.three - 2,
     alignSelf: 'center',
     borderWidth: 1,
-    borderColor: Colors.border,
     borderRadius: 999,
     paddingVertical: Spacing.two,
     paddingHorizontal: Spacing.four,

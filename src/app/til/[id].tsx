@@ -8,9 +8,10 @@ import { TilMarkdown } from '@/components/log/TilMarkdown';
 import { BackHeader } from '@/components/navigation/BackHeader';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Colors, Spacing, Typography } from '@/constants/theme';
+import { Spacing, Typography } from '@/constants/theme';
 import { useDeleteSession } from '@/hooks/sessions/use-delete-session';
 import { useSession } from '@/hooks/sessions/use-session';
+import { useTheme } from '@/hooks/use-theme';
 import { useAuth } from '@/lib/auth-context';
 import { relativeDateLabel } from '@/lib/date';
 
@@ -18,6 +19,7 @@ export default function TilDetailScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { session: authSession } = useAuth();
+  const colors = useTheme();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const session = useSession(id, authSession?.user.id);
   const deleteSession = useDeleteSession(authSession?.user.id);
@@ -93,7 +95,11 @@ export default function TilDetailScreen() {
               )}
 
               <View style={styles.actions}>
-                <Pressable accessibilityRole="button" accessibilityLabel={t('tilDetail.editCta')} onPress={handleEdit} style={styles.actionButton}>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={t('tilDetail.editCta')}
+                  onPress={handleEdit}
+                  style={[styles.actionButton, { backgroundColor: colors.surf2, borderColor: colors.border }]}>
                   <ThemedText type="smallBold">{t('tilDetail.editCta')}</ThemedText>
                 </Pressable>
                 <Pressable
@@ -101,7 +107,11 @@ export default function TilDetailScreen() {
                   accessibilityLabel={t('tilDetail.deleteCta')}
                   onPress={handleDelete}
                   disabled={deleteSession.isPending}
-                  style={[styles.actionButton, deleteSession.isPending && styles.actionButtonDisabled]}>
+                  style={[
+                    styles.actionButton,
+                    { backgroundColor: colors.surf2, borderColor: colors.border },
+                    deleteSession.isPending && styles.actionButtonDisabled,
+                  ]}>
                   <ThemedText type="smallBold" themeColor="amber">
                     {t('tilDetail.deleteCta')}
                   </ThemedText>
@@ -150,9 +160,7 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     flex: 1,
-    backgroundColor: Colors.surf2,
     borderWidth: 1,
-    borderColor: Colors.border,
     borderRadius: 16,
     paddingVertical: Spacing.three,
     alignItems: 'center',

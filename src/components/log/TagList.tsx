@@ -1,7 +1,8 @@
 import { StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 
 export type TagListProps = {
   tags: string[];
@@ -10,6 +11,7 @@ export type TagListProps = {
 };
 
 export function TagList({ tags, maxVisible }: TagListProps) {
+  const colors = useTheme();
   if (tags.length === 0) return null;
 
   const visibleTags = maxVisible !== undefined ? tags.slice(0, maxVisible) : tags;
@@ -18,12 +20,12 @@ export function TagList({ tags, maxVisible }: TagListProps) {
   return (
     <View style={styles.tags}>
       {visibleTags.map((tag) => (
-        <ThemedText key={tag} type="small" themeColor="textDim" style={styles.tag}>
+        <ThemedText key={tag} type="small" themeColor="textDim" style={[styles.tag, { backgroundColor: colors.surf2 }]}>
           #{tag}
         </ThemedText>
       ))}
       {hiddenCount > 0 && (
-        <ThemedText type="small" themeColor="textFaint" style={styles.tag}>
+        <ThemedText type="small" themeColor="textFaint" style={[styles.tag, { backgroundColor: colors.surf2 }]}>
           +{hiddenCount}
         </ThemedText>
       )}
@@ -38,7 +40,6 @@ const styles = StyleSheet.create({
     gap: Spacing.one + 2,
   },
   tag: {
-    backgroundColor: Colors.surf2,
     borderRadius: 999,
     paddingVertical: 3,
     paddingHorizontal: 9,

@@ -3,7 +3,8 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import { TagList } from '@/components/log/TagList';
 import { ThemedText } from '@/components/themed-text';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 import { relativeDateLabel } from '@/lib/date';
 import type { SessionRecord } from '@/lib/sessions';
 
@@ -14,6 +15,7 @@ export type SessionLogCardProps = {
 
 export function SessionLogCard({ session, onPress }: SessionLogCardProps) {
   const { t } = useTranslation();
+  const colors = useTheme();
   const dateLabel = relativeDateLabel(session.date, t);
   const timeLabel =
     session.durationMinutes !== null ? t('log.durationAndDate', { minutes: session.durationMinutes, date: dateLabel }) : dateLabel;
@@ -25,7 +27,7 @@ export function SessionLogCard({ session, onPress }: SessionLogCardProps) {
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
       onPress={onPress}
-      style={({ pressed }) => [styles.card, pressed && styles.pressed]}>
+      style={({ pressed }) => [styles.card, { backgroundColor: colors.surf, borderColor: colors.border }, pressed && styles.pressed]}>
       <View style={styles.top}>
         <ThemedText type="smallBold" style={styles.title} numberOfLines={1}>
           {session.title}
@@ -47,9 +49,7 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.surf,
     borderWidth: 1,
-    borderColor: Colors.border,
     borderRadius: 14,
     paddingVertical: Spacing.two + 2,
     paddingHorizontal: Spacing.three - 2,

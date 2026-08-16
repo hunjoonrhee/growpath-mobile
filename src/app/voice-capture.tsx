@@ -8,7 +8,8 @@ import { BackHeader } from '@/components/navigation/BackHeader';
 import { PrimaryButton } from '@/components/forms/PrimaryButton';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 import { useCloudDictation } from '@/hooks/voice/use-cloud-dictation';
 import { useAuth } from '@/lib/auth-context';
 import { toBcp47 } from '@/lib/locale-bcp47';
@@ -17,6 +18,7 @@ export default function VoiceCaptureScreen() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
   const { session } = useAuth();
+  const colors = useTheme();
   const [transcript, setTranscript] = useState('');
   const { status, start, stop } = useCloudDictation(toBcp47(i18n.language));
 
@@ -62,7 +64,7 @@ export default function VoiceCaptureScreen() {
             {t('voiceCapture.title')}
           </ThemedText>
 
-          <View style={styles.transcriptBox}>
+          <View style={[styles.transcriptBox, { backgroundColor: colors.surf, borderColor: colors.border }]}>
             <ThemedText style={transcript ? undefined : styles.placeholder} themeColor={transcript ? undefined : 'textDim'}>
               {transcript || t('voiceCapture.placeholder')}
             </ThemedText>
@@ -78,14 +80,22 @@ export default function VoiceCaptureScreen() {
               accessibilityLabel={statusLabel}
               onPress={handleRecordPress}
               disabled={isTranscribing}
-              style={[styles.recordButton, isRecording && styles.recordButtonActive, isTranscribing && styles.recordButtonDisabled]}>
-              <ThemedText style={styles.recordIcon}>{isRecording ? '⏹️' : '🎙️'}</ThemedText>
+              style={[
+                styles.recordButton,
+                { backgroundColor: isRecording ? colors.amber : colors.pri },
+                isTranscribing && styles.recordButtonDisabled,
+              ]}>
+              <ThemedText style={[styles.recordIcon, { fontFamily: undefined }]}>{isRecording ? '⏹️' : '🎙️'}</ThemedText>
             </Pressable>
           )}
 
           {transcript.length > 0 && (
             <View style={styles.actions}>
-              <Pressable accessibilityRole="button" accessibilityLabel={t('voiceCapture.retryCta')} onPress={handleRetry} style={styles.retryButton}>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={t('voiceCapture.retryCta')}
+                onPress={handleRetry}
+                style={[styles.retryButton, { backgroundColor: colors.surf2, borderColor: colors.border }]}>
                 <ThemedText type="smallBold">{t('voiceCapture.retryCta')}</ThemedText>
               </Pressable>
               <PrimaryButton label={t('voiceCapture.continueCta')} onPress={handleContinue} style={styles.continueButton} />
@@ -118,9 +128,7 @@ const styles = StyleSheet.create({
   transcriptBox: {
     width: '100%',
     minHeight: 140,
-    backgroundColor: Colors.surf,
     borderWidth: 1,
-    borderColor: Colors.border,
     borderRadius: 16,
     padding: Spacing.three,
   },
@@ -134,12 +142,8 @@ const styles = StyleSheet.create({
     width: 72,
     height: 72,
     borderRadius: 36,
-    backgroundColor: Colors.pri,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  recordButtonActive: {
-    backgroundColor: Colors.amber,
   },
   recordButtonDisabled: {
     opacity: 0.5,
@@ -154,9 +158,7 @@ const styles = StyleSheet.create({
   },
   retryButton: {
     flex: 1,
-    backgroundColor: Colors.surf2,
     borderWidth: 1,
-    borderColor: Colors.border,
     borderRadius: 16,
     paddingVertical: Spacing.three,
     alignItems: 'center',

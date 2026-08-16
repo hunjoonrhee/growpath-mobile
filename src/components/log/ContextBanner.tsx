@@ -2,6 +2,8 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
+import { withAlpha } from '@/lib/color';
 
 export type ContextBannerProps = {
   message: string;
@@ -10,8 +12,10 @@ export type ContextBannerProps = {
 };
 
 export function ContextBanner({ message, dismissAccessibilityLabel, onDismiss }: ContextBannerProps) {
+  const colors = useTheme();
+
   return (
-    <View style={styles.banner}>
+    <View style={[styles.banner, { backgroundColor: withAlpha(colors.ok, 0.1), borderColor: withAlpha(colors.ok, 0.3) }]}>
       <ThemedText type="small" themeColor="ok" style={styles.message}>
         ⏱️ {message}
       </ThemedText>
@@ -27,9 +31,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.two,
-    backgroundColor: 'rgba(16,185,129,0.1)',
     borderWidth: 1,
-    borderColor: 'rgba(16,185,129,0.3)',
     borderRadius: 14,
     paddingVertical: Spacing.two + 2,
     paddingHorizontal: Spacing.three,

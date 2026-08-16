@@ -7,7 +7,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { BackHeader } from '@/components/navigation/BackHeader';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 import { useStudyTimerActivity } from '@/hooks/widgets/use-study-timer-activity';
 import { useAuth } from '@/lib/auth-context';
 import { formatElapsedSeconds } from '@/lib/date';
@@ -18,6 +19,7 @@ export default function TimerScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { session } = useAuth();
+  const colors = useTheme();
   const { topic } = useLocalSearchParams<{ topic?: string }>();
 
   const [status, setStatus] = useState<TimerStatus>('running');
@@ -79,7 +81,7 @@ export default function TimerScreen() {
             </ThemedText>
           ) : null}
 
-          <ThemedText style={styles.clock}>{formatElapsedSeconds(elapsedSeconds)}</ThemedText>
+          <ThemedText style={[styles.clock, { color: colors.text }]}>{formatElapsedSeconds(elapsedSeconds)}</ThemedText>
 
           <ThemedText type="small" themeColor="textDim" style={styles.status}>
             {status === 'running' ? t('timer.statusRunning') : t('timer.statusPaused')}
@@ -90,11 +92,15 @@ export default function TimerScreen() {
               accessibilityRole="button"
               accessibilityLabel={status === 'running' ? t('timer.pauseCta') : t('timer.resumeCta')}
               onPress={handleTogglePause}
-              style={styles.secondaryButton}>
+              style={[styles.secondaryButton, { backgroundColor: colors.surf2, borderColor: colors.border }]}>
               <ThemedText type="smallBold">{status === 'running' ? t('timer.pauseCta') : t('timer.resumeCta')}</ThemedText>
             </Pressable>
-            <Pressable accessibilityRole="button" accessibilityLabel={t('timer.finishCta')} onPress={handleFinish} style={styles.primaryButton}>
-              <ThemedText type="smallBold" style={styles.primaryButtonLabel}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('timer.finishCta')}
+              onPress={handleFinish}
+              style={[styles.primaryButton, { backgroundColor: colors.pri }]}>
+              <ThemedText type="smallBold" style={{ color: colors.onPri }}>
                 {t('timer.finishCta')}
               </ThemedText>
             </Pressable>
@@ -127,7 +133,6 @@ const styles = StyleSheet.create({
     fontSize: 56,
     lineHeight: 64,
     fontWeight: '800',
-    color: Colors.text,
     fontVariant: ['tabular-nums'],
   },
   status: {
@@ -140,21 +145,15 @@ const styles = StyleSheet.create({
   },
   secondaryButton: {
     flex: 1,
-    backgroundColor: Colors.surf2,
     borderWidth: 1,
-    borderColor: Colors.border,
     borderRadius: 16,
     paddingVertical: Spacing.three,
     alignItems: 'center',
   },
   primaryButton: {
     flex: 1,
-    backgroundColor: Colors.pri,
     borderRadius: 16,
     paddingVertical: Spacing.three,
     alignItems: 'center',
-  },
-  primaryButtonLabel: {
-    color: '#ffffff',
   },
 });

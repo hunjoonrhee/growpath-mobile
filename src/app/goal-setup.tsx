@@ -13,9 +13,10 @@ import { VoiceDictationField } from '@/components/voice/VoiceDictationField';
 import { BackHeader } from '@/components/navigation/BackHeader';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
 import { useSwitchActiveRoadmap } from '@/hooks/roadmap/use-switch-active-roadmap';
 import { useSubmitGuard } from '@/hooks/use-submit-guard';
+import { useTheme } from '@/hooks/use-theme';
 import { useAuth } from '@/lib/auth-context';
 import type { Domain } from '@/lib/domain';
 import { toBcp47 } from '@/lib/locale-bcp47';
@@ -33,6 +34,7 @@ export default function GoalSetupScreen() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
   const { session } = useAuth();
+  const colors = useTheme();
   const switchRoadmap = useSwitchActiveRoadmap(session?.user.id);
 
   const [domain, setDomain] = useState<Domain | null>(null);
@@ -142,7 +144,7 @@ export default function GoalSetupScreen() {
 
           {isSubmitting && (
             <View style={styles.generatingRow}>
-              <ActivityIndicator size="small" color={Colors.pri2} />
+              <ActivityIndicator size="small" color={colors.pri2} />
               <ThemedText type="small" themeColor="textDim">
                 {t('goalSetup.generating')}
               </ThemedText>

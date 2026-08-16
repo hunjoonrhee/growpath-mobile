@@ -2,7 +2,8 @@ import { StyleSheet, View } from 'react-native';
 
 import { SkillChip } from '@/components/roadmap/SkillChip';
 import { ThemedText } from '@/components/themed-text';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing, type Palette } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 import type { RoadmapStage } from '@/lib/roadmap';
 
 export type StageStatus = 'done' | 'current' | 'upcoming';
@@ -14,24 +15,36 @@ export type StageTimelineItemProps = {
   isLast: boolean;
 };
 
-function dotLabelStyle(status: StageStatus) {
-  if (status === 'done') return styles.dotLabelDone;
-  if (status === 'current') return styles.dotLabelCurrent;
-  return styles.dotLabelDefault;
+function dotLabelColor(status: StageStatus, colors: Palette) {
+  if (status === 'done') return colors.onPri;
+  if (status === 'current') return colors.pri2;
+  return colors.textFaint;
 }
 
 export function StageTimelineItem({ stage, status, statusLabel, isLast }: StageTimelineItemProps) {
+  const colors = useTheme();
+
   return (
     <View style={styles.row} accessible accessibilityLabel={`${stage.title} — ${statusLabel}`}>
       <View style={styles.rail}>
-        <View style={[styles.dot, status === 'done' && styles.dotDone, status === 'current' && styles.dotCurrent]}>
-          <ThemedText type="smallBold" style={dotLabelStyle(status)}>
+        <View
+          style={[
+            styles.dot,
+            { backgroundColor: colors.surf2 },
+            status === 'done' && { backgroundColor: colors.pri },
+            status === 'current' && { borderWidth: 2, borderColor: colors.pri2 },
+          ]}>
+          <ThemedText type="smallBold" style={{ color: dotLabelColor(status, colors) }}>
             {status === 'done' ? '✓' : stage.level}
           </ThemedText>
         </View>
-        {!isLast && <View style={[styles.line, status === 'done' && styles.lineDone]} />}
+        {!isLast && <View style={[styles.line, { backgroundColor: status === 'done' ? colors.pri2 : colors.border }]} />}
       </View>
-      <View style={[styles.body, status === 'current' && styles.bodyCurrent]}>
+      <View
+        style={[
+          styles.body,
+          status === 'current' && [styles.bodyCurrent, { backgroundColor: colors.surf, borderColor: colors.pri }],
+        ]}>
         <ThemedText type="smallBold">{stage.title}</ThemedText>
         <View style={styles.skills}>
           {stage.skills.map((skill, index) => (
@@ -56,43 +69,20 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 10,
-    backgroundColor: Colors.surf2,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  dotDone: {
-    backgroundColor: Colors.pri,
-  },
-  dotCurrent: {
-    borderWidth: 2,
-    borderColor: Colors.pri2,
-  },
-  dotLabelDefault: {
-    color: Colors.textFaint,
-  },
-  dotLabelCurrent: {
-    color: Colors.pri2,
-  },
-  dotLabelDone: {
-    color: '#ffffff',
   },
   line: {
     width: 2,
     flex: 1,
-    backgroundColor: Colors.border,
     marginVertical: Spacing.half,
-  },
-  lineDone: {
-    backgroundColor: Colors.pri2,
   },
   body: {
     flex: 1,
     paddingBottom: Spacing.four - 4,
   },
   bodyCurrent: {
-    backgroundColor: Colors.surf,
     borderWidth: 1,
-    borderColor: Colors.pri,
     borderRadius: 14,
     padding: Spacing.three - 2,
     marginTop: 2,

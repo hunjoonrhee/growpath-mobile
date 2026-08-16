@@ -1,15 +1,17 @@
 import { StyleSheet } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { Colors } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 
 export type SkillChipProps = {
   label: string;
 };
 
 export function SkillChip({ label }: SkillChipProps) {
+  const colors = useTheme();
+
   return (
-    <ThemedText type="small" themeColor="textDim" style={styles.chip}>
+    <ThemedText type="small" themeColor="textDim" style={[styles.chip, { backgroundColor: colors.surf, borderColor: colors.border }]}>
       {label}
     </ThemedText>
   );
@@ -17,9 +19,7 @@ export function SkillChip({ label }: SkillChipProps) {
 
 const styles = StyleSheet.create({
   chip: {
-    backgroundColor: Colors.surf,
     borderWidth: 1,
-    borderColor: Colors.border,
     borderRadius: 999,
     paddingVertical: 3,
     paddingHorizontal: 9,

@@ -4,7 +4,8 @@ import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { PrimaryButton } from '@/components/forms/PrimaryButton';
 import { TextField } from '@/components/forms/TextField';
 import { ThemedText } from '@/components/themed-text';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 
 export type RoadmapEditFormProps = {
   goal: string;
@@ -33,6 +34,7 @@ export function RoadmapEditForm({
   onSave,
   onCancel,
 }: RoadmapEditFormProps) {
+  const colors = useTheme();
   const [editedGoal, setEditedGoal] = useState(goal);
   const [editedCareerLevel, setEditedCareerLevel] = useState(careerLevel);
   const canSave = editedGoal.trim().length > 0 && editedCareerLevel.trim().length > 0 && !isSaving;
@@ -43,7 +45,7 @@ export function RoadmapEditForm({
       <TextField label={careerLevelLabel} value={editedCareerLevel} onChangeText={setEditedCareerLevel} editable={!isSaving} />
       {isSaving && (
         <View style={styles.savingRow}>
-          <ActivityIndicator size="small" color={Colors.pri2} />
+          <ActivityIndicator size="small" color={colors.pri2} />
           <ThemedText type="small" themeColor="textDim">
             {savingLabel}
           </ThemedText>
@@ -59,7 +61,7 @@ export function RoadmapEditForm({
         <ThemedText
           type="smallBold"
           themeColor="textDim"
-          style={styles.cancel}
+          style={[styles.cancel, { borderBottomColor: colors.border }]}
           onPress={isSaving ? undefined : onCancel}
           accessibilityRole="button"
           accessibilityLabel={cancelLabel}>
@@ -92,7 +94,6 @@ const styles = StyleSheet.create({
   },
   cancel: {
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
     paddingBottom: 1,
   },
 });

@@ -1,7 +1,8 @@
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 
 export type InputMode = 'text' | 'voice';
 
@@ -13,14 +14,16 @@ export type InputModeToggleProps = {
 };
 
 export function InputModeToggle({ mode, onChange, textLabel, voiceLabel }: InputModeToggleProps) {
+  const colors = useTheme();
+
   return (
-    <View style={styles.track}>
+    <View style={[styles.track, { backgroundColor: colors.surf2 }]}>
       <Pressable
         accessibilityRole="button"
         accessibilityState={{ selected: mode === 'text' }}
         onPress={() => onChange('text')}
-        style={[styles.segment, mode === 'text' && styles.segmentActive]}>
-        <ThemedText type="smallBold" themeColor={mode === 'text' ? 'text' : 'textFaint'} style={styles.label}>
+        style={[styles.segment, mode === 'text' && { backgroundColor: colors.pri }]}>
+        <ThemedText type="smallBold" themeColor={mode === 'text' ? 'onPri' : 'textFaint'} style={styles.label}>
           {textLabel}
         </ThemedText>
       </Pressable>
@@ -28,8 +31,8 @@ export function InputModeToggle({ mode, onChange, textLabel, voiceLabel }: Input
         accessibilityRole="button"
         accessibilityState={{ selected: mode === 'voice' }}
         onPress={() => onChange('voice')}
-        style={[styles.segment, mode === 'voice' && styles.segmentActive]}>
-        <ThemedText type="smallBold" themeColor={mode === 'voice' ? 'text' : 'textFaint'} style={styles.label}>
+        style={[styles.segment, mode === 'voice' && { backgroundColor: colors.pri }]}>
+        <ThemedText type="smallBold" themeColor={mode === 'voice' ? 'onPri' : 'textFaint'} style={styles.label}>
           {voiceLabel}
         </ThemedText>
       </Pressable>
@@ -40,7 +43,6 @@ export function InputModeToggle({ mode, onChange, textLabel, voiceLabel }: Input
 const styles = StyleSheet.create({
   track: {
     flexDirection: 'row',
-    backgroundColor: Colors.surf2,
     borderRadius: 12,
     padding: 3,
     gap: 3,
@@ -50,9 +52,6 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.two + 1,
     borderRadius: 9,
     alignItems: 'center',
-  },
-  segmentActive: {
-    backgroundColor: Colors.pri,
   },
   label: {
     fontSize: 12,

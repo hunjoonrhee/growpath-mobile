@@ -1,7 +1,8 @@
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 import { useCloudDictation } from '@/hooks/voice/use-cloud-dictation';
 
 export type VoiceDictationFieldProps = {
@@ -15,6 +16,7 @@ export type VoiceDictationFieldProps = {
 
 /** Tap-to-record dictation field - records, uploads, and transcribes via Google Cloud Speech-to-Text. */
 export function VoiceDictationField({ language, onTranscript, idleLabel, recordingLabel, transcribingLabel, errorLabel }: VoiceDictationFieldProps) {
+  const colors = useTheme();
   const { status, start, stop } = useCloudDictation(language);
   const isRecording = status === 'recording';
 
@@ -30,14 +32,14 @@ export function VoiceDictationField({ language, onTranscript, idleLabel, recordi
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.surf, borderColor: colors.border }]}>
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={statusLabel}
         onPress={handlePress}
         disabled={status === 'transcribing'}
-        style={[styles.button, isRecording && styles.buttonActive, status === 'transcribing' && styles.buttonDisabled]}>
-        <ThemedText style={styles.icon}>{isRecording ? '⏹️' : '🎙️'}</ThemedText>
+        style={[styles.button, { backgroundColor: isRecording ? colors.amber : colors.pri }, status === 'transcribing' && styles.buttonDisabled]}>
+        <ThemedText style={[styles.icon, { fontFamily: undefined }]}>{isRecording ? '⏹️' : '🎙️'}</ThemedText>
       </Pressable>
       <ThemedText type="small" themeColor={status === 'error' ? 'amber' : 'textDim'} style={styles.status}>
         {statusLabel}
@@ -49,9 +51,7 @@ export function VoiceDictationField({ language, onTranscript, idleLabel, recordi
 const styles = StyleSheet.create({
   container: {
     minHeight: 110,
-    backgroundColor: Colors.surf,
     borderWidth: 1,
-    borderColor: Colors.border,
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
@@ -63,12 +63,8 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: Colors.pri,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  buttonActive: {
-    backgroundColor: Colors.amber,
   },
   buttonDisabled: {
     opacity: 0.5,

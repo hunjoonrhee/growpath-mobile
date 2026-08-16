@@ -2,7 +2,9 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
+import { withAlpha } from '@/lib/color';
 import { DOMAIN_LABEL_KEY, DOMAINS, type Domain } from '@/lib/domain';
 
 export type DomainChipSelectorProps = {
@@ -13,6 +15,7 @@ export type DomainChipSelectorProps = {
 
 export function DomainChipSelector({ selected, onSelect, disabled = false }: DomainChipSelectorProps) {
   const { t } = useTranslation();
+  const colors = useTheme();
 
   return (
     <View style={styles.row}>
@@ -25,7 +28,12 @@ export function DomainChipSelector({ selected, onSelect, disabled = false }: Dom
             accessibilityState={{ selected: isActive, disabled }}
             disabled={disabled}
             onPress={() => onSelect(domain)}
-            style={[styles.chip, isActive && styles.chipActive, disabled && styles.chipDisabled]}>
+            style={[
+              styles.chip,
+              { backgroundColor: colors.surf2, borderColor: colors.border },
+              isActive && { backgroundColor: withAlpha(colors.pri, 0.16), borderColor: colors.pri },
+              disabled && styles.chipDisabled,
+            ]}>
             <ThemedText type="smallBold" themeColor={isActive ? 'pri2' : 'textDim'}>
               {t(DOMAIN_LABEL_KEY[domain])}
             </ThemedText>
@@ -43,16 +51,10 @@ const styles = StyleSheet.create({
     gap: Spacing.two,
   },
   chip: {
-    backgroundColor: Colors.surf2,
     borderWidth: 1,
-    borderColor: Colors.border,
     borderRadius: 999,
     paddingVertical: Spacing.two + 1,
     paddingHorizontal: Spacing.three - 1,
-  },
-  chipActive: {
-    backgroundColor: 'rgba(108,99,255,0.16)',
-    borderColor: Colors.pri,
   },
   chipDisabled: {
     opacity: 0.5,

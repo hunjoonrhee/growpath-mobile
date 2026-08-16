@@ -14,13 +14,14 @@ import { RoadmapHero } from '@/components/roadmap/RoadmapHero';
 import { StageTimeline } from '@/components/roadmap/StageTimeline';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
 import { useActiveRoadmap } from '@/hooks/roadmap/use-active-roadmap';
 import { useDeleteRoadmap } from '@/hooks/roadmap/use-delete-roadmap';
 import { useRegenerateRoadmap } from '@/hooks/roadmap/use-regenerate-roadmap';
 import { useSwitchActiveRoadmap } from '@/hooks/roadmap/use-switch-active-roadmap';
 import { useUserRoadmaps } from '@/hooks/roadmap/use-user-roadmaps';
 import { usePullToRefresh } from '@/hooks/use-pull-to-refresh';
+import { useTheme } from '@/hooks/use-theme';
 import { useAuth } from '@/lib/auth-context';
 
 export default function RoadmapScreen() {
@@ -28,6 +29,7 @@ export default function RoadmapScreen() {
   const router = useRouter();
   const { session } = useAuth();
   const userId = session?.user.id;
+  const colors = useTheme();
 
   const { adoptedRoadmapId, roadmap, focusStageLevel, hasAdoptedRoadmap, isLoading, isError } = useActiveRoadmap(userId);
   const userRoadmaps = useUserRoadmaps(userId);
@@ -78,7 +80,7 @@ export default function RoadmapScreen() {
 
         <ScrollView
           contentContainerStyle={styles.content}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.pri2} />}>
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.pri2} />}>
           {isLoading && (
             <ThemedText type="small" themeColor="textDim" style={styles.centerText}>
               {t('roadmap.loading')}

@@ -14,10 +14,11 @@ import { QuickStatsRow } from '@/components/today/QuickStatsRow';
 import { RecommendationCard } from '@/components/today/RecommendationCard';
 import { StageProgressBar } from '@/components/today/StageProgressBar';
 import { TimerHandoffSheet } from '@/components/today/TimerHandoffSheet';
-import { Colors, Spacing, Typography } from '@/constants/theme';
+import { Spacing, Typography } from '@/constants/theme';
 import { useProfileInfo } from '@/hooks/profile/use-profile-info';
 import { useActiveRoadmap } from '@/hooks/roadmap/use-active-roadmap';
 import { useGapAnalysis } from '@/hooks/roadmap/use-gap-analysis';
+import { useTheme } from '@/hooks/use-theme';
 import { useStudyStreak } from '@/hooks/sessions/use-study-streak';
 import { useWeeklySessionCount } from '@/hooks/sessions/use-weekly-session-count';
 import { usePullToRefresh } from '@/hooks/use-pull-to-refresh';
@@ -31,6 +32,7 @@ export default function TodayScreen() {
   const router = useRouter();
   const { session } = useAuth();
   const userId = session?.user.id;
+  const colors = useTheme();
 
   const { adoptedRoadmapId, roadmap, focusStageLevel, hasAdoptedRoadmap, isLoading, isError } = useActiveRoadmap(userId);
   const profileInfo = useProfileInfo(userId);
@@ -96,7 +98,7 @@ export default function TodayScreen() {
       <SafeAreaView style={styles.safeArea} edges={['top']}>
         <ScrollView
           contentContainerStyle={styles.content}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.pri2} />}>
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.pri2} />}>
           <GreetingHeader name={displayName} streakDays={streak.data ?? 0} />
 
           {isLoading && (

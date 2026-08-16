@@ -1,7 +1,9 @@
 import { Modal, Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
+import { withAlpha } from '@/lib/color';
 
 export type TimerHandoffSheetProps = {
   visible: boolean;
@@ -30,11 +32,13 @@ export function TimerHandoffSheet({
   timerOptionLabel,
   timerOptionDescription,
 }: TimerHandoffSheetProps) {
+  const colors = useTheme();
+
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <Pressable style={styles.scrim} onPress={onClose} accessibilityRole="button" accessibilityLabel={closeAccessibilityLabel} />
-      <View style={styles.sheet}>
-        <View style={styles.grabber} />
+      <View style={[styles.sheet, { backgroundColor: colors.surf }]}>
+        <View style={[styles.grabber, { backgroundColor: colors.border }]} />
         <ThemedText type="smallBold" style={styles.title}>
           {title}
         </ThemedText>
@@ -50,9 +54,9 @@ export function TimerHandoffSheet({
           accessibilityRole="button"
           accessibilityLabel={timerOptionLabel}
           onPress={onSelectTimer}
-          style={[styles.option, styles.optionPrimary]}>
-          <View style={[styles.icon, styles.iconPrimary]}>
-            <ThemedText style={styles.iconGlyph}>⏱️</ThemedText>
+          style={[styles.option, { backgroundColor: withAlpha(colors.pri, 0.14), borderColor: colors.pri }]}>
+          <View style={[styles.icon, { backgroundColor: colors.pri }]}>
+            <ThemedText style={[styles.iconGlyph, { fontFamily: undefined }]}>⏱️</ThemedText>
           </View>
           <View style={styles.optionText}>
             <ThemedText type="smallBold">{timerOptionLabel}</ThemedText>
@@ -63,9 +67,13 @@ export function TimerHandoffSheet({
           <ThemedText themeColor="textFaint">→</ThemedText>
         </Pressable>
 
-        <Pressable accessibilityRole="button" accessibilityLabel={webOptionLabel} onPress={onSelectWeb} style={styles.option}>
-          <View style={styles.icon}>
-            <ThemedText style={styles.iconGlyph}>💻</ThemedText>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={webOptionLabel}
+          onPress={onSelectWeb}
+          style={[styles.option, { backgroundColor: colors.surf2, borderColor: colors.border }]}>
+          <View style={[styles.icon, { backgroundColor: colors.bg }]}>
+            <ThemedText style={[styles.iconGlyph, { fontFamily: undefined }]}>💻</ThemedText>
           </View>
           <View style={styles.optionText}>
             <ThemedText type="smallBold">{webOptionLabel}</ThemedText>
@@ -94,7 +102,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: Colors.surf,
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
     paddingHorizontal: Spacing.four,
@@ -105,7 +112,6 @@ const styles = StyleSheet.create({
     width: 36,
     height: 4,
     borderRadius: 2,
-    backgroundColor: Colors.border,
     alignSelf: 'center',
     marginBottom: Spacing.four - 6,
   },
@@ -121,27 +127,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.three - 2,
-    backgroundColor: Colors.surf2,
     borderWidth: 1,
-    borderColor: Colors.border,
     borderRadius: 16,
     padding: Spacing.three - 2,
     marginBottom: Spacing.two,
-  },
-  optionPrimary: {
-    backgroundColor: 'rgba(108,99,255,0.14)',
-    borderColor: Colors.pri,
   },
   icon: {
     width: 40,
     height: 40,
     borderRadius: 12,
-    backgroundColor: Colors.bg,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  iconPrimary: {
-    backgroundColor: Colors.pri,
   },
   iconGlyph: {
     fontSize: 18,

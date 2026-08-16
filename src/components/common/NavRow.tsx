@@ -20,7 +20,7 @@ export function NavRow({ icon, label, subtitle, onPress }: NavRowProps) {
       accessibilityLabel={label}
       onPress={onPress}
       style={({ pressed }) => [styles.row, { backgroundColor: colors.surf, borderColor: colors.border }, pressed && styles.pressed]}>
-      <ThemedText style={styles.icon}>{icon}</ThemedText>
+      <ThemedText style={[styles.icon, { fontFamily: undefined }]}>{icon}</ThemedText>
       <View style={styles.text}>
         <ThemedText type="smallBold">{label}</ThemedText>
         {subtitle ? (

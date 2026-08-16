@@ -2,7 +2,8 @@ import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 
 export type StageProgressBarProps = {
   totalStages: number;
@@ -13,6 +14,7 @@ export type StageProgressBarProps = {
 
 export function StageProgressBar({ totalStages, currentStage, currentStageLabel }: StageProgressBarProps) {
   const { t } = useTranslation();
+  const colors = useTheme();
 
   return (
     <View>
@@ -26,8 +28,8 @@ export function StageProgressBar({ totalStages, currentStage, currentStageLabel 
               key={stageNumber}
               style={[
                 styles.segment,
-                isDone && styles.segmentDone,
-                isCurrent && styles.segmentCurrent,
+                { backgroundColor: colors.surf2 },
+                (isDone || isCurrent) && { backgroundColor: colors.pri2, opacity: isCurrent ? 0.55 : 1 },
               ]}
             />
           );
@@ -50,14 +52,6 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 6,
     borderRadius: 4,
-    backgroundColor: Colors.surf2,
-  },
-  segmentDone: {
-    backgroundColor: Colors.pri2,
-  },
-  segmentCurrent: {
-    backgroundColor: Colors.pri2,
-    opacity: 0.55,
   },
   label: {
     marginTop: Spacing.two,

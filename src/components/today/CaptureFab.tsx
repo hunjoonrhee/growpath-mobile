@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { Colors } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 
 export type CaptureFabProps = {
   onPress: () => void;
@@ -10,14 +10,15 @@ export type CaptureFabProps = {
 
 export function CaptureFab({ onPress }: CaptureFabProps) {
   const { t } = useTranslation();
+  const colors = useTheme();
 
   return (
     <Pressable
-      style={styles.fab}
+      style={[styles.fab, { backgroundColor: colors.pri, shadowColor: colors.pri }]}
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={t('today.captureAccessibilityLabel')}>
-      <ThemedText style={styles.icon}>🎙️</ThemedText>
+      <ThemedText style={[styles.icon, { fontFamily: undefined }]}>🎙️</ThemedText>
     </Pressable>
   );
 }
@@ -30,10 +31,8 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 18,
-    backgroundColor: Colors.pri,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: Colors.pri,
     shadowOpacity: 0.4,
     shadowRadius: 16,
     shadowOffset: { width: 0, height: 8 },

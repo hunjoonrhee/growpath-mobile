@@ -1,7 +1,8 @@
 import { StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 
 export type QuickStat = {
   id: string;
@@ -14,11 +15,13 @@ export type QuickStatsRowProps = {
 };
 
 export function QuickStatsRow({ stats }: QuickStatsRowProps) {
+  const colors = useTheme();
+
   return (
     <View style={styles.row}>
       {stats.map((stat) => (
-        <View key={stat.id} style={styles.card}>
-          <ThemedText style={styles.icon}>{stat.icon}</ThemedText>
+        <View key={stat.id} style={[styles.card, { backgroundColor: colors.surf, borderColor: colors.border }]}>
+          <ThemedText style={[styles.icon, { fontFamily: undefined }]}>{stat.icon}</ThemedText>
           <ThemedText type="small" themeColor="textDim" style={styles.label}>
             {stat.label}
           </ThemedText>
@@ -36,9 +39,7 @@ const styles = StyleSheet.create({
   },
   card: {
     flex: 1,
-    backgroundColor: Colors.surf,
     borderWidth: 1,
-    borderColor: Colors.border,
     borderRadius: 16,
     paddingVertical: Spacing.three - 2,
     alignItems: 'center',

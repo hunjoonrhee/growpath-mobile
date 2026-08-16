@@ -2,8 +2,10 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { Colors, Spacing } from '@/constants/theme';
+import { Fonts, Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 import { DOMAIN_LABEL_KEY, type Domain } from '@/lib/domain';
+import { withAlpha } from '@/lib/color';
 
 export type RecommendationCardProps = {
   /** Omitted when the recommendation isn't tied to a known domain (e.g. derived from roadmap data, which doesn't record one). */
@@ -15,11 +17,12 @@ export type RecommendationCardProps = {
 
 export function RecommendationCard({ domain, title, description, onPressCta }: RecommendationCardProps) {
   const { t } = useTranslation();
+  const colors = useTheme();
 
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, { backgroundColor: colors.surf, borderColor: colors.border }]}>
       {domain && (
-        <View style={styles.domainChip}>
+        <View style={[styles.domainChip, { backgroundColor: withAlpha(colors.pri, 0.14) }]}>
           <ThemedText type="smallBold" themeColor="pri2">
             {t(DOMAIN_LABEL_KEY[domain])}
           </ThemedText>
@@ -30,14 +33,14 @@ export function RecommendationCard({ domain, title, description, onPressCta }: R
         {description}
       </ThemedText>
       <Pressable
-        style={styles.cta}
+        style={[styles.cta, { backgroundColor: colors.pri }]}
         onPress={onPressCta}
         accessibilityRole="button"
         accessibilityLabel={t('today.startCta')}>
-        <ThemedText type="smallBold" themeColor="text">
+        <ThemedText type="smallBold" style={{ color: colors.onPri }}>
           {t('today.startCta')}
         </ThemedText>
-        <ThemedText themeColor="text">→</ThemedText>
+        <ThemedText style={{ color: colors.onPri, fontFamily: undefined }}>→</ThemedText>
       </Pressable>
     </View>
   );
@@ -45,23 +48,20 @@ export function RecommendationCard({ domain, title, description, onPressCta }: R
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: Colors.surf,
     borderWidth: 1,
-    borderColor: Colors.border,
     borderRadius: 20,
     padding: Spacing.four,
   },
   domainChip: {
     alignSelf: 'flex-start',
-    backgroundColor: 'rgba(108,99,255,0.14)',
     borderRadius: 999,
     paddingHorizontal: Spacing.two + 2,
     paddingVertical: Spacing.half + 2,
     marginBottom: Spacing.two,
   },
   title: {
+    fontFamily: Fonts.bold,
     fontSize: 17,
-    fontWeight: '800',
   },
   description: {
     marginTop: Spacing.one,
@@ -72,7 +72,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: Colors.pri,
     borderRadius: 14,
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.three - 3,

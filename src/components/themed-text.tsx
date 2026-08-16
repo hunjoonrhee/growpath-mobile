@@ -1,6 +1,6 @@
 import { Platform, StyleSheet, Text, type TextProps } from 'react-native';
 
-import { Colors, Fonts, ThemeColor } from '@/constants/theme';
+import { Fonts, ThemeColor } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 export type ThemedTextProps = TextProps & {
@@ -20,8 +20,11 @@ export function ThemedText({ style, type = 'default', themeColor, ...rest }: The
         type === 'small' && styles.small,
         type === 'smallBold' && styles.smallBold,
         type === 'subtitle' && styles.subtitle,
-        type === 'link' && styles.link,
-        type === 'linkPrimary' && styles.linkPrimary,
+        (type === 'link' || type === 'linkPrimary') && styles.link,
+        // Overrides the themeColor-driven color above with the live pri2 -
+        // can't live in the static StyleSheet below since that's computed
+        // once at module load, before any theme is known.
+        type === 'linkPrimary' && { color: theme.pri2 },
         type === 'code' && styles.code,
         style,
       ]}
@@ -59,11 +62,6 @@ const styles = StyleSheet.create({
   link: {
     lineHeight: 30,
     fontSize: 14,
-  },
-  linkPrimary: {
-    lineHeight: 30,
-    fontSize: 14,
-    color: Colors.pri2,
   },
   code: {
     fontFamily: Fonts.mono,

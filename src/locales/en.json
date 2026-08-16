@@ -91,6 +91,12 @@
     "certDeleteCta": "Delete",
     "certDeleteError": "Couldn't delete. Please try again in a moment.",
     "settingsSectionTitle": "Settings",
+    "themeLabel": "Theme",
+    "themeModes": {
+      "system": "System",
+      "light": "Light",
+      "dark": "Dark"
+    },
     "languageNames": {
       "ko": "한국어",
       "de": "Deutsch",

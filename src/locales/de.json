@@ -91,6 +91,12 @@
     "certDeleteCta": "Löschen",
     "certDeleteError": "Löschen fehlgeschlagen. Bitte versuche es gleich noch einmal.",
     "settingsSectionTitle": "Einstellungen",
+    "themeLabel": "Design",
+    "themeModes": {
+      "system": "System",
+      "light": "Hell",
+      "dark": "Dunkel"
+    },
     "languageNames": {
       "ko": "한국어",
       "de": "Deutsch",

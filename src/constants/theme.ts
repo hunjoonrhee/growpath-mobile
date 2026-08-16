@@ -1,25 +1,69 @@
 /**
- * Growpath is a dark-only app - there is no light palette to switch to.
- * Values match the design tokens synced to Claude Design in Phase 1.
+ * Light/dark palettes from the Growpath redesign mockup (docs/Growpath
+ * Redesign (standalone).html, "1b" direction) - dark derived from 1b's own
+ * mapping rule (bg F4F6F1->121815, card FFFFFF->1A211D, accent 2F5D50->6FBF95,
+ * shadow->1px border 2A342D, text-on-accent white->10201A for contrast).
  */
 
 import { Platform } from 'react-native';
 
-export const Colors = {
-  bg: '#0b0d12',
-  surf: '#15181f',
-  surf2: '#1c202b',
-  pri: '#6c63ff',
-  pri2: '#8b83ff',
-  ok: '#10b981',
-  amber: '#f59e0b',
-  text: '#f3f4f6',
-  textDim: '#9ca3af',
-  textFaint: '#6b7280',
-  border: '#252a35',
-} as const;
+export type Palette = {
+  bg: string;
+  surf: string;
+  surf2: string;
+  pri: string;
+  pri2: string;
+  /** Large filled surfaces that use the primary color as a background (e.g. the day's focus card) - `pri` itself is legible enough for this in light mode, but too bright in dark mode, so dark substitutes a deeper filled green here. */
+  priFilled: string;
+  /** Text/icon color for content sitting on top of `pri` or `priFilled` - not always white (dark mode's mint `pri` needs near-black text to hit contrast). */
+  onPri: string;
+  ok: string;
+  amber: string;
+  text: string;
+  textDim: string;
+  textFaint: string;
+  border: string;
+};
 
-export type ThemeColor = keyof typeof Colors;
+export const LightColors: Palette = {
+  bg: '#F4F6F1',
+  surf: '#FFFFFF',
+  surf2: '#E4EFE7',
+  pri: '#2F5D50',
+  pri2: '#4E8C71',
+  priFilled: '#2F5D50',
+  onPri: '#F4F6F1',
+  ok: '#2F5D50',
+  amber: '#D18B3C',
+  text: '#1E2A24',
+  textDim: '#5C6B62',
+  textFaint: '#93A099',
+  border: '#E4E9E0',
+};
+
+export const DarkColors: Palette = {
+  bg: '#121815',
+  surf: '#1A211D',
+  surf2: '#222B26',
+  pri: '#6FBF95',
+  pri2: '#9FD9B8',
+  priFilled: '#1E4438',
+  onPri: '#10201A',
+  ok: '#6FBF95',
+  amber: '#E0A75B',
+  text: '#E9EFE9',
+  textDim: '#9BA89F',
+  textFaint: '#6E7C74',
+  border: '#2A342D',
+};
+
+// Static default for the ~60 screen/component files not yet migrated off a
+// direct import (see src/lib/theme-context.tsx) - always resolves to dark
+// until each file switches to useTheme(). Kept as the same Palette shape so
+// migrating a file later is a search-and-replace, not a rewrite.
+export const Colors = DarkColors;
+
+export type ThemeColor = keyof Palette;
 
 export const Fonts = Platform.select({
   ios: {

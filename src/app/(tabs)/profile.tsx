@@ -6,11 +6,13 @@ import { NavRow } from '@/components/common/NavRow';
 import { CertificationsSection } from '@/components/profile/CertificationsSection';
 import { LanguageSelector } from '@/components/profile/LanguageSelector';
 import { ProfileInfoForm } from '@/components/profile/ProfileInfoForm';
+import { ThemeModeSelector } from '@/components/profile/ThemeModeSelector';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing, Typography } from '@/constants/theme';
 import { useProfileInfo } from '@/hooks/profile/use-profile-info';
 import { useSaveProfileInfo } from '@/hooks/profile/use-save-profile-info';
+import { useThemeMode } from '@/hooks/use-theme-mode';
 import { clearTodayWidgetSnapshot } from '@/hooks/widgets/use-today-widget-sync';
 import { useAuth } from '@/lib/auth-context';
 import { setAppLanguage, type SupportedLanguage } from '@/lib/i18n';
@@ -23,6 +25,7 @@ export default function ProfileScreen() {
   const userId = session?.user.id;
   const profileInfo = useProfileInfo(userId);
   const saveProfileInfo = useSaveProfileInfo(userId);
+  const themeMode = useThemeMode();
 
   const handleSelectLanguage = (language: SupportedLanguage) => {
     setAppLanguage(language).catch(() => Alert.alert(t('profile.languageError')));
@@ -91,6 +94,10 @@ export default function ProfileScreen() {
             {t('profile.settingsSectionTitle')}
           </ThemedText>
           <LanguageSelector current={i18n.language} onSelect={handleSelectLanguage} />
+          <ThemedText type="small" themeColor="textDim" style={styles.subLabel}>
+            {t('profile.themeLabel')}
+          </ThemedText>
+          <ThemeModeSelector current={themeMode.mode} onSelect={themeMode.setMode} />
 
           <ThemedText type="small" themeColor="textFaint" style={styles.sectionTitle}>
             {t('profile.accountSectionTitle')}
@@ -123,5 +130,9 @@ const styles = StyleSheet.create({
     ...Typography.sectionLabel,
     marginTop: Spacing.four,
     marginBottom: Spacing.two + 2,
+  },
+  subLabel: {
+    marginTop: Spacing.three,
+    marginBottom: Spacing.two,
   },
 });

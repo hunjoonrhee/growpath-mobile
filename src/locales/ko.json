@@ -91,6 +91,12 @@
     "certDeleteCta": "삭제",
     "certDeleteError": "삭제하지 못했어요. 잠시 후 다시 시도해주세요.",
     "settingsSectionTitle": "설정",
+    "themeLabel": "테마",
+    "themeModes": {
+      "system": "시스템",
+      "light": "라이트",
+      "dark": "다크"
+    },
     "languageNames": {
       "ko": "한국어",
       "de": "Deutsch",

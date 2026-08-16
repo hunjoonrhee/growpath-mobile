@@ -11,6 +11,7 @@ import { SessionLogList } from '@/components/log/SessionLogList';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Colors, Spacing, Typography } from '@/constants/theme';
+import { useActiveRoadmap } from '@/hooks/roadmap/use-active-roadmap';
 import { useActiveRoadmapSessions } from '@/hooks/sessions/use-active-roadmap-sessions';
 import { useDeleteSession } from '@/hooks/sessions/use-delete-session';
 import { usePullToRefresh } from '@/hooks/use-pull-to-refresh';
@@ -24,7 +25,14 @@ export default function LogScreen() {
   // Scoped to the active goal, so switching goals shows that goal's own log
   // instead of every session ever recorded under any goal.
   const activeRoadmapSessions = useActiveRoadmapSessions(session?.user.id);
-  const dueVocabWordCount = useDueVocabWordCount(session?.user.id);
+  // Vocab review/roleplay only make sense for a goal that actually involves
+  // a language (a pure language goal, or a hybrid like "German-speaking
+  // lead architect") - see roadmap.targetLanguage, classified at generation
+  // time. Showing them unconditionally was the reported issue: every user
+  // saw language features regardless of their goal.
+  const activeRoadmap = useActiveRoadmap(session?.user.id);
+  const hasLanguageGoal = Boolean(activeRoadmap.roadmap.data?.targetLanguage);
+  const dueVocabWordCount = useDueVocabWordCount(session?.user.id, hasLanguageGoal);
   const deleteSession = useDeleteSession(session?.user.id);
   const { timerTitle, timerMinutes, timerSessionId } = useLocalSearchParams<{
     timerTitle?: string;
@@ -88,18 +96,22 @@ export default function LogScreen() {
             </ThemedText>
           </Pressable>
 
-          <ThemedText type="small" themeColor="textFaint" style={styles.sectionTitle}>
-            {t('log.languageSectionTitle')}
-          </ThemedText>
-          <NavRow
-            icon="🗂️"
-            label={t('log.vocabReviewCta')}
-            subtitle={t('log.vocabDueCount', { count: dueVocabWordCount.data ?? 0 })}
-            onPress={() => router.push('/vocab-review')}
-          />
-          <NavRow icon="➕" label={t('log.vocabAddCta')} onPress={() => router.push('/vocab-add')} />
-          <NavRow icon="📖" label={t('log.vocabAllCta')} onPress={() => router.push('/vocab-list')} />
-          <NavRow icon="🎭" label={t('log.roleplayCta')} onPress={() => router.push('/roleplay')} />
+          {hasLanguageGoal && (
+            <>
+              <ThemedText type="small" themeColor="textFaint" style={styles.sectionTitle}>
+                {t('log.languageSectionTitle')}
+              </ThemedText>
+              <NavRow
+                icon="🗂️"
+                label={t('log.vocabReviewCta')}
+                subtitle={t('log.vocabDueCount', { count: dueVocabWordCount.data ?? 0 })}
+                onPress={() => router.push('/vocab-review')}
+              />
+              <NavRow icon="➕" label={t('log.vocabAddCta')} onPress={() => router.push('/vocab-add')} />
+              <NavRow icon="📖" label={t('log.vocabAllCta')} onPress={() => router.push('/vocab-list')} />
+              <NavRow icon="🎭" label={t('log.roleplayCta')} onPress={() => router.push('/roleplay')} />
+            </>
+          )}
 
           <SessionLogList
             title={t('log.recentTitle')}

@@ -15,6 +15,8 @@ type GenerateRoadmapApiResponse = {
   goal: string;
   career_level: string;
   stages: RoadmapStage[];
+  domain: string | null;
+  targetLanguage: string | null;
 };
 
 /**
@@ -22,8 +24,10 @@ type GenerateRoadmapApiResponse = {
  * current Supabase session's access token - the route verifies it
  * server-side and derives user_id from it (see joon-dashboard's
  * getAuthenticatedUserId), never from a client-supplied field. The caller's
- * domain isn't sent - the route doesn't accept it and ai_roadmaps has no
- * domain column yet (a known, separately-tracked gap).
+ * domain chip isn't sent - the route classifies domain/targetLanguage itself
+ * from the goal text (see joon-dashboard's roadmap/generate route), which
+ * also catches hybrid goals (e.g. "German-speaking lead architect") the
+ * chip's single dev/language/art/other choice can't express.
  */
 export async function generateRoadmap(input: GenerateRoadmapInput): Promise<Roadmap> {
   if (!env.roadmapApiUrl) {
@@ -74,5 +78,12 @@ export async function generateRoadmap(input: GenerateRoadmapInput): Promise<Road
   // server-side (a joon-dashboard change) - not done here, same accepted-risk
   // class as the TIL-save duplicate-on-timeout gap in the roleplay feature.
   const data = (await res.json()) as GenerateRoadmapApiResponse;
-  return { id: data.id, goal: data.goal, careerLevel: data.career_level, stages: data.stages };
+  return {
+    id: data.id,
+    goal: data.goal,
+    careerLevel: data.career_level,
+    stages: data.stages,
+    domain: data.domain,
+    targetLanguage: data.targetLanguage,
+  };
 }

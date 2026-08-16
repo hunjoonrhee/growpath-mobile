@@ -35,7 +35,11 @@ export default function TodayScreen() {
   const gapAnalysis = useGapAnalysis(userId, adoptedRoadmapId.data, roadmap.data);
   const streak = useStudyStreak(userId);
   const weeklySessionCount = useWeeklySessionCount(userId);
-  const dueVocabWordCount = useDueVocabWordCount(userId);
+  // Vocab review only makes sense for a goal that actually involves a
+  // language (a pure language goal, or a hybrid like "German-speaking lead
+  // architect") - see roadmap.targetLanguage, classified at generation time.
+  const hasLanguageGoal = Boolean(roadmap.data?.targetLanguage);
+  const dueVocabWordCount = useDueVocabWordCount(userId, hasLanguageGoal);
   const [isHandoffSheetVisible, setIsHandoffSheetVisible] = useState(false);
   const { refreshing, onRefresh } = usePullToRefresh();
 
@@ -144,7 +148,9 @@ export default function TodayScreen() {
 
           <QuickStatsRow
             stats={[
-              { id: 'vocab-review', icon: '📚', label: t('today.quickStats.vocabReview', { count: dueVocabWordCount.data ?? 0 }) },
+              ...(hasLanguageGoal
+                ? [{ id: 'vocab-review', icon: '📚', label: t('today.quickStats.vocabReview', { count: dueVocabWordCount.data ?? 0 }) }]
+                : []),
               { id: 'weekly-progress', icon: '🎯', label: t('today.quickStats.weeklyProgress', { count: weeklySessionCount.data ?? 0 }) },
             ]}
           />

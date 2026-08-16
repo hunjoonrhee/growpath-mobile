@@ -18,6 +18,10 @@ export type Roadmap = {
   goal: string;
   careerLevel: string;
   stages: RoadmapStage[];
+  /** e.g. 'dev' | 'language' | 'art' | 'other' - classified by joon-dashboard's /api/roadmap/generate. Null for roadmaps generated before this field existed. */
+  domain: string | null;
+  /** Language this goal requires developing (e.g. "German"), independent of domain - a non-language goal can still need one (e.g. "German-speaking lead architect"). Null when no language component was detected. */
+  targetLanguage: string | null;
 };
 
 export type RoadmapSummary = {
@@ -33,10 +37,19 @@ type AiRoadmapRow = {
   goal: string;
   career_level: string;
   stages: RoadmapStage[];
+  domain: string | null;
+  target_language: string | null;
 };
 
 function toRoadmap(row: AiRoadmapRow): Roadmap {
-  return { id: row.id, goal: row.goal, careerLevel: row.career_level, stages: row.stages };
+  return {
+    id: row.id,
+    goal: row.goal,
+    careerLevel: row.career_level,
+    stages: row.stages,
+    domain: row.domain,
+    targetLanguage: row.target_language,
+  };
 }
 
 /** Reads the user's active roadmap pointer from the `settings` EAV table (see supabase/README.md). */
@@ -54,7 +67,7 @@ export async function fetchAdoptedRoadmapId(userId: string): Promise<string | nu
 export async function fetchRoadmap(roadmapId: string): Promise<Roadmap | null> {
   const { data, error } = await supabase
     .from('ai_roadmaps')
-    .select('id, goal, career_level, stages')
+    .select('id, goal, career_level, stages, domain, target_language')
     .eq('id', roadmapId)
     .maybeSingle();
   if (error) throw error;

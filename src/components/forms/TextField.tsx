@@ -1,7 +1,8 @@
 import { StyleSheet, TextInput, View, type KeyboardTypeOptions } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { Colors, Spacing } from '@/constants/theme';
+import { Fonts, Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 
 export type TextFieldProps = {
   label: string;
@@ -13,6 +14,8 @@ export type TextFieldProps = {
 };
 
 export function TextField({ label, value, onChangeText, placeholder, keyboardType, editable = true }: TextFieldProps) {
+  const colors = useTheme();
+
   return (
     <View>
       <ThemedText type="small" themeColor="textDim" style={styles.label}>
@@ -22,10 +25,14 @@ export function TextField({ label, value, onChangeText, placeholder, keyboardTyp
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        placeholderTextColor={Colors.textFaint}
+        placeholderTextColor={colors.textFaint}
         keyboardType={keyboardType}
         editable={editable}
-        style={[styles.input, !editable && styles.inputDisabled]}
+        style={[
+          styles.input,
+          { backgroundColor: colors.surf, borderColor: colors.border, color: colors.text },
+          !editable && styles.inputDisabled,
+        ]}
       />
     </View>
   );
@@ -36,13 +43,11 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.one + 2,
   },
   input: {
-    backgroundColor: Colors.surf,
     borderWidth: 1,
-    borderColor: Colors.border,
     borderRadius: 14,
     paddingVertical: Spacing.two + 3,
     paddingHorizontal: Spacing.three,
-    color: Colors.text,
+    fontFamily: Fonts.regular,
     fontSize: 14,
   },
   inputDisabled: {

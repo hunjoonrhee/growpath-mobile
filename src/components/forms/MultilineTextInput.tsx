@@ -1,6 +1,7 @@
 import { StyleSheet, TextInput } from 'react-native';
 
-import { Colors, Spacing } from '@/constants/theme';
+import { Fonts, Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 
 export type MultilineTextInputProps = {
   value: string;
@@ -19,28 +20,32 @@ export function MultilineTextInput({
   maxHeight,
   editable = true,
 }: MultilineTextInputProps) {
+  const colors = useTheme();
+
   return (
     <TextInput
       value={value}
       onChangeText={onChangeText}
       placeholder={placeholder}
-      placeholderTextColor={Colors.textFaint}
+      placeholderTextColor={colors.textFaint}
       multiline
       textAlignVertical="top"
       editable={editable}
-      style={[styles.textarea, { minHeight, maxHeight }, !editable && styles.textareaDisabled]}
+      style={[
+        styles.textarea,
+        { backgroundColor: colors.surf, borderColor: colors.border, color: colors.text, minHeight, maxHeight },
+        !editable && styles.textareaDisabled,
+      ]}
     />
   );
 }
 
 const styles = StyleSheet.create({
   textarea: {
-    backgroundColor: Colors.surf,
     borderWidth: 1,
-    borderColor: Colors.border,
     borderRadius: 16,
     padding: Spacing.three,
-    color: Colors.text,
+    fontFamily: Fonts.regular,
     fontSize: 14,
     lineHeight: 21,
   },

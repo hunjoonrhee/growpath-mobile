@@ -2,12 +2,13 @@ import { Redirect, Tabs } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
 import { TabIcon } from '@/components/navigation/TabIcon';
-import { Colors } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 import { useAuth } from '@/lib/auth-context';
 
 export default function TabsLayout() {
   const { t } = useTranslation();
   const { session } = useAuth();
+  const colors = useTheme();
 
   if (!session) return <Redirect href="/login" />;
 
@@ -15,11 +16,11 @@ export default function TabsLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: Colors.pri2,
-        tabBarInactiveTintColor: Colors.textFaint,
+        tabBarActiveTintColor: colors.pri2,
+        tabBarInactiveTintColor: colors.textFaint,
         tabBarStyle: {
-          backgroundColor: Colors.surf,
-          borderTopColor: Colors.border,
+          backgroundColor: colors.surf,
+          borderTopColor: colors.border,
         },
       }}>
       <Tabs.Screen

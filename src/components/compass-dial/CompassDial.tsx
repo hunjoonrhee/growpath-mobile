@@ -1,7 +1,7 @@
 import { useId } from 'react';
 import Svg, { Circle, Defs, Line, LinearGradient, Stop, Text as SvgText } from 'react-native-svg';
 
-import { Colors } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 import { circumference, computeProgressEndpoint, computeTicks } from './geometry';
 
 export type CompassDialProps = {
@@ -22,11 +22,16 @@ export function CompassDial({
   size = 176,
   label,
   showLabel = true,
-  colorFrom = Colors.pri,
-  colorTo = Colors.pri2,
-  tickActiveColor = Colors.pri2,
-  trackColor = Colors.surf2,
+  colorFrom,
+  colorTo,
+  tickActiveColor,
+  trackColor,
 }: CompassDialProps) {
+  const theme = useTheme();
+  const resolvedColorFrom = colorFrom ?? theme.pri;
+  const resolvedColorTo = colorTo ?? theme.pri2;
+  const resolvedTickActiveColor = tickActiveColor ?? theme.pri2;
+  const resolvedTrackColor = trackColor ?? theme.surf2;
   // useId() includes colons (":r0:"), which are valid in SVG ids but risky in
   // CSS-style url(#...) references on the react-native-web renderer - strip them.
   const gradientId = `compass-dial-gradient-${useId().replace(/:/g, '')}`;
@@ -44,12 +49,12 @@ export function CompassDial({
     <Svg width={size} height={size}>
       <Defs>
         <LinearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
-          <Stop offset="0%" stopColor={colorFrom} />
-          <Stop offset="100%" stopColor={colorTo} />
+          <Stop offset="0%" stopColor={resolvedColorFrom} />
+          <Stop offset="100%" stopColor={resolvedColorTo} />
         </LinearGradient>
       </Defs>
 
-      <Circle cx={cx} cy={cy} r={radius} fill="none" stroke={trackColor} strokeWidth={strokeWidth} />
+      <Circle cx={cx} cy={cy} r={radius} fill="none" stroke={resolvedTrackColor} strokeWidth={strokeWidth} />
 
       {ticks.map((tick) => (
         <Line
@@ -58,7 +63,7 @@ export function CompassDial({
           y1={tick.from.y}
           x2={tick.to.x}
           y2={tick.to.y}
-          stroke={tick.isActive ? tickActiveColor : Colors.border}
+          stroke={tick.isActive ? resolvedTickActiveColor : theme.border}
           strokeWidth={tick.isMajor ? size * 0.014 : size * 0.007}
           strokeLinecap="round"
         />
@@ -79,22 +84,16 @@ export function CompassDial({
         originY={cy}
       />
 
-      <Circle cx={progressEnd.x} cy={progressEnd.y} r={size * 0.055} fill={colorTo} opacity={0.28} />
-      <Circle cx={progressEnd.x} cy={progressEnd.y} r={size * 0.032} fill="#ffffff" />
+      <Circle cx={progressEnd.x} cy={progressEnd.y} r={size * 0.055} fill={resolvedColorTo} opacity={0.28} />
+      <Circle cx={progressEnd.x} cy={progressEnd.y} r={size * 0.032} fill={theme.bg} />
 
       {showLabel && (
-        <SvgText
-          x={cx}
-          y={cy - size * 0.02}
-          textAnchor="middle"
-          fontSize={size * 0.19}
-          fontWeight="800"
-          fill={Colors.text}>
-          {Math.round(clampedPercent)}%
+        <SvgText x={cx} y={cy - size * 0.02} textAnchor="middle" fontSize={size * 0.19} fontWeight="800" fill={theme.text}>
+          {Math.round(clampedPercent)} %
         </SvgText>
       )}
       {showLabel && label && (
-        <SvgText x={cx} y={cy + size * 0.11} textAnchor="middle" fontSize={size * 0.06} fontWeight="600" fill={Colors.textDim}>
+        <SvgText x={cx} y={cy + size * 0.11} textAnchor="middle" fontSize={size * 0.06} fontWeight="600" fill={theme.textDim}>
           {label}
         </SvgText>
       )}

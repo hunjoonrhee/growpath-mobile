@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { Colors } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 
 export type BackButtonProps = {
   accessibilityLabel: string;
@@ -9,8 +9,14 @@ export type BackButtonProps = {
 };
 
 export function BackButton({ accessibilityLabel, onPress }: BackButtonProps) {
+  const colors = useTheme();
+
   return (
-    <Pressable accessibilityRole="button" accessibilityLabel={accessibilityLabel} onPress={onPress} style={styles.button}>
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
+      onPress={onPress}
+      style={[styles.button, { backgroundColor: colors.surf2 }]}>
       <ThemedText type="smallBold">←</ThemedText>
     </Pressable>
   );
@@ -21,7 +27,6 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 10,
-    backgroundColor: Colors.surf2,
     alignItems: 'center',
     justifyContent: 'center',
   },

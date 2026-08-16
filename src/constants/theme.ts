@@ -65,16 +65,17 @@ export const Colors = DarkColors;
 
 export type ThemeColor = keyof Palette;
 
-export const Fonts = Platform.select({
-  ios: {
-    sans: 'DM Sans',
-    mono: 'ui-monospace',
-  },
-  default: {
-    sans: 'DM Sans',
-    mono: 'monospace',
-  },
-});
+// IBM Plex Sans KR (redesign mockup's typeface) - loaded via useFonts in
+// _layout.tsx, weight-specific font files (RN can't fake bold on a custom
+// font the way it can on a system font, so every weight used in ThemedText
+// needs its own named entry here rather than a single family + fontWeight).
+export const Fonts = {
+  regular: 'IBMPlexSansKR_400Regular',
+  medium: 'IBMPlexSansKR_500Medium',
+  semiBold: 'IBMPlexSansKR_600SemiBold',
+  bold: 'IBMPlexSansKR_700Bold',
+  mono: Platform.select({ ios: 'ui-monospace', default: 'monospace' }),
+};
 
 export const Spacing = {
   half: 2,

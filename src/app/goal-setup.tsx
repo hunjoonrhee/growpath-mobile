@@ -1,7 +1,7 @@
 import { Redirect, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, ScrollView, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Alert, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { MultilineTextInput } from '@/components/forms/MultilineTextInput';
@@ -13,7 +13,7 @@ import { VoiceDictationField } from '@/components/voice/VoiceDictationField';
 import { BackHeader } from '@/components/navigation/BackHeader';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Spacing } from '@/constants/theme';
+import { Colors, Spacing } from '@/constants/theme';
 import { useSwitchActiveRoadmap } from '@/hooks/roadmap/use-switch-active-roadmap';
 import { useSubmitGuard } from '@/hooks/use-submit-guard';
 import { useAuth } from '@/lib/auth-context';
@@ -118,14 +118,7 @@ export default function GoalSetupScreen() {
               textLabel={t('goalSetup.inputMode.text')}
               voiceLabel={t('goalSetup.inputMode.voice')}
             />
-            {inputMode === 'text' ? (
-              <MultilineTextInput
-                value={goalText}
-                onChangeText={handleGoalTextChange}
-                placeholder={t('goalSetup.textPlaceholder')}
-                editable={!isSubmitting}
-              />
-            ) : (
+            {inputMode === 'voice' && (
               <VoiceDictationField
                 language={toBcp47(i18n.language)}
                 onTranscript={(text) => handleGoalTextChange(goalText ? `${goalText} ${text}` : text)}
@@ -135,7 +128,26 @@ export default function GoalSetupScreen() {
                 errorLabel={t('goalSetup.voiceError')}
               />
             )}
+            {/* Kept visible (not just in text mode) so a voice transcript
+                shows up immediately instead of only after switching modes -
+                also lets the user review/edit what was transcribed either
+                way. */}
+            <MultilineTextInput
+              value={goalText}
+              onChangeText={handleGoalTextChange}
+              placeholder={t('goalSetup.textPlaceholder')}
+              editable={!isSubmitting}
+            />
           </View>
+
+          {isSubmitting && (
+            <View style={styles.generatingRow}>
+              <ActivityIndicator size="small" color={Colors.pri2} />
+              <ThemedText type="small" themeColor="textDim">
+                {t('goalSetup.generating')}
+              </ThemedText>
+            </View>
+          )}
 
           <PrimaryButton label={t('goalSetup.submitCta')} onPress={handleSubmit} disabled={!canSubmit} style={styles.submitButton} />
         </ScrollView>
@@ -172,5 +184,12 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     marginTop: Spacing.five,
+  },
+  generatingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.two,
+    marginTop: Spacing.four,
   },
 });

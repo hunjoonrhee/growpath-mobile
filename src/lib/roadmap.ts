@@ -139,3 +139,45 @@ export async function switchActiveRoadmap(roadmapId: string): Promise<void> {
   const { error } = await supabase.rpc('set_adopted_roadmap', { p_roadmap_id: roadmapId });
   if (error) throw error;
 }
+
+export type UpdateRoadmapInput = { goal: string; careerLevel: string };
+
+/** Edits the goal text/career level only - doesn't regenerate stages, domain, or targetLanguage. */
+export async function updateRoadmap(roadmapId: string, input: UpdateRoadmapInput): Promise<void> {
+  const { error } = await supabase
+    .from('ai_roadmaps')
+    .update({ goal: input.goal, career_level: input.careerLevel })
+    .eq('id', roadmapId);
+  if (error) throw error;
+}
+
+/**
+ * Deletes a roadmap and detaches (rather than cascade-deletes) records that
+ * reference it - ai_roadmaps has no FK back to it from any migration in
+ * this repo (it's a joon-dashboard-owned table), so a plain delete would
+ * leave sessions/roleplay_sessions pointing at a nonexistent roadmap_id
+ * instead of falling into the already-supported "goal-less" null state.
+ * `goals` rows are hard-deleted instead - they're roadmap-scoped (one set
+ * per stage, created on adoption) and have no meaning outside it, unlike a
+ * session or roleplay transcript, which is a personal record regardless of
+ * which roadmap it was originally logged under.
+ *
+ * If this was the active roadmap, also clears the now-dangling
+ * settings.adopted_roadmap_id pointer - useActiveRoadmap treats a pointer
+ * to a missing roadmap as an error state, so leaving it set would replace
+ * "no active goal" (which NoActiveRoadmapState handles gracefully) with a
+ * load error immediately after the user's own delete action.
+ */
+export async function deleteRoadmap(roadmapId: string, userId: string): Promise<void> {
+  await supabase.from('sessions').update({ roadmap_id: null }).eq('roadmap_id', roadmapId).eq('user_id', userId);
+  await supabase.from('roleplay_sessions').update({ roadmap_id: null }).eq('roadmap_id', roadmapId).eq('user_id', userId);
+  await supabase.from('goals').delete().eq('roadmap_id', roadmapId);
+
+  const { error } = await supabase.from('ai_roadmaps').delete().eq('id', roadmapId).eq('user_id', userId);
+  if (error) throw error;
+
+  const adoptedId = await fetchAdoptedRoadmapId(userId);
+  if (adoptedId === roadmapId) {
+    await supabase.from('settings').delete().eq('user_id', userId).eq('key', ADOPTED_ROADMAP_ID_KEY);
+  }
+}

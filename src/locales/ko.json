@@ -105,6 +105,7 @@
     "backAccessibilityLabel": "뒤로가기",
     "stageProgress": "{{current}}단계 / {{total}}단계",
     "otherGoalsTitle": "다른 목표",
+    "addGoalCta": "새 목표 추가",
     "loading": "로드맵 불러오는 중...",
     "loadError": "로드맵을 불러오지 못했어요. 잠시 후 다시 시도해주세요.",
     "emptyTitle": "아직 활성화된 로드맵이 없어요",

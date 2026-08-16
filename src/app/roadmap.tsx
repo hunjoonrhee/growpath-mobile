@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Alert, RefreshControl, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { NavRow } from '@/components/common/NavRow';
 import { BackHeader } from '@/components/navigation/BackHeader';
 import { NoActiveRoadmapState } from '@/components/roadmap/NoActiveRoadmapState';
 import { OtherGoalsList } from '@/components/roadmap/OtherGoalsList';
@@ -83,6 +84,14 @@ export default function RoadmapScreen() {
             onSelect={handleSelectOtherGoal}
             isSwitching={switchRoadmap.isPending}
           />
+
+          {/* NoActiveRoadmapState above already covers "no goal at all" with
+              its own CTA - this is specifically for adding an *additional*
+              goal once one exists, which had no entry point anywhere in the
+              app (goal-setup was only reachable from the empty state). */}
+          {!isLoading && !isError && hasAdoptedRoadmap && (
+            <NavRow icon="➕" label={t('roadmap.addGoalCta')} onPress={() => router.push('/goal-setup')} />
+          )}
         </ScrollView>
       </SafeAreaView>
     </ThemedView>

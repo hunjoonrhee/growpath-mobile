@@ -105,6 +105,7 @@
     "backAccessibilityLabel": "Zurück",
     "stageProgress": "Stufe {{current}} / {{total}}",
     "otherGoalsTitle": "Andere Ziele",
+    "addGoalCta": "Neues Ziel hinzufügen",
     "loading": "Roadmap wird geladen...",
     "loadError": "Roadmap konnte nicht geladen werden. Bitte versuche es gleich noch einmal.",
     "emptyTitle": "Noch keine aktive Roadmap",

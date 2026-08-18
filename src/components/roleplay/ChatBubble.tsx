@@ -27,13 +27,15 @@ export type ChatBubbleProps = {
   formatPronunciationLabel?: (score: number) => string;
 };
 
-// PronScore is 0-100 (see joon-dashboard's transcribe route). This app only
-// has two semantic status colors (ok/amber, see theme.ts) rather than a
-// full traffic-light scale, so a single "good vs needs work" cutoff matches
-// how amber is already used everywhere else (errors, warnings) instead of
-// introducing a third color just for this.
+// Both call sites below only ever render inside a user bubble (pronunciation
+// scores only exist on the user's own recorded speech), so this always sits
+// on a colors.pri background. `ok` is defined as an alias of `pri` in both
+// palettes (green-on-green makes semantic sense as a standalone token) -
+// exactly the collision that made a "good" score render invisible here.
+// `onPri` is guaranteed to read against `pri`; amber already contrasts fine
+// against it in both modes, so only the good-score branch needed to change.
 function pronunciationColor(score: number, colors: Palette): string {
-  return score >= 80 ? colors.ok : colors.amber;
+  return score >= 80 ? colors.onPri : colors.amber;
 }
 
 export function ChatBubble({ message, playback, formatPronunciationLabel }: ChatBubbleProps) {
@@ -92,13 +94,17 @@ export function ChatBubble({ message, playback, formatPronunciationLabel }: Chat
             onPress={playback.onPress}
             disabled={playback.isLoading}
             style={styles.playButton}>
-            {playback.isLoading ? (
-              <ActivityIndicator size="small" color={colors.textDim} />
-            ) : playback.isPlaying ? (
-              <Square size={14} color={colors.textDim} strokeWidth={1.8} fill={colors.textDim} />
-            ) : (
-              <Volume2 size={14} color={colors.textDim} strokeWidth={1.8} />
-            )}
+            {(() => {
+              // Model-message play buttons sit on colors.surf (textDim
+              // reads fine there); user-message ones - the "hear my own
+              // recording back" case - sit on colors.pri, where textDim's
+              // contrast was too low to see (reported: "확성기 이모티콘이
+              // 잘 안보이네").
+              const iconColor = isUser ? colors.onPri : colors.textDim;
+              if (playback.isLoading) return <ActivityIndicator size="small" color={iconColor} />;
+              if (playback.isPlaying) return <Square size={14} color={iconColor} strokeWidth={1.8} fill={iconColor} />;
+              return <Volume2 size={14} color={iconColor} strokeWidth={1.8} />;
+            })()}
           </Pressable>
         )}
       </View>

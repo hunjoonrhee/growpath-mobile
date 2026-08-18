@@ -107,7 +107,9 @@ export default function TodayScreen() {
         showCelebration({
           eyebrow: t('celebration.streakMilestone.eyebrow'),
           title: t('celebration.streakMilestone.title', { count: milestone }),
-          subtitle: t('celebration.streakMilestone.subtitle'),
+          subtitle: t('celebration.streakMilestone.subtitle', { count: milestone }),
+          centerLabel: { value: String(milestone), caption: t('celebration.streakMilestone.dialCaption') },
+          colorTheme: milestone >= 100 ? 'purple' : milestone >= 30 ? 'gold' : 'green',
           primaryLabel: t('celebration.streakMilestone.primaryCta'),
           onPrimary: () => router.push('/log'),
           secondaryLabel: t('celebration.dismiss'),

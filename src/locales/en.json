@@ -311,7 +311,8 @@
       "eyebrow": "MILESTONE",
       "title": "{{count}}-day streak!",
       "subtitle": "You've shown up {{count}} days in a row. Keep the streak alive.",
-      "primaryCta": "Log today's study"
+      "primaryCta": "Log today's study",
+      "dialCaption": "day streak"
     }
   }
 }

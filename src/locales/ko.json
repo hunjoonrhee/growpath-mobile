@@ -311,7 +311,8 @@
       "eyebrow": "MILESTONE",
       "title": "{{count}}일 연속 기록!",
       "subtitle": "{{count}}일 동안 꾸준히 이어왔어요. 계속 이어가봐요.",
-      "primaryCta": "오늘 기록하기"
+      "primaryCta": "오늘 기록하기",
+      "dialCaption": "일 연속"
     }
   }
 }

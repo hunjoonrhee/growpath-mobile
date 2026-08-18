@@ -1,5 +1,8 @@
 import { createContext, useCallback, useContext, useState, type ReactNode } from 'react';
 
+/** A milestone-tier color scheme for the celebration screen (not a light/dark variant - see CelebrationOverlay). Defaults to 'green'. */
+export type CelebrationColorTheme = 'green' | 'gold' | 'purple';
+
 export type CelebrationOptions = {
   /** Small uppercase label above the title, e.g. "MILESTONE". */
   eyebrow: string;
@@ -7,6 +10,9 @@ export type CelebrationOptions = {
   subtitle: string;
   /** Drives the dial's fill-up animation (0-100) - omit for celebrations with no natural percent (e.g. "roadmap created"), which renders the dial at 100. */
   percent?: number;
+  /** Overrides the dial's center text for celebrations whose milestone isn't a percent (e.g. a streak day count) - shown instead of CompassDial's own "N %" label. */
+  centerLabel?: { value: string; caption?: string };
+  colorTheme?: CelebrationColorTheme;
   primaryLabel: string;
   onPrimary: () => void;
   secondaryLabel?: string;

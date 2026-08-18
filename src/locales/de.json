@@ -311,7 +311,8 @@
       "eyebrow": "MILESTONE",
       "title": "{{count}} Tage in Folge!",
       "subtitle": "Du warst {{count}} Tage in Folge dabei. Bleib dran.",
-      "primaryCta": "Heute eintragen"
+      "primaryCta": "Heute eintragen",
+      "dialCaption": "Tage in Folge"
     }
   }
 }

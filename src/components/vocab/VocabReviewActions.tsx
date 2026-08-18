@@ -1,3 +1,4 @@
+import { Check, RotateCcw } from 'lucide-react-native';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
@@ -23,8 +24,9 @@ export function VocabReviewActions({ onPressAgain, onPressKnow, againLabel, know
         onPress={onPressAgain}
         disabled={disabled}
         style={[styles.button, { backgroundColor: colors.surf2, borderWidth: 1, borderColor: colors.border }, disabled && styles.disabled]}>
+        <RotateCcw size={16} color={colors.textDim} strokeWidth={1.8} />
         <ThemedText type="smallBold" themeColor="textDim">
-          🔁 {againLabel}
+          {againLabel}
         </ThemedText>
       </Pressable>
       <Pressable
@@ -33,8 +35,9 @@ export function VocabReviewActions({ onPressAgain, onPressKnow, againLabel, know
         onPress={onPressKnow}
         disabled={disabled}
         style={[styles.button, { backgroundColor: colors.ok }, disabled && styles.disabled]}>
+        <Check size={16} color={colors.onPri} strokeWidth={1.8} />
         <ThemedText type="smallBold" style={{ color: colors.onPri }}>
-          ✓ {knowLabel}
+          {knowLabel}
         </ThemedText>
       </Pressable>
     </View>
@@ -51,6 +54,9 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: Spacing.one + 2,
     paddingVertical: Spacing.three,
     borderRadius: 16,
     alignItems: 'center',

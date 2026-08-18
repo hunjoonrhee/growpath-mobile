@@ -1,3 +1,4 @@
+import { LogOut } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Alert, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -102,7 +103,7 @@ export default function ProfileScreen() {
           <ThemedText type="small" themeColor="textFaint" style={styles.sectionTitle}>
             {t('profile.accountSectionTitle')}
           </ThemedText>
-          <NavRow icon="🚪" label={t('profile.logoutCta')} onPress={handleLogout} />
+          <NavRow icon={LogOut} label={t('profile.logoutCta')} onPress={handleLogout} />
         </ScrollView>
       </SafeAreaView>
     </ThemedView>

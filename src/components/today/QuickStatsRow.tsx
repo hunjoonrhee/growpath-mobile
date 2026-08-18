@@ -1,3 +1,4 @@
+import type { LucideIcon } from 'lucide-react-native';
 import { StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
@@ -6,7 +7,7 @@ import { useTheme } from '@/hooks/use-theme';
 
 export type QuickStat = {
   id: string;
-  icon: string;
+  icon: LucideIcon;
   label: string;
 };
 
@@ -21,7 +22,7 @@ export function QuickStatsRow({ stats }: QuickStatsRowProps) {
     <View style={styles.row}>
       {stats.map((stat) => (
         <View key={stat.id} style={[styles.card, { backgroundColor: colors.surf, borderColor: colors.border }]}>
-          <ThemedText style={[styles.icon, { fontFamily: undefined }]}>{stat.icon}</ThemedText>
+          <stat.icon size={22} color={colors.pri2} strokeWidth={1.8} />
           <ThemedText type="small" themeColor="textDim" style={styles.label}>
             {stat.label}
           </ThemedText>
@@ -44,9 +45,6 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.three - 2,
     alignItems: 'center',
     gap: Spacing.one + 2,
-  },
-  icon: {
-    fontSize: 20,
   },
   label: {
     textAlign: 'center',

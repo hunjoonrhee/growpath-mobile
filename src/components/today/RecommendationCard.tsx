@@ -1,3 +1,4 @@
+import { ArrowRight } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
 
@@ -40,7 +41,7 @@ export function RecommendationCard({ domain, title, description, onPressCta }: R
         <ThemedText type="smallBold" style={{ color: colors.onPri }}>
           {t('today.startCta')}
         </ThemedText>
-        <ThemedText style={{ color: colors.onPri, fontFamily: undefined }}>→</ThemedText>
+        <ArrowRight size={16} color={colors.onPri} strokeWidth={1.8} />
       </Pressable>
     </View>
   );

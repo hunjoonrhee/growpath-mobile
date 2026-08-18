@@ -5,8 +5,8 @@
     "profile": "Profile"
   },
   "today": {
-    "greeting": "Hi, {{name}} 👋",
-    "streak": "🔥 {{count}}-day streak",
+    "greeting": "Hi, {{name}}",
+    "streak": "{{count}}-day streak",
     "dialLabel": "Progress · Tap to see roadmap",
     "dialAccessibilityLabel": "Go to roadmap",
     "captureAccessibilityLabel": "Record with voice",
@@ -33,10 +33,10 @@
       "timerDescription": "Track time here on your phone"
     },
     "domain": {
-      "dev": "💻 Dev",
-      "language": "🗣️ Language",
-      "art": "🎨 Art",
-      "other": "✨ Other"
+      "dev": "Dev",
+      "language": "Language",
+      "art": "Art",
+      "other": "Other"
     }
   },
   "log": {
@@ -165,8 +165,8 @@
     "subtitle": "Pick a domain and tell us your goal and current level.",
     "backAccessibilityLabel": "Go back",
     "inputMode": {
-      "text": "✏️ Text",
-      "voice": "🎙️ Voice"
+      "text": "Text",
+      "voice": "Voice"
     },
     "voiceIdle": "Tap to speak",
     "voiceRecording": "Listening...",
@@ -210,7 +210,7 @@
     "loading": "Loading words...",
     "loadError": "Couldn't load your words. Please try again in a moment.",
     "emptyDeck": "No words to review today.",
-    "deckComplete": "You've reviewed everything for today! 🎉",
+    "deckComplete": "You've reviewed everything for today!",
     "exampleHint": "Shown exactly as saved",
     "againCta": "Review again",
     "knowCta": "I know this",

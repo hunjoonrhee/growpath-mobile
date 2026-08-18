@@ -5,8 +5,8 @@
     "profile": "Profil"
   },
   "today": {
-    "greeting": "Hallo, {{name}} 👋",
-    "streak": "🔥 {{count}} Tage in Folge",
+    "greeting": "Hallo, {{name}}",
+    "streak": "{{count}} Tage in Folge",
     "dialLabel": "Fortschritt · Tippen für Roadmap",
     "dialAccessibilityLabel": "Zur Roadmap",
     "captureAccessibilityLabel": "Per Sprache aufnehmen",
@@ -33,10 +33,10 @@
       "timerDescription": "Zeit hier auf dem Handy erfassen"
     },
     "domain": {
-      "dev": "💻 Entwicklung",
-      "language": "🗣️ Sprache",
-      "art": "🎨 Kunst",
-      "other": "✨ Sonstiges"
+      "dev": "Entwicklung",
+      "language": "Sprache",
+      "art": "Kunst",
+      "other": "Sonstiges"
     }
   },
   "log": {
@@ -165,8 +165,8 @@
     "subtitle": "Wähle einen Bereich und beschreibe dein Ziel und dein aktuelles Niveau.",
     "backAccessibilityLabel": "Zurück",
     "inputMode": {
-      "text": "✏️ Text",
-      "voice": "🎙️ Sprache"
+      "text": "Text",
+      "voice": "Sprache"
     },
     "voiceIdle": "Zum Sprechen tippen",
     "voiceRecording": "Ich höre zu...",
@@ -210,7 +210,7 @@
     "loading": "Vokabeln werden geladen...",
     "loadError": "Vokabeln konnten nicht geladen werden. Bitte versuche es gleich noch einmal.",
     "emptyDeck": "Heute keine Vokabeln zu wiederholen.",
-    "deckComplete": "Du hast die heutige Wiederholung abgeschlossen! 🎉",
+    "deckComplete": "Du hast die heutige Wiederholung abgeschlossen!",
     "exampleHint": "Genau wie beim Speichern angezeigt",
     "againCta": "Nochmal üben",
     "knowCta": "Weiß ich",

@@ -1,3 +1,4 @@
+import { Mic, Square } from 'lucide-react-native';
 import { useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, StyleSheet, View } from 'react-native';
 
@@ -106,8 +107,10 @@ export function ChatComposer({
             ]}>
             {isBusyTranscribing ? (
               <ActivityIndicator size="small" color={colors.text} />
+            ) : isRecording ? (
+              <Square size={16} color={colors.onPri} strokeWidth={1.8} fill={colors.onPri} />
             ) : (
-              <ThemedText style={[styles.micIcon, { fontFamily: undefined }]}>{isRecording ? '⏹️' : '🎙️'}</ThemedText>
+              <Mic size={16} color={colors.text} strokeWidth={1.8} />
             )}
           </Pressable>
         )}
@@ -151,9 +154,6 @@ const styles = StyleSheet.create({
   },
   micButtonDisabled: {
     opacity: 0.5,
-  },
-  micIcon: {
-    fontSize: 16,
   },
   sendButton: {
     borderRadius: 18,

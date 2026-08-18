@@ -1,3 +1,4 @@
+import { Camera, Mic } from 'lucide-react-native';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
@@ -22,7 +23,7 @@ export function CaptureButtonsRow({ voiceLabel, photoLabel, onPressVoice, onPres
         onPress={onPressVoice}
         style={[styles.button, { backgroundColor: colors.surf, borderColor: colors.border }]}>
         <View style={[styles.icon, { backgroundColor: colors.pri }]}>
-          <ThemedText style={[styles.iconGlyph, { fontFamily: undefined }]}>🎙️</ThemedText>
+          <Mic size={19} color={colors.onPri} strokeWidth={1.8} />
         </View>
         <ThemedText type="smallBold" style={styles.label}>
           {voiceLabel}
@@ -34,7 +35,7 @@ export function CaptureButtonsRow({ voiceLabel, photoLabel, onPressVoice, onPres
         onPress={onPressPhoto}
         style={[styles.button, { backgroundColor: colors.surf, borderColor: colors.border }]}>
         <View style={[styles.icon, { backgroundColor: colors.pri }]}>
-          <ThemedText style={[styles.iconGlyph, { fontFamily: undefined }]}>📷</ThemedText>
+          <Camera size={19} color={colors.onPri} strokeWidth={1.8} />
         </View>
         <ThemedText type="smallBold" style={styles.label}>
           {photoLabel}
@@ -64,9 +65,6 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  iconGlyph: {
-    fontSize: 19,
   },
   label: {
     fontSize: 12,

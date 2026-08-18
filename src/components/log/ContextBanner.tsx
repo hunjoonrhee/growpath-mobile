@@ -1,3 +1,4 @@
+import { Timer, X } from 'lucide-react-native';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
@@ -16,11 +17,12 @@ export function ContextBanner({ message, dismissAccessibilityLabel, onDismiss }:
 
   return (
     <View style={[styles.banner, { backgroundColor: withAlpha(colors.ok, 0.1), borderColor: withAlpha(colors.ok, 0.3) }]}>
+      <Timer size={16} color={colors.ok} strokeWidth={1.8} />
       <ThemedText type="small" themeColor="ok" style={styles.message}>
-        ⏱️ {message}
+        {message}
       </ThemedText>
       <Pressable accessibilityRole="button" accessibilityLabel={dismissAccessibilityLabel} onPress={onDismiss} hitSlop={8}>
-        <ThemedText themeColor="ok">✕</ThemedText>
+        <X size={16} color={colors.ok} strokeWidth={1.8} />
       </Pressable>
     </View>
   );

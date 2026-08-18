@@ -5,8 +5,8 @@
     "profile": "프로필"
   },
   "today": {
-    "greeting": "안녕, {{name}} 👋",
-    "streak": "🔥 {{count}}일 연속 기록 중",
+    "greeting": "안녕, {{name}}",
+    "streak": "{{count}}일 연속 기록 중",
     "dialLabel": "진행률 · 탭해서 로드맵 보기",
     "dialAccessibilityLabel": "로드맵 화면으로 이동",
     "captureAccessibilityLabel": "음성으로 기록하기",
@@ -33,10 +33,10 @@
       "timerDescription": "모바일에서 시간만 측정해요"
     },
     "domain": {
-      "dev": "💻 개발",
-      "language": "🗣️ 언어",
-      "art": "🎨 예술",
-      "other": "✨ 기타"
+      "dev": "개발",
+      "language": "언어",
+      "art": "예술",
+      "other": "기타"
     }
   },
   "log": {
@@ -165,8 +165,8 @@
     "subtitle": "도메인을 고르고, 목표와 현재 수준을 알려주세요.",
     "backAccessibilityLabel": "뒤로가기",
     "inputMode": {
-      "text": "✏️ 텍스트",
-      "voice": "🎙️ 음성"
+      "text": "텍스트",
+      "voice": "음성"
     },
     "voiceIdle": "눌러서 말하기",
     "voiceRecording": "듣고 있어요...",
@@ -210,7 +210,7 @@
     "loading": "단어 불러오는 중...",
     "loadError": "단어를 불러오지 못했어요. 잠시 후 다시 시도해주세요.",
     "emptyDeck": "오늘 복습할 단어가 없어요.",
-    "deckComplete": "오늘의 복습을 모두 마쳤어요! 🎉",
+    "deckComplete": "오늘의 복습을 모두 마쳤어요!",
     "exampleHint": "저장 당시 문장 그대로 표시",
     "againCta": "다시 볼래요",
     "knowCta": "알고 있어요",

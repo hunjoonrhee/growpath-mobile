@@ -1,3 +1,4 @@
+import { Mic, Type } from 'lucide-react-native';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
@@ -23,6 +24,7 @@ export function InputModeToggle({ mode, onChange, textLabel, voiceLabel }: Input
         accessibilityState={{ selected: mode === 'text' }}
         onPress={() => onChange('text')}
         style={[styles.segment, mode === 'text' && { backgroundColor: colors.pri }]}>
+        <Type size={14} color={mode === 'text' ? colors.onPri : colors.textFaint} strokeWidth={1.8} />
         <ThemedText type="smallBold" themeColor={mode === 'text' ? 'onPri' : 'textFaint'} style={styles.label}>
           {textLabel}
         </ThemedText>
@@ -32,6 +34,7 @@ export function InputModeToggle({ mode, onChange, textLabel, voiceLabel }: Input
         accessibilityState={{ selected: mode === 'voice' }}
         onPress={() => onChange('voice')}
         style={[styles.segment, mode === 'voice' && { backgroundColor: colors.pri }]}>
+        <Mic size={14} color={mode === 'voice' ? colors.onPri : colors.textFaint} strokeWidth={1.8} />
         <ThemedText type="smallBold" themeColor={mode === 'voice' ? 'onPri' : 'textFaint'} style={styles.label}>
           {voiceLabel}
         </ThemedText>
@@ -49,6 +52,9 @@ const styles = StyleSheet.create({
   },
   segment: {
     flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: Spacing.one,
     paddingVertical: Spacing.two + 1,
     borderRadius: 9,
     alignItems: 'center',

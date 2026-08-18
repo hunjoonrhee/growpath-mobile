@@ -1,4 +1,5 @@
 import { Redirect, useRouter } from 'expo-router';
+import { Plus } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, RefreshControl, ScrollView, StyleSheet } from 'react-native';
@@ -145,7 +146,7 @@ export default function RoadmapScreen() {
               goal once one exists, which had no entry point anywhere in the
               app (goal-setup was only reachable from the empty state). */}
           {!isLoading && !isError && hasAdoptedRoadmap && (
-            <NavRow icon="➕" label={t('roadmap.addGoalCta')} onPress={() => router.push('/goal-setup')} />
+            <NavRow icon={Plus} label={t('roadmap.addGoalCta')} onPress={() => router.push('/goal-setup')} />
           )}
         </ScrollView>
       </SafeAreaView>

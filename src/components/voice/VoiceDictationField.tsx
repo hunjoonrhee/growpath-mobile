@@ -1,3 +1,4 @@
+import { Mic, Square } from 'lucide-react-native';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
@@ -39,7 +40,11 @@ export function VoiceDictationField({ language, onTranscript, idleLabel, recordi
         onPress={handlePress}
         disabled={status === 'transcribing'}
         style={[styles.button, { backgroundColor: isRecording ? colors.amber : colors.pri }, status === 'transcribing' && styles.buttonDisabled]}>
-        <ThemedText style={[styles.icon, { fontFamily: undefined }]}>{isRecording ? '⏹️' : '🎙️'}</ThemedText>
+        {isRecording ? (
+          <Square size={24} color={colors.onPri} strokeWidth={1.8} fill={colors.onPri} />
+        ) : (
+          <Mic size={24} color={colors.onPri} strokeWidth={1.8} />
+        )}
       </Pressable>
       <ThemedText type="small" themeColor={status === 'error' ? 'amber' : 'textDim'} style={styles.status}>
         {statusLabel}
@@ -68,9 +73,6 @@ const styles = StyleSheet.create({
   },
   buttonDisabled: {
     opacity: 0.5,
-  },
-  icon: {
-    fontSize: 24,
   },
   status: {
     textAlign: 'center',

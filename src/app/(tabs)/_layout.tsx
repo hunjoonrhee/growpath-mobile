@@ -1,4 +1,5 @@
 import { Redirect, Tabs } from 'expo-router';
+import { Compass, NotebookText, User } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
 import { TabIcon } from '@/components/navigation/TabIcon';
@@ -27,21 +28,21 @@ export default function TabsLayout() {
         name="index"
         options={{
           title: t('tabs.today'),
-          tabBarIcon: ({ focused }) => <TabIcon icon="🧭" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon icon={Compass} focused={focused} />,
         }}
       />
       <Tabs.Screen
         name="log"
         options={{
           title: t('tabs.log'),
-          tabBarIcon: ({ focused }) => <TabIcon icon="📓" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon icon={NotebookText} focused={focused} />,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
           title: t('tabs.profile'),
-          tabBarIcon: ({ focused }) => <TabIcon icon="👤" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon icon={User} focused={focused} />,
         }}
       />
     </Tabs>

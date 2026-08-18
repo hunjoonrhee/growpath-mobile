@@ -1,3 +1,4 @@
+import { Check } from 'lucide-react-native';
 import { StyleSheet, View } from 'react-native';
 
 import { SkillChip } from '@/components/roadmap/SkillChip';
@@ -34,9 +35,13 @@ export function StageTimelineItem({ stage, status, statusLabel, isLast }: StageT
             status === 'done' && { backgroundColor: colors.pri },
             status === 'current' && { borderWidth: 2, borderColor: colors.pri2 },
           ]}>
-          <ThemedText type="smallBold" style={{ color: dotLabelColor(status, colors) }}>
-            {status === 'done' ? '✓' : stage.level}
-          </ThemedText>
+          {status === 'done' ? (
+            <Check size={16} color={dotLabelColor(status, colors)} strokeWidth={2.2} />
+          ) : (
+            <ThemedText type="smallBold" style={{ color: dotLabelColor(status, colors) }}>
+              {stage.level}
+            </ThemedText>
+          )}
         </View>
         {!isLast && <View style={[styles.line, { backgroundColor: status === 'done' ? colors.pri2 : colors.border }]} />}
       </View>

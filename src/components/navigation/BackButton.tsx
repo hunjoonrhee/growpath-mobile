@@ -1,6 +1,6 @@
+import { ArrowLeft } from 'lucide-react-native';
 import { Pressable, StyleSheet } from 'react-native';
 
-import { ThemedText } from '@/components/themed-text';
 import { useTheme } from '@/hooks/use-theme';
 
 export type BackButtonProps = {
@@ -17,7 +17,7 @@ export function BackButton({ accessibilityLabel, onPress }: BackButtonProps) {
       accessibilityLabel={accessibilityLabel}
       onPress={onPress}
       style={[styles.button, { backgroundColor: colors.surf2 }]}>
-      <ThemedText type="smallBold">←</ThemedText>
+      <ArrowLeft size={18} color={colors.text} strokeWidth={1.8} />
     </Pressable>
   );
 }

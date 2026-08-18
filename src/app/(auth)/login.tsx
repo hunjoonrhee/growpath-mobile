@@ -1,4 +1,5 @@
 import { useRouter } from 'expo-router';
+import { Apple } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, StyleSheet, View } from 'react-native';
@@ -55,17 +56,15 @@ export default function LoginScreen() {
         <BrandHeader tagline={t('auth.tagline')} />
         <View style={styles.spacer} />
         <View style={styles.social}>
-          <SocialLoginButton variant="apple" label={t('auth.appleContinue')} onPress={handleApplePress} />
+          <SocialLoginButton variant="apple" icon={Apple} label={t('auth.appleContinue')} onPress={handleApplePress} />
           <SocialLoginButton
             variant="google"
-            icon="🔴"
             label={t('auth.googleContinue')}
             onPress={() => handleOAuthPress('google')}
             disabled={isSigningInWith !== null}
           />
           <SocialLoginButton
             variant="github"
-            icon="🐙"
             label={t('auth.githubContinue')}
             onPress={() => handleOAuthPress('github')}
             disabled={isSigningInWith !== null}

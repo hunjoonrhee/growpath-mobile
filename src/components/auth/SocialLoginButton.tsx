@@ -1,3 +1,4 @@
+import type { LucideIcon } from 'lucide-react-native';
 import { Pressable, StyleSheet } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
@@ -8,13 +9,16 @@ export type SocialLoginVariant = 'apple' | 'google' | 'github';
 
 export type SocialLoginButtonProps = {
   variant: SocialLoginVariant;
-  icon?: string;
+  // Google/GitHub have no equivalent in the generic icon set (real brand
+  // marks aren't included, and a look-alike risks reading as wrong/fake) -
+  // those two variants go icon-less, text-only.
+  icon?: LucideIcon;
   label: string;
   onPress: () => void;
   disabled?: boolean;
 };
 
-export function SocialLoginButton({ variant, icon, label, onPress, disabled }: SocialLoginButtonProps) {
+export function SocialLoginButton({ variant, icon: Icon, label, onPress, disabled }: SocialLoginButtonProps) {
   const colors = useTheme();
 
   return (
@@ -32,7 +36,7 @@ export function SocialLoginButton({ variant, icon, label, onPress, disabled }: S
         disabled && styles.disabled,
         pressed && !disabled && styles.pressed,
       ]}>
-      {icon ? <ThemedText style={[styles.icon, { fontFamily: undefined }]}>{icon}</ThemedText> : null}
+      {Icon ? <Icon size={18} color={variant === 'apple' ? '#000000' : colors.text} strokeWidth={1.8} /> : null}
       <ThemedText type="smallBold" style={variant === 'apple' ? styles.appleLabel : { color: colors.text }}>
         {label}
       </ThemedText>
@@ -60,9 +64,6 @@ const styles = StyleSheet.create({
   },
   pressed: {
     opacity: 0.8,
-  },
-  icon: {
-    fontSize: 16,
   },
   appleLabel: {
     color: '#000000',

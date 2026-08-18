@@ -1,3 +1,4 @@
+import { Compass } from 'lucide-react-native';
 import { StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
@@ -14,7 +15,7 @@ export function BrandHeader({ tagline }: BrandHeaderProps) {
   return (
     <View style={styles.container}>
       <View style={[styles.mark, { backgroundColor: colors.pri }]}>
-        <ThemedText style={[styles.markGlyph, { fontFamily: undefined }]}>🧭</ThemedText>
+        <Compass size={30} color={colors.onPri} strokeWidth={1.8} />
       </View>
       <ThemedText type="title" style={styles.title}>
         Growpath
@@ -37,10 +38,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: Spacing.four - 6,
-  },
-  markGlyph: {
-    fontSize: 28,
-    lineHeight: 34,
   },
   title: {
     fontSize: 24,

@@ -1,3 +1,4 @@
+import { ChevronRight, type LucideIcon } from 'lucide-react-native';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
@@ -5,13 +6,13 @@ import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 export type NavRowProps = {
-  icon: string;
+  icon: LucideIcon;
   label: string;
   subtitle?: string;
   onPress: () => void;
 };
 
-export function NavRow({ icon, label, subtitle, onPress }: NavRowProps) {
+export function NavRow({ icon: Icon, label, subtitle, onPress }: NavRowProps) {
   const colors = useTheme();
 
   return (
@@ -20,7 +21,7 @@ export function NavRow({ icon, label, subtitle, onPress }: NavRowProps) {
       accessibilityLabel={label}
       onPress={onPress}
       style={({ pressed }) => [styles.row, { backgroundColor: colors.surf, borderColor: colors.border }, pressed && styles.pressed]}>
-      <ThemedText style={[styles.icon, { fontFamily: undefined }]}>{icon}</ThemedText>
+      <Icon size={20} color={colors.textDim} strokeWidth={1.8} />
       <View style={styles.text}>
         <ThemedText type="smallBold">{label}</ThemedText>
         {subtitle ? (
@@ -29,7 +30,7 @@ export function NavRow({ icon, label, subtitle, onPress }: NavRowProps) {
           </ThemedText>
         ) : null}
       </View>
-      <ThemedText themeColor="textFaint">→</ThemedText>
+      <ChevronRight size={18} color={colors.textFaint} strokeWidth={1.8} />
     </Pressable>
   );
 }
@@ -46,9 +47,6 @@ const styles = StyleSheet.create({
   },
   pressed: {
     opacity: 0.8,
-  },
-  icon: {
-    fontSize: 20,
   },
   text: {
     flex: 1,

@@ -1,4 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { BookOpen, Drama, Plus, RotateCw } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Pressable, RefreshControl, ScrollView, StyleSheet } from 'react-native';
@@ -104,14 +105,14 @@ export default function LogScreen() {
                 {t('log.languageSectionTitle')}
               </ThemedText>
               <NavRow
-                icon="🗂️"
+                icon={RotateCw}
                 label={t('log.vocabReviewCta')}
                 subtitle={t('log.vocabDueCount', { count: dueVocabWordCount.data ?? 0 })}
                 onPress={() => router.push('/vocab-review')}
               />
-              <NavRow icon="➕" label={t('log.vocabAddCta')} onPress={() => router.push('/vocab-add')} />
-              <NavRow icon="📖" label={t('log.vocabAllCta')} onPress={() => router.push('/vocab-list')} />
-              <NavRow icon="🎭" label={t('log.roleplayCta')} onPress={() => router.push('/roleplay')} />
+              <NavRow icon={Plus} label={t('log.vocabAddCta')} onPress={() => router.push('/vocab-add')} />
+              <NavRow icon={BookOpen} label={t('log.vocabAllCta')} onPress={() => router.push('/vocab-list')} />
+              <NavRow icon={Drama} label={t('log.roleplayCta')} onPress={() => router.push('/roleplay')} />
             </>
           )}
 

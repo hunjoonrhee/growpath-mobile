@@ -1,3 +1,4 @@
+import { ChevronDown, ChevronUp, Square, Volume2 } from 'lucide-react-native';
 import { useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 
@@ -58,9 +59,11 @@ export function ChatBubble({ message, playback, formatPronunciationLabel }: Chat
               <ThemedText type="small" style={[styles.pronunciation, { color: pronunciationColor(message.pronunciation.pronScore, colors) }]}>
                 {formatPronunciationLabel(Math.round(message.pronunciation.pronScore))}
               </ThemedText>
-              <ThemedText type="small" style={[styles.pronunciationChevron, { color: colors.textFaint }]}>
-                {wordsExpanded ? '▲' : '▼'}
-              </ThemedText>
+              {wordsExpanded ? (
+                <ChevronUp size={12} color={colors.textFaint} strokeWidth={1.8} />
+              ) : (
+                <ChevronDown size={12} color={colors.textFaint} strokeWidth={1.8} />
+              )}
             </Pressable>
             {wordsExpanded && (
               <View style={styles.wordChips}>
@@ -91,8 +94,10 @@ export function ChatBubble({ message, playback, formatPronunciationLabel }: Chat
             style={styles.playButton}>
             {playback.isLoading ? (
               <ActivityIndicator size="small" color={colors.textDim} />
+            ) : playback.isPlaying ? (
+              <Square size={14} color={colors.textDim} strokeWidth={1.8} fill={colors.textDim} />
             ) : (
-              <ThemedText style={[styles.playIcon, { fontFamily: undefined }]}>{playback.isPlaying ? '⏹️' : '🔊'}</ThemedText>
+              <Volume2 size={14} color={colors.textDim} strokeWidth={1.8} />
             )}
           </Pressable>
         )}
@@ -125,9 +130,6 @@ const styles = StyleSheet.create({
   pronunciation: {
     fontSize: 11,
   },
-  pronunciationChevron: {
-    fontSize: 8,
-  },
   wordChips: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -151,8 +153,5 @@ const styles = StyleSheet.create({
     marginTop: Spacing.one,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  playIcon: {
-    fontSize: 14,
   },
 });

@@ -1,7 +1,7 @@
+import { Mic } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet } from 'react-native';
 
-import { ThemedText } from '@/components/themed-text';
 import { useTheme } from '@/hooks/use-theme';
 
 export type CaptureFabProps = {
@@ -18,7 +18,7 @@ export function CaptureFab({ onPress }: CaptureFabProps) {
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={t('today.captureAccessibilityLabel')}>
-      <ThemedText style={[styles.icon, { fontFamily: undefined }]}>🎙️</ThemedText>
+      <Mic size={24} color={colors.onPri} strokeWidth={1.8} />
     </Pressable>
   );
 }
@@ -37,8 +37,5 @@ const styles = StyleSheet.create({
     shadowRadius: 16,
     shadowOffset: { width: 0, height: 8 },
     elevation: 6,
-  },
-  icon: {
-    fontSize: 22,
   },
 });

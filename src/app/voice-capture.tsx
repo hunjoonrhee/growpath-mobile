@@ -1,4 +1,5 @@
 import { Redirect, useRouter } from 'expo-router';
+import { Mic, Square } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
@@ -85,7 +86,11 @@ export default function VoiceCaptureScreen() {
                 { backgroundColor: isRecording ? colors.amber : colors.pri },
                 isTranscribing && styles.recordButtonDisabled,
               ]}>
-              <ThemedText style={[styles.recordIcon, { fontFamily: undefined }]}>{isRecording ? '⏹️' : '🎙️'}</ThemedText>
+              {isRecording ? (
+                <Square size={28} color={colors.onPri} strokeWidth={1.8} fill={colors.onPri} />
+              ) : (
+                <Mic size={28} color={colors.onPri} strokeWidth={1.8} />
+              )}
             </Pressable>
           )}
 
@@ -147,9 +152,6 @@ const styles = StyleSheet.create({
   },
   recordButtonDisabled: {
     opacity: 0.5,
-  },
-  recordIcon: {
-    fontSize: 30,
   },
   actions: {
     flexDirection: 'row',

@@ -1,3 +1,4 @@
+import { Flame } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
@@ -21,6 +22,7 @@ export function GreetingHeader({ name, streakDays }: GreetingHeaderProps) {
         {t('today.greeting', { name })}
       </ThemedText>
       <View style={[styles.streak, { backgroundColor: withAlpha(colors.amber, 0.12), borderColor: withAlpha(colors.amber, 0.3) }]}>
+        <Flame size={14} color={colors.amber} strokeWidth={1.8} />
         <ThemedText type="smallBold" themeColor="amber">
           {t('today.streak', { count: streakDays })}
         </ThemedText>
@@ -38,6 +40,9 @@ const styles = StyleSheet.create({
     lineHeight: 28,
   },
   streak: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.one,
     alignSelf: 'flex-start',
     marginTop: Spacing.two,
     borderWidth: 1,

@@ -1,3 +1,4 @@
+import { ChevronRight, Laptop, Timer } from 'lucide-react-native';
 import { Modal, Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
@@ -56,7 +57,7 @@ export function TimerHandoffSheet({
           onPress={onSelectTimer}
           style={[styles.option, { backgroundColor: withAlpha(colors.pri, 0.14), borderColor: colors.pri }]}>
           <View style={[styles.icon, { backgroundColor: colors.pri }]}>
-            <ThemedText style={[styles.iconGlyph, { fontFamily: undefined }]}>⏱️</ThemedText>
+            <Timer size={18} color={colors.onPri} strokeWidth={1.8} />
           </View>
           <View style={styles.optionText}>
             <ThemedText type="smallBold">{timerOptionLabel}</ThemedText>
@@ -64,7 +65,7 @@ export function TimerHandoffSheet({
               {timerOptionDescription}
             </ThemedText>
           </View>
-          <ThemedText themeColor="textFaint">→</ThemedText>
+          <ChevronRight size={18} color={colors.textFaint} strokeWidth={1.8} />
         </Pressable>
 
         <Pressable
@@ -73,7 +74,7 @@ export function TimerHandoffSheet({
           onPress={onSelectWeb}
           style={[styles.option, { backgroundColor: colors.surf2, borderColor: colors.border }]}>
           <View style={[styles.icon, { backgroundColor: colors.bg }]}>
-            <ThemedText style={[styles.iconGlyph, { fontFamily: undefined }]}>💻</ThemedText>
+            <Laptop size={18} color={colors.text} strokeWidth={1.8} />
           </View>
           <View style={styles.optionText}>
             <ThemedText type="smallBold">{webOptionLabel}</ThemedText>
@@ -81,7 +82,7 @@ export function TimerHandoffSheet({
               {webOptionDescription}
             </ThemedText>
           </View>
-          <ThemedText themeColor="textFaint">→</ThemedText>
+          <ChevronRight size={18} color={colors.textFaint} strokeWidth={1.8} />
         </Pressable>
       </View>
     </Modal>
@@ -138,9 +139,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  iconGlyph: {
-    fontSize: 18,
   },
   optionText: {
     flex: 1,

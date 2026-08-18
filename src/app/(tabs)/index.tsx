@@ -1,4 +1,5 @@
 import { useRouter } from 'expo-router';
+import { BookOpen, Target } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Pressable, RefreshControl, ScrollView, StyleSheet } from 'react-native';
@@ -161,9 +162,9 @@ export default function TodayScreen() {
           <QuickStatsRow
             stats={[
               ...(hasLanguageGoal
-                ? [{ id: 'vocab-review', icon: '📚', label: t('today.quickStats.vocabReview', { count: dueVocabWordCount.data ?? 0 }) }]
+                ? [{ id: 'vocab-review', icon: BookOpen, label: t('today.quickStats.vocabReview', { count: dueVocabWordCount.data ?? 0 }) }]
                 : []),
-              { id: 'weekly-progress', icon: '🎯', label: t('today.quickStats.weeklyProgress', { count: weeklySessionCount.data ?? 0 }) },
+              { id: 'weekly-progress', icon: Target, label: t('today.quickStats.weeklyProgress', { count: weeklySessionCount.data ?? 0 }) },
             ]}
           />
         </ScrollView>

@@ -298,5 +298,14 @@
     "error": "Spracherkennung fehlgeschlagen. Bitte versuche es noch einmal.",
     "retryCta": "Erneut aufnehmen",
     "continueCta": "Weiter"
+  },
+  "celebration": {
+    "dismiss": "Später",
+    "stageComplete": {
+      "eyebrow": "STAGE COMPLETE",
+      "title": "Du hast {{stage}} abgeschlossen!",
+      "subtitle": "Eine weitere Stufe auf deiner Roadmap geschafft. Weiter so.",
+      "primaryCta": "Roadmap ansehen"
+    }
   }
 }

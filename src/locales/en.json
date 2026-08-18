@@ -298,5 +298,14 @@
     "error": "Speech recognition failed. Please try again.",
     "retryCta": "Record again",
     "continueCta": "Continue"
+  },
+  "celebration": {
+    "dismiss": "Later",
+    "stageComplete": {
+      "eyebrow": "STAGE COMPLETE",
+      "title": "You finished {{stage}}!",
+      "subtitle": "One more stage down on your roadmap. Keep it up.",
+      "primaryCta": "View roadmap"
+    }
   }
 }

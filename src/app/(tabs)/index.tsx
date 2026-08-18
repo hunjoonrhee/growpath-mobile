@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { BookOpen, Target } from 'lucide-react-native';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Pressable, RefreshControl, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -19,13 +19,16 @@ import { Spacing, Typography } from '@/constants/theme';
 import { useProfileInfo } from '@/hooks/profile/use-profile-info';
 import { useActiveRoadmap } from '@/hooks/roadmap/use-active-roadmap';
 import { useGapAnalysis } from '@/hooks/roadmap/use-gap-analysis';
-import { useTheme } from '@/hooks/use-theme';
+import { useStageCompletionDetector } from '@/hooks/roadmap/use-stage-completion-detector';
 import { useStudyStreak } from '@/hooks/sessions/use-study-streak';
 import { useWeeklySessionCount } from '@/hooks/sessions/use-weekly-session-count';
+import { useCelebration } from '@/hooks/use-celebration';
 import { usePullToRefresh } from '@/hooks/use-pull-to-refresh';
+import { useTheme } from '@/hooks/use-theme';
 import { useDueVocabWordCount } from '@/hooks/vocab/use-due-vocab-word-count';
 import { useTodayWidgetSync } from '@/hooks/widgets/use-today-widget-sync';
 import { useAuth } from '@/lib/auth-context';
+import { canCelebrateToday, markCelebratedToday } from '@/lib/celebration-rate-limit';
 import { deriveTodayRecommendation } from '@/lib/today-recommendation';
 
 export default function TodayScreen() {
@@ -47,6 +50,7 @@ export default function TodayScreen() {
   const dueVocabWordCount = useDueVocabWordCount(userId, hasLanguageGoal);
   const [isHandoffSheetVisible, setIsHandoffSheetVisible] = useState(false);
   const { refreshing, onRefresh } = usePullToRefresh();
+  const showCelebration = useCelebration();
 
   // Prefers the profile's saved name (Profile tab) over the email prefix -
   // falls back to the latter until the user sets one, so the greeting is
@@ -70,6 +74,30 @@ export default function TodayScreen() {
   const missingSkillNames = Array.from(
     new Set(gapAnalysis.result?.skills.filter((skill) => skill.source === 'none').map((skill) => skill.name) ?? [])
   );
+
+  const handleStageCompleted = useCallback(
+    (completedStageLevel: number) => {
+      const stages = roadmap.data?.stages;
+      if (!stages) return;
+      const completedStage = stages.find((s) => s.level === completedStageLevel);
+      canCelebrateToday().then((canCelebrate) => {
+        if (!canCelebrate) return;
+        showCelebration({
+          eyebrow: t('celebration.stageComplete.eyebrow'),
+          title: t('celebration.stageComplete.title', { stage: completedStage?.title ?? '' }),
+          subtitle: t('celebration.stageComplete.subtitle'),
+          percent: stages.length > 0 ? Math.round((completedStageLevel / stages.length) * 100) : undefined,
+          primaryLabel: t('celebration.stageComplete.primaryCta'),
+          onPrimary: () => router.push('/roadmap'),
+          secondaryLabel: t('celebration.dismiss'),
+        });
+        markCelebratedToday();
+      });
+    },
+    [roadmap.data, showCelebration, t, router]
+  );
+
+  useStageCompletionDetector(adoptedRoadmapId.data, focusStageLevel.data, handleStageCompleted);
 
   useTodayWidgetSync(
     roadmap.data

@@ -219,6 +219,7 @@
     "emptyDeck": "No words to review today.",
     "deckComplete": "You've reviewed everything for today!",
     "exampleHint": "Shown exactly as saved",
+    "flipHint": "Tap to reveal the meaning",
     "againCta": "Review again",
     "knowCta": "I know this",
     "errorGeneric": "Couldn't save. Please try again in a moment."
@@ -244,7 +245,8 @@
     "loadError": "Couldn't load your words. Please try again in a moment.",
     "empty": "No saved words yet.",
     "deleteCta": "Delete",
-    "deleteError": "Couldn't delete. Please try again in a moment."
+    "deleteError": "Couldn't delete. Please try again in a moment.",
+    "wordDetailCloseAccessibilityLabel": "Close"
   },
   "tilDetail": {
     "backAccessibilityLabel": "Go back",

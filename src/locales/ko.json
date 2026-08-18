@@ -219,6 +219,7 @@
     "emptyDeck": "오늘 복습할 단어가 없어요.",
     "deckComplete": "오늘의 복습을 모두 마쳤어요!",
     "exampleHint": "저장 당시 문장 그대로 표시",
+    "flipHint": "탭해서 뜻 보기",
     "againCta": "다시 볼래요",
     "knowCta": "알고 있어요",
     "errorGeneric": "저장에 실패했어요. 잠시 후 다시 시도해주세요."
@@ -244,7 +245,8 @@
     "loadError": "단어를 불러오지 못했어요. 잠시 후 다시 시도해주세요.",
     "empty": "아직 저장된 단어가 없어요.",
     "deleteCta": "삭제",
-    "deleteError": "삭제에 실패했어요. 잠시 후 다시 시도해주세요."
+    "deleteError": "삭제에 실패했어요. 잠시 후 다시 시도해주세요.",
+    "wordDetailCloseAccessibilityLabel": "닫기"
   },
   "tilDetail": {
     "backAccessibilityLabel": "뒤로가기",

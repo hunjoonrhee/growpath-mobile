@@ -1,4 +1,5 @@
 import { Redirect, useRouter } from 'expo-router';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, RefreshControl, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -7,12 +8,14 @@ import { BackHeader } from '@/components/navigation/BackHeader';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { SwipeableVocabWordCard } from '@/components/vocab/SwipeableVocabWordCard';
+import { VocabWordDetailModal } from '@/components/vocab/VocabWordDetailModal';
 import { Spacing } from '@/constants/theme';
 import { usePullToRefresh } from '@/hooks/use-pull-to-refresh';
 import { useTheme } from '@/hooks/use-theme';
 import { useAllVocabWords } from '@/hooks/vocab/use-all-vocab-words';
 import { useDeleteVocabWord } from '@/hooks/vocab/use-delete-vocab-word';
 import { useAuth } from '@/lib/auth-context';
+import type { VocabWord } from '@/lib/vocab';
 
 export default function VocabListScreen() {
   const { t } = useTranslation();
@@ -22,6 +25,8 @@ export default function VocabListScreen() {
   const allVocabWords = useAllVocabWords(session?.user.id);
   const deleteVocabWord = useDeleteVocabWord(session?.user.id);
   const { refreshing, onRefresh } = usePullToRefresh();
+  const [selectedWord, setSelectedWord] = useState<VocabWord | null>(null);
+  const [isDetailFlipped, setIsDetailFlipped] = useState(false);
 
   if (!session) return <Redirect href="/login" />;
 
@@ -64,10 +69,24 @@ export default function VocabListScreen() {
                 key={word.id}
                 word={word}
                 onDelete={() => deleteVocabWord.mutate(word.id, { onError: () => Alert.alert(t('vocabList.deleteError')) })}
+                onPress={() => {
+                  setSelectedWord(word);
+                  setIsDetailFlipped(false);
+                }}
               />
             ))}
         </ScrollView>
       </SafeAreaView>
+
+      <VocabWordDetailModal
+        word={selectedWord}
+        isFlipped={isDetailFlipped}
+        onToggleFlip={() => setIsDetailFlipped((flipped) => !flipped)}
+        onClose={() => setSelectedWord(null)}
+        closeAccessibilityLabel={t('vocabList.wordDetailCloseAccessibilityLabel')}
+        flipHint={t('vocab.flipHint')}
+        exampleHint={t('vocab.exampleHint')}
+      />
     </ThemedView>
   );
 }

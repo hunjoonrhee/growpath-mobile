@@ -23,6 +23,10 @@ export default function VocabReviewScreen() {
   const dueWords = useDueVocabWords(session?.user.id);
   const reviewWord = useReviewVocabWord(session?.user.id);
   const [currentIndex, setCurrentIndex] = useState(0);
+  // Front face only shows the word - this is the self-testing gate: the
+  // review buttons (다시 볼래요/알고 있어요) only make sense to answer once
+  // the meaning has actually been revealed, so they're gated on this too.
+  const [isFlipped, setIsFlipped] = useState(false);
   // Reviewing a word invalidates the due-words query, which then refetches
   // with that word removed. Reading dueWords.data directly here would shift
   // every later word down one slot mid-session and skip it. Snapshotting
@@ -56,6 +60,7 @@ export default function VocabReviewScreen() {
       {
         onSuccess: () => {
           submitGuard.release();
+          setIsFlipped(false);
           setCurrentIndex((index) => index + 1);
         },
         onError: () => {
@@ -109,14 +114,19 @@ export default function VocabReviewScreen() {
                 meaning={currentWord.meaning}
                 exampleSentence={currentWord.exampleSentence}
                 exampleHint={t('vocab.exampleHint')}
+                flipHint={t('vocab.flipHint')}
+                isFlipped={isFlipped}
+                onPress={() => setIsFlipped((flipped) => !flipped)}
               />
-              <VocabReviewActions
-                onPressAgain={() => handleReview(false)}
-                onPressKnow={() => handleReview(true)}
-                againLabel={t('vocab.againCta')}
-                knowLabel={t('vocab.knowCta')}
-                disabled={reviewWord.isPending}
-              />
+              {isFlipped && (
+                <VocabReviewActions
+                  onPressAgain={() => handleReview(false)}
+                  onPressKnow={() => handleReview(true)}
+                  againLabel={t('vocab.againCta')}
+                  knowLabel={t('vocab.knowCta')}
+                  disabled={reviewWord.isPending}
+                />
+              )}
             </>
           )}
         </ScrollView>

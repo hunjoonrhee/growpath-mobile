@@ -219,6 +219,7 @@
     "emptyDeck": "Heute keine Vokabeln zu wiederholen.",
     "deckComplete": "Du hast die heutige Wiederholung abgeschlossen!",
     "exampleHint": "Genau wie beim Speichern angezeigt",
+    "flipHint": "Tippen, um die Bedeutung zu sehen",
     "againCta": "Nochmal üben",
     "knowCta": "Weiß ich",
     "errorGeneric": "Speichern fehlgeschlagen. Bitte versuche es gleich noch einmal."
@@ -244,7 +245,8 @@
     "loadError": "Vokabeln konnten nicht geladen werden. Bitte versuche es gleich noch einmal.",
     "empty": "Noch keine gespeicherten Vokabeln.",
     "deleteCta": "Löschen",
-    "deleteError": "Löschen fehlgeschlagen. Bitte versuche es gleich noch einmal."
+    "deleteError": "Löschen fehlgeschlagen. Bitte versuche es gleich noch einmal.",
+    "wordDetailCloseAccessibilityLabel": "Schließen"
   },
   "tilDetail": {
     "backAccessibilityLabel": "Zurück",

@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Pressable } from 'react-native';
 import ReanimatedSwipeable, { type SwipeableMethods } from 'react-native-gesture-handler/ReanimatedSwipeable';
 
 import { SwipeDeleteAction } from '@/components/log/SwipeDeleteAction';
@@ -9,10 +10,11 @@ import type { VocabWord } from '@/lib/vocab';
 export type SwipeableVocabWordCardProps = {
   word: VocabWord;
   onDelete: () => void;
+  onPress: () => void;
 };
 
 /** Same "swipe left to delete" pattern as SwipeableSessionLogCard - the swipe + tapping the revealed button is the confirmation, so no additional Alert. */
-export function SwipeableVocabWordCard({ word, onDelete }: SwipeableVocabWordCardProps) {
+export function SwipeableVocabWordCard({ word, onDelete, onPress }: SwipeableVocabWordCardProps) {
   const { t } = useTranslation();
   const swipeableRef = useRef<SwipeableMethods>(null);
 
@@ -27,7 +29,9 @@ export function SwipeableVocabWordCard({ word, onDelete }: SwipeableVocabWordCar
       friction={2}
       rightThreshold={40}
       renderRightActions={(progress) => <SwipeDeleteAction progress={progress} label={t('vocabList.deleteCta')} onPress={handleDelete} />}>
-      <VocabWordCard word={word} />
+      <Pressable accessibilityRole="button" accessibilityLabel={word.word} onPress={onPress}>
+        <VocabWordCard word={word} />
+      </Pressable>
     </ReanimatedSwipeable>
   );
 }

@@ -90,8 +90,13 @@
     "certSaveError": "Speichern fehlgeschlagen. Bitte versuche es gleich noch einmal.",
     "certDeleteCta": "Löschen",
     "certDeleteError": "Löschen fehlgeschlagen. Bitte versuche es gleich noch einmal.",
-    "settingsSectionTitle": "Einstellungen",
-    "themeLabel": "Design",
+    "settingsNavLabel": "Einstellungen"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "backAccessibilityLabel": "Zurück",
+    "languageSectionTitle": "Sprache",
+    "themeSectionTitle": "Design",
     "themeModes": {
       "system": "System",
       "light": "Hell",

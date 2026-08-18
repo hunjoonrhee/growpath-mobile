@@ -90,8 +90,13 @@
     "certSaveError": "Couldn't save. Please try again in a moment.",
     "certDeleteCta": "Delete",
     "certDeleteError": "Couldn't delete. Please try again in a moment.",
-    "settingsSectionTitle": "Settings",
-    "themeLabel": "Theme",
+    "settingsNavLabel": "Settings"
+  },
+  "settings": {
+    "title": "Settings",
+    "backAccessibilityLabel": "Go back",
+    "languageSectionTitle": "Language",
+    "themeSectionTitle": "Theme",
     "themeModes": {
       "system": "System",
       "light": "Light",

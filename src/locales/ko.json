@@ -90,8 +90,13 @@
     "certSaveError": "저장하지 못했어요. 잠시 후 다시 시도해주세요.",
     "certDeleteCta": "삭제",
     "certDeleteError": "삭제하지 못했어요. 잠시 후 다시 시도해주세요.",
-    "settingsSectionTitle": "설정",
-    "themeLabel": "테마",
+    "settingsNavLabel": "설정"
+  },
+  "settings": {
+    "title": "설정",
+    "backAccessibilityLabel": "뒤로 가기",
+    "languageSectionTitle": "언어",
+    "themeSectionTitle": "테마",
     "themeModes": {
       "system": "시스템",
       "light": "라이트",

@@ -195,7 +195,9 @@
     "saveCta": "저장하기",
     "loading": "불러오는 중...",
     "loadError": "기록을 불러오지 못했어요. 잠시 후 다시 시도해주세요.",
-    "errorGeneric": "저장에 실패했어요. 잠시 후 다시 시도해주세요."
+    "errorGeneric": "저장에 실패했어요. 잠시 후 다시 시도해주세요.",
+    "savedToastTitle": "기록을 저장했어요",
+    "savedToastSubtitle": "{{minutes}}분 · {{title}}"
   },
   "timer": {
     "backAccessibilityLabel": "뒤로가기",

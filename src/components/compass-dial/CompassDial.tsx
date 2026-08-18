@@ -14,7 +14,12 @@ export type CompassDialProps = {
   colorFrom?: string;
   colorTo?: string;
   tickActiveColor?: string;
+  tickInactiveColor?: string;
   trackColor?: string;
+  /** The marker dot's inner fill - punches through the ring, so it should match whatever surface the dial sits on. Defaults to the live theme's bg, which is wrong on a surface that deliberately ignores the app theme (e.g. CelebrationOverlay, always-dark regardless of light/dark mode). */
+  markerFill?: string;
+  textColor?: string;
+  subLabelColor?: string;
 };
 
 export function CompassDial({
@@ -25,13 +30,21 @@ export function CompassDial({
   colorFrom,
   colorTo,
   tickActiveColor,
+  tickInactiveColor,
   trackColor,
+  markerFill,
+  textColor,
+  subLabelColor,
 }: CompassDialProps) {
   const theme = useTheme();
   const resolvedColorFrom = colorFrom ?? theme.pri;
   const resolvedColorTo = colorTo ?? theme.pri2;
   const resolvedTickActiveColor = tickActiveColor ?? theme.pri2;
+  const resolvedTickInactiveColor = tickInactiveColor ?? theme.border;
   const resolvedTrackColor = trackColor ?? theme.surf2;
+  const resolvedMarkerFill = markerFill ?? theme.bg;
+  const resolvedTextColor = textColor ?? theme.text;
+  const resolvedSubLabelColor = subLabelColor ?? theme.textDim;
   // useId() includes colons (":r0:"), which are valid in SVG ids but risky in
   // CSS-style url(#...) references on the react-native-web renderer - strip them.
   const gradientId = `compass-dial-gradient-${useId().replace(/:/g, '')}`;
@@ -63,7 +76,7 @@ export function CompassDial({
           y1={tick.from.y}
           x2={tick.to.x}
           y2={tick.to.y}
-          stroke={tick.isActive ? resolvedTickActiveColor : theme.border}
+          stroke={tick.isActive ? resolvedTickActiveColor : resolvedTickInactiveColor}
           strokeWidth={tick.isMajor ? size * 0.014 : size * 0.007}
           strokeLinecap="round"
         />
@@ -85,15 +98,15 @@ export function CompassDial({
       />
 
       <Circle cx={progressEnd.x} cy={progressEnd.y} r={size * 0.055} fill={resolvedColorTo} opacity={0.28} />
-      <Circle cx={progressEnd.x} cy={progressEnd.y} r={size * 0.032} fill={theme.bg} />
+      <Circle cx={progressEnd.x} cy={progressEnd.y} r={size * 0.032} fill={resolvedMarkerFill} />
 
       {showLabel && (
-        <SvgText x={cx} y={cy - size * 0.02} textAnchor="middle" fontSize={size * 0.19} fontWeight="800" fill={theme.text}>
+        <SvgText x={cx} y={cy - size * 0.02} textAnchor="middle" fontSize={size * 0.19} fontWeight="800" fill={resolvedTextColor}>
           {Math.round(clampedPercent)} %
         </SvgText>
       )}
       {showLabel && label && (
-        <SvgText x={cx} y={cy + size * 0.11} textAnchor="middle" fontSize={size * 0.06} fontWeight="600" fill={theme.textDim}>
+        <SvgText x={cx} y={cy + size * 0.11} textAnchor="middle" fontSize={size * 0.06} fontWeight="600" fill={resolvedSubLabelColor}>
           {label}
         </SvgText>
       )}

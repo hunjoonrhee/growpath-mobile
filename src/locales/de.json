@@ -195,7 +195,9 @@
     "saveCta": "Speichern",
     "loading": "Wird geladen...",
     "loadError": "Eintrag konnte nicht geladen werden. Bitte versuche es gleich noch einmal.",
-    "errorGeneric": "Speichern fehlgeschlagen. Bitte versuche es gleich noch einmal."
+    "errorGeneric": "Speichern fehlgeschlagen. Bitte versuche es gleich noch einmal.",
+    "savedToastTitle": "Eintrag gespeichert",
+    "savedToastSubtitle": "{{minutes}} Min · {{title}}"
   },
   "timer": {
     "backAccessibilityLabel": "Zurück",

@@ -1,4 +1,5 @@
 import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
+import { Check } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Alert, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -12,12 +13,14 @@ import { useCreateSession } from '@/hooks/sessions/use-create-session';
 import { useSession } from '@/hooks/sessions/use-session';
 import { useUpdateSession } from '@/hooks/sessions/use-update-session';
 import { useSubmitGuard } from '@/hooks/use-submit-guard';
+import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/lib/auth-context';
 
 export default function CaptureEntryScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { session } = useAuth();
+  const showToast = useToast();
   const params = useLocalSearchParams<{ title?: string; minutes?: string; til?: string; timerSessionId?: string; id?: string }>();
   const editingId = params.id;
   const isEditing = editingId !== undefined;
@@ -43,12 +46,29 @@ export default function CaptureEntryScreen() {
       submitGuard.release();
       Alert.alert(t('captureEntry.errorGeneric'));
     };
+    const showSavedToast = () => {
+      showToast({
+        icon: Check,
+        title: t('captureEntry.savedToastTitle'),
+        subtitle:
+          values.durationMinutes !== null
+            ? t('captureEntry.savedToastSubtitle', { minutes: values.durationMinutes, title: values.title })
+            : values.title,
+      });
+    };
 
     if (isEditing) {
-      updateSession.mutate(values, { onSuccess: () => router.back(), onError });
+      updateSession.mutate(values, {
+        onSuccess: () => {
+          showSavedToast();
+          router.back();
+        },
+        onError,
+      });
     } else {
       createSession.mutate(values, {
         onSuccess: () => {
+          showSavedToast();
           // Saving a timer-prefilled entry logs that session - replace
           // (not back()) into /log with no params so its ContextBanner,
           // which is keyed on this same timerSessionId, doesn't reappear

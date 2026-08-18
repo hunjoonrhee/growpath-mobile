@@ -195,7 +195,9 @@
     "saveCta": "Save",
     "loading": "Loading...",
     "loadError": "Couldn't load this entry. Please try again in a moment.",
-    "errorGeneric": "Couldn't save. Please try again in a moment."
+    "errorGeneric": "Couldn't save. Please try again in a moment.",
+    "savedToastTitle": "Saved your log",
+    "savedToastSubtitle": "{{minutes}} min · {{title}}"
   },
   "timer": {
     "backAccessibilityLabel": "Go back",

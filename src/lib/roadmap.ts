@@ -1,3 +1,4 @@
+import { ensureGoalsForRoadmap } from '@/lib/goals';
 import { supabase } from '@/lib/supabase';
 import { flattenTagsColumn } from '@/lib/tags';
 
@@ -134,10 +135,31 @@ export async function fetchUserRoadmaps(userId: string): Promise<RoadmapSummary[
  * Doing this as separate sequential client-side writes risked a partial
  * failure leaving the two representations disagreeing. The function derives
  * the user from auth.uid() itself, so there's no user id to pass here.
+ *
+ * Also ensures this roadmap has its per-stage `goals` rows (see
+ * ensureGoalsForRoadmap) - every roadmap adopted through this app goes
+ * through here, so this is the one place that can guarantee it without
+ * every caller (goal-setup, switching to another goal, ...) remembering to.
+ * Best-effort: a sync failure here shouldn't block the switch itself
+ * succeeding, since the adopted pointer is the part that actually matters.
  */
 export async function switchActiveRoadmap(roadmapId: string): Promise<void> {
   const { error } = await supabase.rpc('set_adopted_roadmap', { p_roadmap_id: roadmapId });
   if (error) throw error;
+
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  if (!session) return;
+
+  try {
+    const roadmap = await fetchRoadmap(roadmapId);
+    if (roadmap) {
+      await ensureGoalsForRoadmap(roadmapId, session.user.id, roadmap.stages);
+    }
+  } catch (error) {
+    console.warn('ensureGoalsForRoadmap failed', error);
+  }
 }
 
 /**

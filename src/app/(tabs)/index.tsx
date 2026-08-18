@@ -20,6 +20,7 @@ import { useProfileInfo } from '@/hooks/profile/use-profile-info';
 import { useActiveRoadmap } from '@/hooks/roadmap/use-active-roadmap';
 import { useGapAnalysis } from '@/hooks/roadmap/use-gap-analysis';
 import { useStageCompletionDetector } from '@/hooks/roadmap/use-stage-completion-detector';
+import { useStreakMilestoneDetector } from '@/hooks/sessions/use-streak-milestone-detector';
 import { useStudyStreak } from '@/hooks/sessions/use-study-streak';
 import { useWeeklySessionCount } from '@/hooks/sessions/use-weekly-session-count';
 import { useCelebration } from '@/hooks/use-celebration';
@@ -98,6 +99,26 @@ export default function TodayScreen() {
   );
 
   useStageCompletionDetector(adoptedRoadmapId.data, focusStageLevel.data, handleStageCompleted);
+
+  const handleMilestoneReached = useCallback(
+    (milestone: number) => {
+      canCelebrateToday().then((canCelebrate) => {
+        if (!canCelebrate) return;
+        showCelebration({
+          eyebrow: t('celebration.streakMilestone.eyebrow'),
+          title: t('celebration.streakMilestone.title', { count: milestone }),
+          subtitle: t('celebration.streakMilestone.subtitle'),
+          primaryLabel: t('celebration.streakMilestone.primaryCta'),
+          onPrimary: () => router.push('/log'),
+          secondaryLabel: t('celebration.dismiss'),
+        });
+        markCelebratedToday();
+      });
+    },
+    [showCelebration, t, router]
+  );
+
+  useStreakMilestoneDetector(userId, streak.data, handleMilestoneReached);
 
   useTodayWidgetSync(
     roadmap.data

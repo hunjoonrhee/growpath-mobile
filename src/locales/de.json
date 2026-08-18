@@ -306,6 +306,12 @@
       "title": "Du hast {{stage}} abgeschlossen!",
       "subtitle": "Eine weitere Stufe auf deiner Roadmap geschafft. Weiter so.",
       "primaryCta": "Roadmap ansehen"
+    },
+    "streakMilestone": {
+      "eyebrow": "MILESTONE",
+      "title": "{{count}} Tage in Folge!",
+      "subtitle": "Du warst {{count}} Tage in Folge dabei. Bleib dran.",
+      "primaryCta": "Heute eintragen"
     }
   }
 }

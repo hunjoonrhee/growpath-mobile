@@ -306,6 +306,12 @@
       "title": "You finished {{stage}}!",
       "subtitle": "One more stage down on your roadmap. Keep it up.",
       "primaryCta": "View roadmap"
+    },
+    "streakMilestone": {
+      "eyebrow": "MILESTONE",
+      "title": "{{count}}-day streak!",
+      "subtitle": "You've shown up {{count}} days in a row. Keep the streak alive.",
+      "primaryCta": "Log today's study"
     }
   }
 }

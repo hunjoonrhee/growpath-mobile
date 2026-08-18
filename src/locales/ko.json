@@ -306,6 +306,12 @@
       "title": "{{stage}} 단계를 마쳤어요!",
       "subtitle": "로드맵에서 한 단계 더 나아갔어요. 계속 이어가봐요.",
       "primaryCta": "로드맵 보기"
+    },
+    "streakMilestone": {
+      "eyebrow": "MILESTONE",
+      "title": "{{count}}일 연속 기록!",
+      "subtitle": "{{count}}일 동안 꾸준히 이어왔어요. 계속 이어가봐요.",
+      "primaryCta": "오늘 기록하기"
     }
   }
 }

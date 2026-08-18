@@ -3,7 +3,8 @@ import { StyleSheet, View } from 'react-native';
 import { TagList } from '@/components/log/TagList';
 import { TilMarkdown } from '@/components/log/TilMarkdown';
 import { ThemedText } from '@/components/themed-text';
-import { Colors, Spacing, Typography } from '@/constants/theme';
+import { Spacing, Typography } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 import type { RoleplaySummary } from '@/lib/roleplay';
 
 export type SessionSummaryCardProps = {
@@ -13,8 +14,10 @@ export type SessionSummaryCardProps = {
 };
 
 export function SessionSummaryCard({ summary, label, vocabAddedLabel }: SessionSummaryCardProps) {
+  const colors = useTheme();
+
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, { backgroundColor: colors.surf, borderColor: colors.border }]}>
       <ThemedText type="small" themeColor="textFaint" style={styles.label}>
         {label}
       </ThemedText>
@@ -41,9 +44,7 @@ export function SessionSummaryCard({ summary, label, vocabAddedLabel }: SessionS
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: Colors.surf,
     borderWidth: 1,
-    borderColor: Colors.border,
     borderRadius: 16,
     padding: Spacing.three,
     gap: Spacing.two,

@@ -3,7 +3,8 @@ import { ActivityIndicator, Alert, Pressable, StyleSheet, View } from 'react-nat
 
 import { MultilineTextInput } from '@/components/forms/MultilineTextInput';
 import { ThemedText } from '@/components/themed-text';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 import { useCloudDictation } from '@/hooks/voice/use-cloud-dictation';
 import type { PronunciationResult } from '@/lib/speech-transcription';
 
@@ -31,6 +32,7 @@ export function ChatComposer({
   voiceTranscribingLabel,
   voiceAssessingPronunciationLabel,
 }: ChatComposerProps) {
+  const colors = useTheme();
   const [text, setText] = useState('');
   // Tracks the exact transcript a pronunciation score was computed for -
   // sent along only if the user hasn't edited the text since (see handleSend).
@@ -86,7 +88,7 @@ export function ChatComposer({
           {micLabel}
         </ThemedText>
       )}
-      <View style={styles.row}>
+      <View style={[styles.row, { borderTopColor: colors.border }]}>
         <View style={styles.inputWrap}>
           <MultilineTextInput value={text} onChangeText={setText} placeholder={placeholder} minHeight={40} maxHeight={100} editable={!disabled} />
         </View>
@@ -96,11 +98,16 @@ export function ChatComposer({
             accessibilityLabel={micLabel}
             onPress={handleMicPress}
             disabled={disabled || isBusyTranscribing}
-            style={[styles.micButton, isRecording && styles.micButtonActive, disabled && styles.micButtonDisabled]}>
+            style={[
+              styles.micButton,
+              { backgroundColor: colors.surf2, borderColor: colors.border },
+              isRecording && { backgroundColor: colors.amber, borderColor: colors.amber },
+              disabled && styles.micButtonDisabled,
+            ]}>
             {isBusyTranscribing ? (
-              <ActivityIndicator size="small" color={Colors.text} />
+              <ActivityIndicator size="small" color={colors.text} />
             ) : (
-              <ThemedText style={styles.micIcon}>{isRecording ? '⏹️' : '🎙️'}</ThemedText>
+              <ThemedText style={[styles.micIcon, { fontFamily: undefined }]}>{isRecording ? '⏹️' : '🎙️'}</ThemedText>
             )}
           </Pressable>
         )}
@@ -109,8 +116,8 @@ export function ChatComposer({
           accessibilityLabel={sendLabel}
           onPress={handleSend}
           disabled={!canSend}
-          style={[styles.sendButton, !canSend && styles.sendButtonDisabled]}>
-          <ThemedText type="smallBold" style={styles.sendLabel}>
+          style={[styles.sendButton, { backgroundColor: colors.pri }, !canSend && styles.sendButtonDisabled]}>
+          <ThemedText type="smallBold" style={{ color: colors.onPri }}>
             {sendLabel}
           </ThemedText>
         </Pressable>
@@ -130,7 +137,6 @@ const styles = StyleSheet.create({
     gap: Spacing.two,
     padding: Spacing.three,
     borderTopWidth: 1,
-    borderTopColor: Colors.border,
   },
   inputWrap: {
     flex: 1,
@@ -139,15 +145,9 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: Colors.surf2,
     borderWidth: 1,
-    borderColor: Colors.border,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  micButtonActive: {
-    backgroundColor: Colors.amber,
-    borderColor: Colors.amber,
   },
   micButtonDisabled: {
     opacity: 0.5,
@@ -156,7 +156,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   sendButton: {
-    backgroundColor: Colors.pri,
     borderRadius: 18,
     paddingVertical: Spacing.two + 2,
     paddingHorizontal: Spacing.three,
@@ -166,8 +165,5 @@ const styles = StyleSheet.create({
   // block layout) but should still fade the same amount.
   sendButtonDisabled: {
     opacity: 0.5,
-  },
-  sendLabel: {
-    color: '#ffffff',
   },
 });

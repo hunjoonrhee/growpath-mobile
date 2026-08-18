@@ -11,10 +11,11 @@ import { ChatComposer } from '@/components/roleplay/ChatComposer';
 import { SessionSummaryCard } from '@/components/roleplay/SessionSummaryCard';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
 import { useActiveRoadmap } from '@/hooks/roadmap/use-active-roadmap';
 import { useRoleplayChat } from '@/hooks/roleplay/use-roleplay-chat';
 import { useRoleplayTts } from '@/hooks/roleplay/use-roleplay-tts';
+import { useTheme } from '@/hooks/use-theme';
 import { useAuth } from '@/lib/auth-context';
 import { roleplayLanguageToBcp47 } from '@/lib/roleplay-language-bcp47';
 
@@ -22,6 +23,7 @@ export default function RoleplayChatScreen() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
   const { session } = useAuth();
+  const colors = useTheme();
   const { language, topic } = useLocalSearchParams<{ language?: string; topic?: string }>();
   const scrollRef = useRef<ScrollView>(null);
 
@@ -168,7 +170,7 @@ export default function RoleplayChatScreen() {
                 label={t('roleplay.endCta')}
                 onPress={handleEnd}
                 disabled={chat.isEnding || chat.isSending}
-                style={styles.endButton}
+                style={[styles.endButton, { backgroundColor: colors.surf2 }]}
               />
             )}
 
@@ -227,7 +229,6 @@ const styles = StyleSheet.create({
   endButton: {
     marginHorizontal: Spacing.four,
     marginBottom: Spacing.two,
-    backgroundColor: Colors.surf2,
   },
   retryButton: {
     marginTop: Spacing.two,

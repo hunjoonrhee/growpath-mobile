@@ -1,7 +1,8 @@
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 
 export type VocabReviewActionsProps = {
   onPressAgain: () => void;
@@ -12,6 +13,8 @@ export type VocabReviewActionsProps = {
 };
 
 export function VocabReviewActions({ onPressAgain, onPressKnow, againLabel, knowLabel, disabled }: VocabReviewActionsProps) {
+  const colors = useTheme();
+
   return (
     <View style={styles.row}>
       <Pressable
@@ -19,7 +22,7 @@ export function VocabReviewActions({ onPressAgain, onPressKnow, againLabel, know
         accessibilityLabel={againLabel}
         onPress={onPressAgain}
         disabled={disabled}
-        style={[styles.button, styles.againButton, disabled && styles.disabled]}>
+        style={[styles.button, { backgroundColor: colors.surf2, borderWidth: 1, borderColor: colors.border }, disabled && styles.disabled]}>
         <ThemedText type="smallBold" themeColor="textDim">
           🔁 {againLabel}
         </ThemedText>
@@ -29,8 +32,8 @@ export function VocabReviewActions({ onPressAgain, onPressKnow, againLabel, know
         accessibilityLabel={knowLabel}
         onPress={onPressKnow}
         disabled={disabled}
-        style={[styles.button, styles.knowButton, disabled && styles.disabled]}>
-        <ThemedText type="smallBold" style={styles.knowLabel}>
+        style={[styles.button, { backgroundColor: colors.ok }, disabled && styles.disabled]}>
+        <ThemedText type="smallBold" style={{ color: colors.onPri }}>
           ✓ {knowLabel}
         </ThemedText>
       </Pressable>
@@ -51,17 +54,6 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.three,
     borderRadius: 16,
     alignItems: 'center',
-  },
-  againButton: {
-    backgroundColor: Colors.surf2,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  knowButton: {
-    backgroundColor: Colors.ok,
-  },
-  knowLabel: {
-    color: '#ffffff',
   },
   disabled: {
     opacity: 0.5,

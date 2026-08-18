@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing, type Palette } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 import type { ChatMessage } from '@/lib/roleplay';
 
 export type ChatBubbleProps = {
@@ -30,34 +31,41 @@ export type ChatBubbleProps = {
 // full traffic-light scale, so a single "good vs needs work" cutoff matches
 // how amber is already used everywhere else (errors, warnings) instead of
 // introducing a third color just for this.
-function pronunciationColor(score: number): string {
-  return score >= 80 ? Colors.ok : Colors.amber;
+function pronunciationColor(score: number, colors: Palette): string {
+  return score >= 80 ? colors.ok : colors.amber;
 }
 
 export function ChatBubble({ message, playback, formatPronunciationLabel }: ChatBubbleProps) {
+  const colors = useTheme();
   const isUser = message.role === 'user';
   const [wordsExpanded, setWordsExpanded] = useState(false);
 
   return (
     <View style={[styles.row, isUser && styles.rowUser]}>
-      <View style={[styles.bubble, isUser ? styles.bubbleUser : styles.bubbleModel]}>
-        <ThemedText type="small" style={isUser ? styles.textUser : styles.textModel}>
+      <View
+        style={[
+          styles.bubble,
+          isUser
+            ? { backgroundColor: colors.pri, borderTopRightRadius: 4 }
+            : { backgroundColor: colors.surf, borderWidth: 1, borderColor: colors.border, borderTopLeftRadius: 4 },
+        ]}>
+        <ThemedText type="small" style={{ color: isUser ? colors.onPri : colors.text }}>
           {message.text}
         </ThemedText>
         {isUser && message.pronunciation && formatPronunciationLabel && (
           <>
             <Pressable accessibilityRole="button" onPress={() => setWordsExpanded((current) => !current)} style={styles.pronunciationRow}>
-              <ThemedText type="small" style={[styles.pronunciation, { color: pronunciationColor(message.pronunciation.pronScore) }]}>
+              <ThemedText type="small" style={[styles.pronunciation, { color: pronunciationColor(message.pronunciation.pronScore, colors) }]}>
                 {formatPronunciationLabel(Math.round(message.pronunciation.pronScore))}
               </ThemedText>
-              <ThemedText type="small" style={styles.pronunciationChevron}>
+              <ThemedText type="small" style={[styles.pronunciationChevron, { color: colors.textFaint }]}>
                 {wordsExpanded ? '▲' : '▼'}
               </ThemedText>
             </Pressable>
             {wordsExpanded && (
               <View style={styles.wordChips}>
                 {message.pronunciation.words.map((word, index) => {
-                  const color = pronunciationColor(word.accuracyScore);
+                  const color = pronunciationColor(word.accuracyScore, colors);
                   return (
                     <View key={index} style={[styles.wordChip, { borderColor: color }]}>
                       <ThemedText style={[styles.wordChipText, { color }]}>{word.word}</ThemedText>
@@ -82,9 +90,9 @@ export function ChatBubble({ message, playback, formatPronunciationLabel }: Chat
             disabled={playback.isLoading}
             style={styles.playButton}>
             {playback.isLoading ? (
-              <ActivityIndicator size="small" color={Colors.textDim} />
+              <ActivityIndicator size="small" color={colors.textDim} />
             ) : (
-              <ThemedText style={styles.playIcon}>{playback.isPlaying ? '⏹️' : '🔊'}</ThemedText>
+              <ThemedText style={[styles.playIcon, { fontFamily: undefined }]}>{playback.isPlaying ? '⏹️' : '🔊'}</ThemedText>
             )}
           </Pressable>
         )}
@@ -119,7 +127,6 @@ const styles = StyleSheet.create({
   },
   pronunciationChevron: {
     fontSize: 8,
-    color: Colors.textFaint,
   },
   wordChips: {
     flexDirection: 'row',
@@ -147,21 +154,5 @@ const styles = StyleSheet.create({
   },
   playIcon: {
     fontSize: 14,
-  },
-  bubbleModel: {
-    backgroundColor: Colors.surf,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    borderTopLeftRadius: 4,
-  },
-  bubbleUser: {
-    backgroundColor: Colors.pri,
-    borderTopRightRadius: 4,
-  },
-  textModel: {
-    color: Colors.text,
-  },
-  textUser: {
-    color: '#ffffff',
   },
 });

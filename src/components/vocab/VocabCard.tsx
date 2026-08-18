@@ -1,7 +1,8 @@
 import { StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 
 export type VocabCardProps = {
   language: string;
@@ -12,12 +13,14 @@ export type VocabCardProps = {
 };
 
 export function VocabCard({ language, word, meaning, exampleSentence, exampleHint }: VocabCardProps) {
+  const colors = useTheme();
+
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, { backgroundColor: colors.surf2, borderColor: colors.border }]}>
       <ThemedText type="smallBold" themeColor="pri2" style={styles.language}>
         {language}
       </ThemedText>
-      <ThemedText style={styles.word}>{word}</ThemedText>
+      <ThemedText style={[styles.word, { color: colors.text }]}>{word}</ThemedText>
       {exampleSentence && (
         <ThemedText type="small" themeColor="textDim" style={styles.example}>
           “{exampleSentence}”
@@ -40,9 +43,7 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 320,
     minHeight: 300,
-    backgroundColor: Colors.surf2,
     borderWidth: 1,
-    borderColor: Colors.border,
     borderRadius: 24,
     paddingVertical: Spacing.five,
     paddingHorizontal: Spacing.four,
@@ -59,7 +60,6 @@ const styles = StyleSheet.create({
     fontSize: 28,
     lineHeight: 34,
     fontWeight: '800',
-    color: Colors.text,
     textAlign: 'center',
   },
   example: {

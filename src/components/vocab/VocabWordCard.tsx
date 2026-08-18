@@ -1,7 +1,8 @@
 import { StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 import type { VocabWord } from '@/lib/vocab';
 
 export type VocabWordCardProps = {
@@ -9,8 +10,10 @@ export type VocabWordCardProps = {
 };
 
 export function VocabWordCard({ word }: VocabWordCardProps) {
+  const colors = useTheme();
+
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, { backgroundColor: colors.surf, borderColor: colors.border }]}>
       <View style={styles.top}>
         <ThemedText type="smallBold" style={styles.word}>
           {word.word}
@@ -33,9 +36,7 @@ export function VocabWordCard({ word }: VocabWordCardProps) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: Colors.surf,
     borderWidth: 1,
-    borderColor: Colors.border,
     borderRadius: 14,
     paddingVertical: Spacing.two + 2,
     paddingHorizontal: Spacing.three - 2,

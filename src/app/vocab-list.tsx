@@ -7,8 +7,9 @@ import { BackHeader } from '@/components/navigation/BackHeader';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { SwipeableVocabWordCard } from '@/components/vocab/SwipeableVocabWordCard';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
 import { usePullToRefresh } from '@/hooks/use-pull-to-refresh';
+import { useTheme } from '@/hooks/use-theme';
 import { useAllVocabWords } from '@/hooks/vocab/use-all-vocab-words';
 import { useDeleteVocabWord } from '@/hooks/vocab/use-delete-vocab-word';
 import { useAuth } from '@/lib/auth-context';
@@ -17,6 +18,7 @@ export default function VocabListScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { session } = useAuth();
+  const colors = useTheme();
   const allVocabWords = useAllVocabWords(session?.user.id);
   const deleteVocabWord = useDeleteVocabWord(session?.user.id);
   const { refreshing, onRefresh } = usePullToRefresh();
@@ -32,7 +34,7 @@ export default function VocabListScreen() {
 
         <ScrollView
           contentContainerStyle={styles.content}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.pri2} />}>
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.pri2} />}>
           <ThemedText type="subtitle" style={styles.title}>
             {t('vocabList.title')}
           </ThemedText>

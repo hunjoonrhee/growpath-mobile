@@ -6,11 +6,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 import { requestEmailOtp, verifyEmailOtp } from '@/lib/email-otp';
 
 export default function OtpScreen() {
   const { t } = useTranslation();
+  const colors = useTheme();
   const { email } = useLocalSearchParams<{ email?: string }>();
   const [code, setCode] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
@@ -54,10 +56,10 @@ export default function OtpScreen() {
           value={code}
           onChangeText={setCode}
           placeholder={t('auth.otp.codePlaceholder')}
-          placeholderTextColor={Colors.textFaint}
+          placeholderTextColor={colors.textFaint}
           keyboardType="number-pad"
           maxLength={6}
-          style={styles.input}
+          style={[styles.input, { backgroundColor: colors.surf, borderColor: colors.border, color: colors.text }]}
         />
         <Pressable
           accessibilityRole="button"
@@ -66,10 +68,11 @@ export default function OtpScreen() {
           disabled={isVerifying || code.length === 0}
           style={({ pressed }) => [
             styles.verifyButton,
+            { backgroundColor: colors.pri },
             (isVerifying || code.length === 0) && styles.disabled,
             pressed && styles.pressed,
           ]}>
-          <ThemedText type="smallBold" style={styles.verifyLabel}>
+          <ThemedText type="smallBold" style={{ color: colors.onPri }}>
             {t('auth.otp.verify')}
           </ThemedText>
         </Pressable>
@@ -107,20 +110,16 @@ const styles = StyleSheet.create({
   },
   input: {
     marginTop: Spacing.five,
-    backgroundColor: Colors.surf,
     borderWidth: 1,
-    borderColor: Colors.border,
     borderRadius: 14,
     paddingVertical: Spacing.three - 2,
     paddingHorizontal: Spacing.three,
-    color: Colors.text,
     fontSize: 20,
     letterSpacing: 6,
     textAlign: 'center',
   },
   verifyButton: {
     marginTop: Spacing.three,
-    backgroundColor: Colors.pri,
     borderRadius: 14,
     paddingVertical: Spacing.three - 1,
     alignItems: 'center',
@@ -130,9 +129,6 @@ const styles = StyleSheet.create({
   },
   pressed: {
     opacity: 0.85,
-  },
-  verifyLabel: {
-    color: '#ffffff',
   },
   resendButton: {
     marginTop: Spacing.three,

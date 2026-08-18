@@ -2,7 +2,9 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
+import { withAlpha } from '@/lib/color';
 import { SUPPORTED_LANGUAGES, type SupportedLanguage } from '@/lib/i18n';
 
 export type LanguageSelectorProps = {
@@ -12,6 +14,7 @@ export type LanguageSelectorProps = {
 
 export function LanguageSelector({ current, onSelect }: LanguageSelectorProps) {
   const { t } = useTranslation();
+  const colors = useTheme();
 
   return (
     <View style={styles.row}>
@@ -29,7 +32,11 @@ export function LanguageSelector({ current, onSelect }: LanguageSelectorProps) {
             accessibilityState={{ selected: isActive }}
             accessibilityLabel={label}
             onPress={() => onSelect(language)}
-            style={[styles.chip, isActive && styles.chipActive]}>
+            style={[
+              styles.chip,
+              { backgroundColor: colors.surf, borderColor: colors.border },
+              isActive && { backgroundColor: withAlpha(colors.pri, 0.16), borderColor: colors.pri },
+            ]}>
             <ThemedText type="smallBold" themeColor={isActive ? 'pri2' : 'textDim'}>
               {label}
             </ThemedText>
@@ -49,14 +56,8 @@ const styles = StyleSheet.create({
   chip: {
     flex: 1,
     alignItems: 'center',
-    backgroundColor: Colors.surf,
     borderWidth: 1,
-    borderColor: Colors.border,
     borderRadius: 14,
     paddingVertical: Spacing.two + 2,
-  },
-  chipActive: {
-    backgroundColor: 'rgba(108,99,255,0.16)',
-    borderColor: Colors.pri,
   },
 });

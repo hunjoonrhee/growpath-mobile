@@ -4,7 +4,8 @@ import { StyleSheet, View } from 'react-native';
 import { PrimaryButton } from '@/components/forms/PrimaryButton';
 import { TextField } from '@/components/forms/TextField';
 import { ThemedText } from '@/components/themed-text';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 import type { NewCertificationInput } from '@/lib/profile';
 
 export type CertificationAddFormProps = {
@@ -34,6 +35,7 @@ export function CertificationAddForm({
   onSave,
   onCancel,
 }: CertificationAddFormProps) {
+  const colors = useTheme();
   const [name, setName] = useState('');
   const [issuer, setIssuer] = useState('');
   const [tagsInput, setTagsInput] = useState('');
@@ -48,7 +50,7 @@ export function CertificationAddForm({
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.surf2 }]}>
       <TextField label={nameLabel} value={name} onChangeText={setName} placeholder={namePlaceholder} editable={!isSaving} />
       <TextField label={issuerLabel} value={issuer} onChangeText={setIssuer} placeholder={issuerPlaceholder} editable={!isSaving} />
       <TextField label={tagsLabel} value={tagsInput} onChangeText={setTagsInput} placeholder={tagsPlaceholder} editable={!isSaving} />
@@ -57,7 +59,7 @@ export function CertificationAddForm({
         <ThemedText
           type="smallBold"
           themeColor="textDim"
-          style={styles.cancel}
+          style={[styles.cancel, { borderBottomColor: colors.border }]}
           onPress={isSaving ? undefined : onCancel}
           accessibilityRole="button"
           accessibilityLabel={cancelLabel}>
@@ -71,7 +73,6 @@ export function CertificationAddForm({
 const styles = StyleSheet.create({
   container: {
     gap: Spacing.three - 2,
-    backgroundColor: Colors.surf2,
     borderRadius: 16,
     padding: Spacing.three,
   },
@@ -86,7 +87,6 @@ const styles = StyleSheet.create({
   },
   cancel: {
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
     paddingBottom: 1,
   },
 });

@@ -1,7 +1,8 @@
 import { Pressable, StyleSheet } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 
 export type SocialLoginVariant = 'apple' | 'google' | 'github';
 
@@ -14,6 +15,8 @@ export type SocialLoginButtonProps = {
 };
 
 export function SocialLoginButton({ variant, icon, label, onPress, disabled }: SocialLoginButtonProps) {
+  const colors = useTheme();
+
   return (
     <Pressable
       accessibilityRole="button"
@@ -22,13 +25,15 @@ export function SocialLoginButton({ variant, icon, label, onPress, disabled }: S
       onPress={onPress}
       style={({ pressed }) => [
         styles.button,
-        variant === 'apple' && styles.apple,
-        variant !== 'apple' && styles.neutral,
+        // Apple's "Sign in with Apple" button colors are fixed by Apple's
+        // brand guidelines, not the app theme - white bg + black text
+        // regardless of light/dark mode.
+        variant === 'apple' ? styles.apple : { backgroundColor: colors.surf2, borderColor: colors.border },
         disabled && styles.disabled,
         pressed && !disabled && styles.pressed,
       ]}>
-      {icon ? <ThemedText style={styles.icon}>{icon}</ThemedText> : null}
-      <ThemedText type="smallBold" style={variant === 'apple' ? styles.appleLabel : styles.neutralLabel}>
+      {icon ? <ThemedText style={[styles.icon, { fontFamily: undefined }]}>{icon}</ThemedText> : null}
+      <ThemedText type="smallBold" style={variant === 'apple' ? styles.appleLabel : { color: colors.text }}>
         {label}
       </ThemedText>
     </Pressable>
@@ -45,14 +50,10 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.three - 1,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: Colors.border,
   },
   apple: {
     backgroundColor: '#ffffff',
     borderWidth: 0,
-  },
-  neutral: {
-    backgroundColor: Colors.surf2,
   },
   disabled: {
     opacity: 0.5,
@@ -65,8 +66,5 @@ const styles = StyleSheet.create({
   },
   appleLabel: {
     color: '#000000',
-  },
-  neutralLabel: {
-    color: Colors.text,
   },
 });

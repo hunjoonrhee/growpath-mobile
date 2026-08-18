@@ -1,7 +1,9 @@
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
+import { withAlpha } from '@/lib/color';
 import type { Certification } from '@/lib/profile';
 
 export type CertificationRowProps = {
@@ -12,8 +14,10 @@ export type CertificationRowProps = {
 };
 
 export function CertificationRow({ certification, deleteLabel, onDelete, disabled }: CertificationRowProps) {
+  const colors = useTheme();
+
   return (
-    <View style={styles.row}>
+    <View style={[styles.row, { backgroundColor: colors.surf, borderColor: colors.border }]}>
       <View style={styles.info}>
         <ThemedText type="smallBold">{certification.name}</ThemedText>
         {certification.issuer && (
@@ -24,7 +28,7 @@ export function CertificationRow({ certification, deleteLabel, onDelete, disable
         {certification.tags.length > 0 && (
           <View style={styles.tags}>
             {certification.tags.map((tag) => (
-              <View key={tag} style={styles.tag}>
+              <View key={tag} style={[styles.tag, { backgroundColor: withAlpha(colors.pri, 0.16) }]}>
                 <ThemedText type="small" themeColor="pri2">
                   {tag}
                 </ThemedText>
@@ -48,9 +52,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'space-between',
     gap: Spacing.two,
-    backgroundColor: Colors.surf,
     borderWidth: 1,
-    borderColor: Colors.border,
     borderRadius: 14,
     padding: Spacing.three,
   },
@@ -65,7 +67,6 @@ const styles = StyleSheet.create({
     marginTop: Spacing.one,
   },
   tag: {
-    backgroundColor: 'rgba(108,99,255,0.16)',
     borderRadius: 10,
     paddingVertical: Spacing.half,
     paddingHorizontal: Spacing.two,

@@ -5,7 +5,8 @@ import { MultilineTextInput } from '@/components/forms/MultilineTextInput';
 import { PrimaryButton } from '@/components/forms/PrimaryButton';
 import { TextField } from '@/components/forms/TextField';
 import { ThemedText } from '@/components/themed-text';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 
 export type ProfileInfoFormProps = {
   name: string;
@@ -33,6 +34,7 @@ export function ProfileInfoForm({
   isSaving,
   onSave,
 }: ProfileInfoFormProps) {
+  const colors = useTheme();
   const [editedName, setEditedName] = useState(name);
   const [editedBio, setEditedBio] = useState(bio);
   const canSave = !isSaving && (editedName !== name || editedBio !== bio);
@@ -48,7 +50,7 @@ export function ProfileInfoForm({
       </View>
       {isSaving && (
         <View style={styles.savingRow}>
-          <ActivityIndicator size="small" color={Colors.pri2} />
+          <ActivityIndicator size="small" color={colors.pri2} />
           <ThemedText type="small" themeColor="textDim">
             {savingLabel}
           </ThemedText>

@@ -1,17 +1,20 @@
 import { StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 
 export type BrandHeaderProps = {
   tagline: string;
 };
 
 export function BrandHeader({ tagline }: BrandHeaderProps) {
+  const colors = useTheme();
+
   return (
     <View style={styles.container}>
-      <View style={styles.mark}>
-        <ThemedText style={styles.markGlyph}>🧭</ThemedText>
+      <View style={[styles.mark, { backgroundColor: colors.pri }]}>
+        <ThemedText style={[styles.markGlyph, { fontFamily: undefined }]}>🧭</ThemedText>
       </View>
       <ThemedText type="title" style={styles.title}>
         Growpath
@@ -31,7 +34,6 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 20,
-    backgroundColor: Colors.pri,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: Spacing.four - 6,

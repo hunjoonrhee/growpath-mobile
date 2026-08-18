@@ -1,7 +1,8 @@
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { Colors, Spacing } from '@/constants/theme';
+import { Fonts, Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 
 export type EmailOtpFormProps = {
   email: string;
@@ -13,25 +14,32 @@ export type EmailOtpFormProps = {
 };
 
 export function EmailOtpForm({ email, onChangeEmail, onSubmit, isSubmitting, placeholder, submitLabel }: EmailOtpFormProps) {
+  const colors = useTheme();
+
   return (
     <View style={styles.row}>
       <TextInput
         value={email}
         onChangeText={onChangeEmail}
         placeholder={placeholder}
-        placeholderTextColor={Colors.textFaint}
+        placeholderTextColor={colors.textFaint}
         keyboardType="email-address"
         autoCapitalize="none"
         autoComplete="email"
-        style={styles.input}
+        style={[styles.input, { backgroundColor: colors.surf, borderColor: colors.border, color: colors.text }]}
       />
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={submitLabel}
         onPress={onSubmit}
         disabled={isSubmitting || email.length === 0}
-        style={({ pressed }) => [styles.submit, (isSubmitting || email.length === 0) && styles.submitDisabled, pressed && styles.pressed]}>
-        <ThemedText type="smallBold" style={styles.submitLabel}>
+        style={({ pressed }) => [
+          styles.submit,
+          { backgroundColor: colors.pri },
+          (isSubmitting || email.length === 0) && styles.submitDisabled,
+          pressed && styles.pressed,
+        ]}>
+        <ThemedText type="smallBold" style={{ color: colors.onPri }}>
           {submitLabel}
         </ThemedText>
       </Pressable>
@@ -46,17 +54,14 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    backgroundColor: Colors.surf,
     borderWidth: 1,
-    borderColor: Colors.border,
     borderRadius: 14,
     paddingVertical: Spacing.three - 2,
     paddingHorizontal: Spacing.three,
-    color: Colors.text,
+    fontFamily: Fonts.regular,
     fontSize: 14,
   },
   submit: {
-    backgroundColor: Colors.pri,
     borderRadius: 14,
     paddingHorizontal: Spacing.four - 6,
     alignItems: 'center',
@@ -67,8 +72,5 @@ const styles = StyleSheet.create({
   },
   pressed: {
     opacity: 0.85,
-  },
-  submitLabel: {
-    color: '#ffffff',
   },
 });

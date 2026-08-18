@@ -1,20 +1,23 @@
 import { StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 
 export type DividerProps = {
   label: string;
 };
 
 export function Divider({ label }: DividerProps) {
+  const colors = useTheme();
+
   return (
     <View style={styles.row}>
-      <View style={styles.line} />
+      <View style={[styles.line, { backgroundColor: colors.border }]} />
       <ThemedText type="small" themeColor="textFaint">
         {label}
       </ThemedText>
-      <View style={styles.line} />
+      <View style={[styles.line, { backgroundColor: colors.border }]} />
     </View>
   );
 }
@@ -29,6 +32,5 @@ const styles = StyleSheet.create({
   line: {
     flex: 1,
     height: 1,
-    backgroundColor: Colors.border,
   },
 });

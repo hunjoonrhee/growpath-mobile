@@ -4,11 +4,14 @@
     "slug": "growpath-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/icon-dark.png",
     "scheme": "growpath",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon",
+      "icon": {
+        "light": "./assets/images/icon-light.png",
+        "dark": "./assets/images/icon-dark.png"
+      },
       "bundleIdentifier": "com.anonymous.growpath-mobile",
       "appleTeamId": "ZB27Q6H235"
     },

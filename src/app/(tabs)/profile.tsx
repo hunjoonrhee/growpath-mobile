@@ -1,4 +1,5 @@
 import { useRouter } from 'expo-router';
+import { Check } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Alert, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -11,6 +12,7 @@ import { ThemedView } from '@/components/themed-view';
 import { Spacing, Typography } from '@/constants/theme';
 import { useProfileInfo } from '@/hooks/profile/use-profile-info';
 import { useSaveProfileInfo } from '@/hooks/profile/use-save-profile-info';
+import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/lib/auth-context';
 
 // TODO(phase-3+): avatar upload, stats.
@@ -21,9 +23,13 @@ export default function ProfileScreen() {
   const userId = session?.user.id;
   const profileInfo = useProfileInfo(userId);
   const saveProfileInfo = useSaveProfileInfo(userId);
+  const showToast = useToast();
 
   const handleSaveInfo = (info: { name: string; bio: string }) => {
-    saveProfileInfo.mutate(info, { onError: () => Alert.alert(t('profile.saveError')) });
+    saveProfileInfo.mutate(info, {
+      onSuccess: () => showToast({ icon: Check, title: t('profile.savedToastTitle') }),
+      onError: () => Alert.alert(t('profile.saveError')),
+    });
   };
 
   return (

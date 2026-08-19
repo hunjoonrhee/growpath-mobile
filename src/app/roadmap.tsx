@@ -1,5 +1,5 @@
 import { Redirect, useRouter } from 'expo-router';
-import { Plus } from 'lucide-react-native';
+import { Check, Plus } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, RefreshControl, ScrollView, StyleSheet } from 'react-native';
@@ -23,6 +23,7 @@ import { useSwitchActiveRoadmap } from '@/hooks/roadmap/use-switch-active-roadma
 import { useUserRoadmaps } from '@/hooks/roadmap/use-user-roadmaps';
 import { usePullToRefresh } from '@/hooks/use-pull-to-refresh';
 import { useTheme } from '@/hooks/use-theme';
+import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/lib/auth-context';
 
 export default function RoadmapScreen() {
@@ -31,6 +32,7 @@ export default function RoadmapScreen() {
   const { session } = useAuth();
   const userId = session?.user.id;
   const colors = useTheme();
+  const showToast = useToast();
 
   const { adoptedRoadmapId, roadmap, focusStageLevel, hasAdoptedRoadmap, isLoading, isError } = useActiveRoadmap(userId);
   const userRoadmaps = useUserRoadmaps(userId);
@@ -44,6 +46,7 @@ export default function RoadmapScreen() {
 
   const handleSelectOtherGoal = (roadmapId: string) => {
     switchRoadmap.mutate(roadmapId, {
+      onSuccess: () => showToast({ icon: Check, title: t('roadmap.switchedToastTitle') }),
       onError: () => Alert.alert(t('roadmap.errorGeneric')),
     });
   };
@@ -52,7 +55,10 @@ export default function RoadmapScreen() {
     regenerateRoadmap.mutate(
       { goalText: input.goal, careerLevel: input.careerLevel, locale: i18n.language, roadmapId },
       {
-        onSuccess: () => setIsEditing(false),
+        onSuccess: () => {
+          setIsEditing(false);
+          showToast({ icon: Check, title: t('roadmap.regeneratedToastTitle') });
+        },
         onError: () => Alert.alert(t('roadmap.errorGeneric')),
       }
     );
@@ -64,7 +70,11 @@ export default function RoadmapScreen() {
       {
         text: t('roadmap.deleteConfirm'),
         style: 'destructive',
-        onPress: () => deleteRoadmap.mutate(roadmapId, { onError: () => Alert.alert(t('roadmap.deleteError')) }),
+        onPress: () =>
+          deleteRoadmap.mutate(roadmapId, {
+            onSuccess: () => showToast({ icon: Check, title: t('roadmap.deletedToastTitle') }),
+            onError: () => Alert.alert(t('roadmap.deleteError')),
+          }),
       },
     ]);
   };

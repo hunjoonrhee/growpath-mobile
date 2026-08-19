@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { BookOpen, Drama, Plus, RotateCw } from 'lucide-react-native';
+import { BookOpen, Check, Drama, Plus, RotateCw } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Pressable, RefreshControl, ScrollView, StyleSheet } from 'react-native';
@@ -17,6 +17,7 @@ import { useActiveRoadmapSessions } from '@/hooks/sessions/use-active-roadmap-se
 import { useDeleteSession } from '@/hooks/sessions/use-delete-session';
 import { usePullToRefresh } from '@/hooks/use-pull-to-refresh';
 import { useTheme } from '@/hooks/use-theme';
+import { useToast } from '@/hooks/use-toast';
 import { useDueVocabWordCount } from '@/hooks/vocab/use-due-vocab-word-count';
 import { useAuth } from '@/lib/auth-context';
 
@@ -37,6 +38,7 @@ export default function LogScreen() {
   const hasLanguageGoal = Boolean(activeRoadmap.roadmap.data?.targetLanguage);
   const dueVocabWordCount = useDueVocabWordCount(session?.user.id, hasLanguageGoal);
   const deleteSession = useDeleteSession(session?.user.id);
+  const showToast = useToast();
   const { timerTitle, timerMinutes, timerSessionId } = useLocalSearchParams<{
     timerTitle?: string;
     timerMinutes?: string;
@@ -125,7 +127,12 @@ export default function LogScreen() {
             errorLabel={t('log.loadError')}
             emptyLabel={t('log.empty')}
             onPressSession={(id) => router.push(`/til/${id}`)}
-            onDeleteSession={(id) => deleteSession.mutate(id, { onError: () => Alert.alert(t('log.deleteError')) })}
+            onDeleteSession={(id) =>
+              deleteSession.mutate(id, {
+                onSuccess: () => showToast({ icon: Check, title: t('log.deletedToastTitle') }),
+                onError: () => Alert.alert(t('log.deleteError')),
+              })
+            }
           />
         </ScrollView>
       </SafeAreaView>

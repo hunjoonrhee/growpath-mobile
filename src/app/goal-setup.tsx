@@ -14,6 +14,8 @@ import { BackHeader } from '@/components/navigation/BackHeader';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
+import { useProfileInfo } from '@/hooks/profile/use-profile-info';
+import { useSaveProfileInfo } from '@/hooks/profile/use-save-profile-info';
 import { useSwitchActiveRoadmap } from '@/hooks/roadmap/use-switch-active-roadmap';
 import { useSubmitGuard } from '@/hooks/use-submit-guard';
 import { useTheme } from '@/hooks/use-theme';
@@ -36,12 +38,25 @@ export default function GoalSetupScreen() {
   const { session } = useAuth();
   const colors = useTheme();
   const switchRoadmap = useSwitchActiveRoadmap(session?.user.id);
+  const profileInfo = useProfileInfo(session?.user.id);
+  const saveProfileInfo = useSaveProfileInfo(session?.user.id);
 
   const [domain, setDomain] = useState<Domain | null>(null);
   const [careerLevel, setCareerLevel] = useState('');
   const [inputMode, setInputMode] = useState<InputMode>('text');
   const [goalText, setGoalText] = useState('');
+  // null = not yet seeded from the fetched profile - distinct from '' (a
+  // profile that genuinely has no bio saved), so the seed below only runs
+  // once and doesn't clobber whatever the user's typed since.
+  const [bio, setBio] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Same "derive state from data that just arrived" pattern as
+  // vocab-review.tsx's deck snapshot - set directly during render, guarded
+  // so it only fires once, the first render after profileInfo.data arrives.
+  if (bio === null && profileInfo.data) {
+    setBio(profileInfo.data.bio);
+  }
   // Set once generateRoadmap succeeds, so a retry after a failed adopt below
   // doesn't call generateRoadmap again and create a second, orphaned
   // ai_roadmaps row for the same submission - it just retries adoption.
@@ -58,6 +73,7 @@ export default function GoalSetupScreen() {
   const handleDomainSelect = withPendingReset(setPendingRoadmapId, setDomain);
   const handleCareerLevelChange = withPendingReset(setPendingRoadmapId, setCareerLevel);
   const handleGoalTextChange = withPendingReset(setPendingRoadmapId, setGoalText);
+  const handleBioChange = withPendingReset(setPendingRoadmapId, (next: string) => setBio(next));
 
   const canSubmit = domain !== null && careerLevel.trim().length > 0 && goalText.trim().length > 0 && !isSubmitting;
 
@@ -65,6 +81,16 @@ export default function GoalSetupScreen() {
     if (!domain || !submitGuard.tryStart()) return;
     setIsSubmitting(true);
     try {
+      // Saved before generating (not sent as part of the generate request)
+      // - the route already resolves user_id server-side and looks up bio
+      // itself (see joon-dashboard's /api/roadmap/generate), so writing it
+      // here first is enough for this generation to pick it up, and keeps
+      // the profile screen's bio in sync going forward too.
+      const trimmedBio = (bio ?? '').trim();
+      if (trimmedBio !== (profileInfo.data?.bio ?? '').trim()) {
+        await saveProfileInfo.mutateAsync({ name: profileInfo.data?.name ?? '', bio: trimmedBio });
+      }
+
       const roadmapId =
         pendingRoadmapId ??
         (
@@ -110,6 +136,22 @@ export default function GoalSetupScreen() {
               onChangeText={handleCareerLevelChange}
               placeholder={t('goalSetup.careerLevelPlaceholder')}
               editable={!isSubmitting}
+            />
+          </View>
+
+          <View style={styles.bioField}>
+            <ThemedText type="small" themeColor="textDim" style={styles.bioLabel}>
+              {t('goalSetup.bioLabel')}
+            </ThemedText>
+            <ThemedText type="small" themeColor="textFaint" style={styles.bioHint}>
+              {t('goalSetup.bioHint')}
+            </ThemedText>
+            <MultilineTextInput
+              value={bio ?? ''}
+              onChangeText={handleBioChange}
+              placeholder={t('goalSetup.bioPlaceholder')}
+              editable={!isSubmitting}
+              minHeight={70}
             />
           </View>
 
@@ -179,6 +221,15 @@ const styles = StyleSheet.create({
   },
   careerLevelField: {
     marginTop: Spacing.four,
+  },
+  bioField: {
+    marginTop: Spacing.four,
+  },
+  bioLabel: {
+    marginBottom: 2,
+  },
+  bioHint: {
+    marginBottom: Spacing.two,
   },
   inputSection: {
     marginTop: Spacing.four,

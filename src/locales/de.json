@@ -62,7 +62,8 @@
     "vocabAllCta": "Alle Vokabeln ansehen",
     "roleplayCta": "Rollenspiel-Übung",
     "deleteCta": "Löschen",
-    "deleteError": "Löschen fehlgeschlagen. Bitte versuche es gleich noch einmal."
+    "deleteError": "Löschen fehlgeschlagen. Bitte versuche es gleich noch einmal.",
+    "deletedToastTitle": "Eintrag gelöscht"
   },
   "profile": {
     "title": "Profil",
@@ -74,6 +75,7 @@
     "saveCta": "Speichern",
     "saving": "Wird gespeichert...",
     "saveError": "Speichern fehlgeschlagen. Bitte versuche es gleich noch einmal.",
+    "savedToastTitle": "Profil gespeichert",
     "loading": "Wird geladen...",
     "loadError": "Laden fehlgeschlagen. Bitte versuche es gleich noch einmal.",
     "certificationsSectionTitle": "Zertifikate",
@@ -88,8 +90,10 @@
     "certTagsPlaceholder": "z. B. aws, cloud",
     "certSaveCta": "Speichern",
     "certSaveError": "Speichern fehlgeschlagen. Bitte versuche es gleich noch einmal.",
+    "certAddedToastTitle": "Zertifikat hinzugefügt",
     "certDeleteCta": "Löschen",
     "certDeleteError": "Löschen fehlgeschlagen. Bitte versuche es gleich noch einmal.",
+    "certDeletedToastTitle": "Zertifikat gelöscht",
     "settingsNavLabel": "Einstellungen"
   },
   "settings": {
@@ -147,6 +151,7 @@
     "emptySubtitle": "Sobald du ein Ziel festlegst, erscheint hier deine Roadmap.",
     "emptyCta": "Ziel festlegen",
     "errorGeneric": "Zielwechsel fehlgeschlagen. Bitte versuche es gleich noch einmal.",
+    "switchedToastTitle": "Ziel gewechselt",
     "editCta": "Bearbeiten",
     "deleteCta": "Löschen",
     "editGoalLabel": "Ziel",
@@ -154,11 +159,13 @@
     "editSaveCta": "Speichern",
     "editCancelCta": "Abbrechen",
     "editGenerating": "Die KI erstellt deine Roadmap neu...",
+    "regeneratedToastTitle": "Roadmap neu erstellt",
     "deleteConfirmTitle": "Dieses Ziel löschen?",
     "deleteConfirmMessage": "Die Roadmap und der Lernplan dieses Ziels werden gelöscht. Deine Einträge/Rollenspiel-Verläufe bleiben erhalten, nur die Verknüpfung zu diesem Ziel wird entfernt.",
     "deleteCancel": "Abbrechen",
     "deleteConfirm": "Löschen",
     "deleteError": "Löschen fehlgeschlagen. Bitte versuche es gleich noch einmal.",
+    "deletedToastTitle": "Roadmap gelöscht",
     "stageStatus": {
       "done": "Fertig",
       "current": "In Arbeit",
@@ -179,6 +186,9 @@
     "voiceError": "Spracherkennung fehlgeschlagen. Bitte versuche es noch einmal.",
     "careerLevelLabel": "Aktuelles Niveau",
     "careerLevelPlaceholder": "z. B. Senior-Frontend-Entwickler, ca. 3 Jahre Angular in der Praxis",
+    "bioLabel": "Hintergrund (optional)",
+    "bioHint": "Das hilft uns, die Roadmap genauer zuzuschneiden",
+    "bioPlaceholder": "z. B. Ich kenne bereits die React-Grundlagen. TypeScript ist neu für mich.",
     "textPlaceholder": "z. B. Ich möchte Lead Architect werden",
     "submitCta": "Mit diesem Ziel starten",
     "generating": "Die KI erstellt deine Roadmap...",
@@ -236,7 +246,8 @@
     "exampleLabel": "Beispielsatz (optional)",
     "examplePlaceholder": "Schreib einen Satz mit diesem Wort...",
     "saveCta": "Speichern",
-    "errorGeneric": "Speichern fehlgeschlagen. Bitte versuche es gleich noch einmal."
+    "errorGeneric": "Speichern fehlgeschlagen. Bitte versuche es gleich noch einmal.",
+    "savedToastTitle": "Vokabel gespeichert"
   },
   "vocabList": {
     "backAccessibilityLabel": "Zurück",
@@ -246,6 +257,7 @@
     "empty": "Noch keine gespeicherten Vokabeln.",
     "deleteCta": "Löschen",
     "deleteError": "Löschen fehlgeschlagen. Bitte versuche es gleich noch einmal.",
+    "deletedToastTitle": "Vokabel gelöscht",
     "wordDetailCloseAccessibilityLabel": "Schließen"
   },
   "tilDetail": {
@@ -260,7 +272,8 @@
     "deleteConfirmMessage": "Das kann nicht rückgängig gemacht werden.",
     "deleteCancel": "Abbrechen",
     "deleteConfirm": "Löschen",
-    "deleteError": "Löschen fehlgeschlagen. Bitte versuche es gleich noch einmal."
+    "deleteError": "Löschen fehlgeschlagen. Bitte versuche es gleich noch einmal.",
+    "deletedToastTitle": "Eintrag gelöscht"
   },
   "roleplay": {
     "backAccessibilityLabel": "Zurück",

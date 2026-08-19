@@ -1,4 +1,5 @@
 import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
+import { Check } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -12,6 +13,7 @@ import { Spacing, Typography } from '@/constants/theme';
 import { useDeleteSession } from '@/hooks/sessions/use-delete-session';
 import { useSession } from '@/hooks/sessions/use-session';
 import { useTheme } from '@/hooks/use-theme';
+import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/lib/auth-context';
 import { relativeDateLabel } from '@/lib/date';
 
@@ -20,6 +22,7 @@ export default function TilDetailScreen() {
   const router = useRouter();
   const { session: authSession } = useAuth();
   const colors = useTheme();
+  const showToast = useToast();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const session = useSession(id, authSession?.user.id);
   const deleteSession = useDeleteSession(authSession?.user.id);
@@ -40,7 +43,10 @@ export default function TilDetailScreen() {
         style: 'destructive',
         onPress: () => {
           deleteSession.mutate(id, {
-            onSuccess: () => router.back(),
+            onSuccess: () => {
+              router.back();
+              showToast({ icon: Check, title: t('tilDetail.deletedToastTitle') });
+            },
             onError: () => Alert.alert(t('tilDetail.deleteError')),
           });
         },

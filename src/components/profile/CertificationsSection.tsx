@@ -1,3 +1,4 @@
+import { Check } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Pressable, StyleSheet, View } from 'react-native';
@@ -9,6 +10,7 @@ import { Spacing, Typography } from '@/constants/theme';
 import { useAddCertification } from '@/hooks/profile/use-add-certification';
 import { useCertifications } from '@/hooks/profile/use-certifications';
 import { useDeleteCertification } from '@/hooks/profile/use-delete-certification';
+import { useToast } from '@/hooks/use-toast';
 import type { NewCertificationInput } from '@/lib/profile';
 
 export type CertificationsSectionProps = {
@@ -21,17 +23,24 @@ export function CertificationsSection({ userId }: CertificationsSectionProps) {
   const certifications = useCertifications(userId);
   const addCertification = useAddCertification(userId);
   const deleteCertification = useDeleteCertification(userId);
+  const showToast = useToast();
   const [isAdding, setIsAdding] = useState(false);
 
   const handleAdd = (input: NewCertificationInput) => {
     addCertification.mutate(input, {
-      onSuccess: () => setIsAdding(false),
+      onSuccess: () => {
+        setIsAdding(false);
+        showToast({ icon: Check, title: t('profile.certAddedToastTitle') });
+      },
       onError: () => Alert.alert(t('profile.certSaveError')),
     });
   };
 
   const handleDelete = (certificationId: string) => {
-    deleteCertification.mutate(certificationId, { onError: () => Alert.alert(t('profile.certDeleteError')) });
+    deleteCertification.mutate(certificationId, {
+      onSuccess: () => showToast({ icon: Check, title: t('profile.certDeletedToastTitle') }),
+      onError: () => Alert.alert(t('profile.certDeleteError')),
+    });
   };
 
   return (

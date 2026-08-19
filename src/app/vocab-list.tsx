@@ -1,4 +1,5 @@
 import { Redirect, useRouter } from 'expo-router';
+import { Check } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, RefreshControl, ScrollView, StyleSheet } from 'react-native';
@@ -12,6 +13,7 @@ import { VocabWordDetailModal } from '@/components/vocab/VocabWordDetailModal';
 import { Spacing } from '@/constants/theme';
 import { usePullToRefresh } from '@/hooks/use-pull-to-refresh';
 import { useTheme } from '@/hooks/use-theme';
+import { useToast } from '@/hooks/use-toast';
 import { useAllVocabWords } from '@/hooks/vocab/use-all-vocab-words';
 import { useDeleteVocabWord } from '@/hooks/vocab/use-delete-vocab-word';
 import { useAuth } from '@/lib/auth-context';
@@ -22,6 +24,7 @@ export default function VocabListScreen() {
   const router = useRouter();
   const { session } = useAuth();
   const colors = useTheme();
+  const showToast = useToast();
   const allVocabWords = useAllVocabWords(session?.user.id);
   const deleteVocabWord = useDeleteVocabWord(session?.user.id);
   const { refreshing, onRefresh } = usePullToRefresh();
@@ -68,7 +71,12 @@ export default function VocabListScreen() {
               <SwipeableVocabWordCard
                 key={word.id}
                 word={word}
-                onDelete={() => deleteVocabWord.mutate(word.id, { onError: () => Alert.alert(t('vocabList.deleteError')) })}
+                onDelete={() =>
+                  deleteVocabWord.mutate(word.id, {
+                    onSuccess: () => showToast({ icon: Check, title: t('vocabList.deletedToastTitle') }),
+                    onError: () => Alert.alert(t('vocabList.deleteError')),
+                  })
+                }
                 onPress={() => {
                   setSelectedWord(word);
                   setIsDetailFlipped(false);

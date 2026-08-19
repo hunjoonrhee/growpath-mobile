@@ -62,7 +62,8 @@
     "vocabAllCta": "단어장 전체 보기",
     "roleplayCta": "롤플레이 연습",
     "deleteCta": "삭제",
-    "deleteError": "삭제에 실패했어요. 잠시 후 다시 시도해주세요."
+    "deleteError": "삭제에 실패했어요. 잠시 후 다시 시도해주세요.",
+    "deletedToastTitle": "기록이 삭제됐어요"
   },
   "profile": {
     "title": "프로필",
@@ -74,6 +75,7 @@
     "saveCta": "저장",
     "saving": "저장 중...",
     "saveError": "저장하지 못했어요. 잠시 후 다시 시도해주세요.",
+    "savedToastTitle": "프로필이 저장됐어요",
     "loading": "불러오는 중...",
     "loadError": "불러오지 못했어요. 잠시 후 다시 시도해주세요.",
     "certificationsSectionTitle": "자격증",
@@ -88,8 +90,10 @@
     "certTagsPlaceholder": "예: aws, cloud",
     "certSaveCta": "저장",
     "certSaveError": "저장하지 못했어요. 잠시 후 다시 시도해주세요.",
+    "certAddedToastTitle": "자격증이 추가됐어요",
     "certDeleteCta": "삭제",
     "certDeleteError": "삭제하지 못했어요. 잠시 후 다시 시도해주세요.",
+    "certDeletedToastTitle": "자격증이 삭제됐어요",
     "settingsNavLabel": "설정"
   },
   "settings": {
@@ -147,6 +151,7 @@
     "emptySubtitle": "목표를 설정하면 여기에 로드맵이 표시돼요.",
     "emptyCta": "목표 설정하기",
     "errorGeneric": "목표 전환에 실패했어요. 잠시 후 다시 시도해주세요.",
+    "switchedToastTitle": "목표가 전환됐어요",
     "editCta": "수정",
     "deleteCta": "삭제",
     "editGoalLabel": "목표",
@@ -154,11 +159,13 @@
     "editSaveCta": "저장하기",
     "editCancelCta": "취소",
     "editGenerating": "AI가 로드맵을 다시 만들고 있어요...",
+    "regeneratedToastTitle": "로드맵이 다시 만들어졌어요",
     "deleteConfirmTitle": "이 목표를 삭제할까요?",
     "deleteConfirmMessage": "로드맵과 이 목표에 연결된 학습 계획이 삭제돼요. 기록/롤플레이 기록은 남아있지만 목표 연결이 해제돼요.",
     "deleteCancel": "취소",
     "deleteConfirm": "삭제",
     "deleteError": "삭제에 실패했어요. 잠시 후 다시 시도해주세요.",
+    "deletedToastTitle": "로드맵이 삭제됐어요",
     "stageStatus": {
       "done": "완료",
       "current": "진행 중",
@@ -179,6 +186,9 @@
     "voiceError": "음성 인식에 실패했어요. 다시 시도해주세요.",
     "careerLevelLabel": "현재 수준",
     "careerLevelPlaceholder": "예: 시니어 프론트엔드 개발자, Angular 실무 3년차",
+    "bioLabel": "학습 배경 (선택)",
+    "bioHint": "미리 알려주면 로드맵을 더 정확하게 짤 수 있어요",
+    "bioPlaceholder": "예: 이미 React 기초는 알고 있어요. TypeScript는 처음이에요.",
     "textPlaceholder": "예: 리드 아키텍트가 되고 싶어요",
     "submitCta": "이 목표로 시작하기",
     "generating": "AI가 로드맵을 만들고 있어요...",
@@ -236,7 +246,8 @@
     "exampleLabel": "예문 (선택)",
     "examplePlaceholder": "이 단어가 쓰인 문장을 적어보세요...",
     "saveCta": "저장하기",
-    "errorGeneric": "저장에 실패했어요. 잠시 후 다시 시도해주세요."
+    "errorGeneric": "저장에 실패했어요. 잠시 후 다시 시도해주세요.",
+    "savedToastTitle": "단어가 저장됐어요"
   },
   "vocabList": {
     "backAccessibilityLabel": "뒤로가기",
@@ -246,6 +257,7 @@
     "empty": "아직 저장된 단어가 없어요.",
     "deleteCta": "삭제",
     "deleteError": "삭제에 실패했어요. 잠시 후 다시 시도해주세요.",
+    "deletedToastTitle": "단어가 삭제됐어요",
     "wordDetailCloseAccessibilityLabel": "닫기"
   },
   "tilDetail": {
@@ -260,7 +272,8 @@
     "deleteConfirmMessage": "삭제하면 되돌릴 수 없어요.",
     "deleteCancel": "취소",
     "deleteConfirm": "삭제",
-    "deleteError": "삭제에 실패했어요. 잠시 후 다시 시도해주세요."
+    "deleteError": "삭제에 실패했어요. 잠시 후 다시 시도해주세요.",
+    "deletedToastTitle": "기록이 삭제됐어요"
   },
   "roleplay": {
     "backAccessibilityLabel": "뒤로가기",

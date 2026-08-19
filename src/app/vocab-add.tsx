@@ -1,4 +1,5 @@
 import { Redirect, useRouter } from 'expo-router';
+import { Check } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, ScrollView, StyleSheet } from 'react-native';
@@ -12,6 +13,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import { useSubmitGuard } from '@/hooks/use-submit-guard';
+import { useToast } from '@/hooks/use-toast';
 import { useCreateVocabWord } from '@/hooks/vocab/use-create-vocab-word';
 import { useAuth } from '@/lib/auth-context';
 
@@ -20,6 +22,7 @@ export default function VocabAddScreen() {
   const router = useRouter();
   const { session } = useAuth();
   const createVocabWord = useCreateVocabWord(session?.user.id);
+  const showToast = useToast();
 
   const [language, setLanguage] = useState('');
   const [word, setWord] = useState('');
@@ -36,7 +39,10 @@ export default function VocabAddScreen() {
     createVocabWord.mutate(
       { language: language.trim(), word: word.trim(), meaning: meaning.trim(), exampleSentence: exampleSentence.trim() },
       {
-        onSuccess: () => router.back(),
+        onSuccess: () => {
+          router.back();
+          showToast({ icon: Check, title: t('vocabAdd.savedToastTitle') });
+        },
         onError: () => {
           submitGuard.release();
           Alert.alert(t('vocabAdd.errorGeneric'));

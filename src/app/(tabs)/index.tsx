@@ -29,7 +29,6 @@ import { useTheme } from '@/hooks/use-theme';
 import { useDueVocabWordCount } from '@/hooks/vocab/use-due-vocab-word-count';
 import { useTodayWidgetSync } from '@/hooks/widgets/use-today-widget-sync';
 import { useAuth } from '@/lib/auth-context';
-import { canCelebrateToday, markCelebratedToday } from '@/lib/celebration-rate-limit';
 import { deriveTodayRecommendation } from '@/lib/today-recommendation';
 
 export default function TodayScreen() {
@@ -81,18 +80,14 @@ export default function TodayScreen() {
       const stages = roadmap.data?.stages;
       if (!stages) return;
       const completedStage = stages.find((s) => s.level === completedStageLevel);
-      canCelebrateToday().then((canCelebrate) => {
-        if (!canCelebrate) return;
-        showCelebration({
-          eyebrow: t('celebration.stageComplete.eyebrow'),
-          title: t('celebration.stageComplete.title', { stage: completedStage?.title ?? '' }),
-          subtitle: t('celebration.stageComplete.subtitle'),
-          percent: stages.length > 0 ? Math.round((completedStageLevel / stages.length) * 100) : undefined,
-          primaryLabel: t('celebration.stageComplete.primaryCta'),
-          onPrimary: () => router.push('/roadmap'),
-          secondaryLabel: t('celebration.dismiss'),
-        });
-        markCelebratedToday();
+      showCelebration({
+        eyebrow: t('celebration.stageComplete.eyebrow'),
+        title: t('celebration.stageComplete.title', { stage: completedStage?.title ?? '' }),
+        subtitle: t('celebration.stageComplete.subtitle'),
+        percent: stages.length > 0 ? Math.round((completedStageLevel / stages.length) * 100) : undefined,
+        primaryLabel: t('celebration.stageComplete.primaryCta'),
+        onPrimary: () => router.push('/roadmap'),
+        secondaryLabel: t('celebration.dismiss'),
       });
     },
     [roadmap.data, showCelebration, t, router]
@@ -102,19 +97,15 @@ export default function TodayScreen() {
 
   const handleMilestoneReached = useCallback(
     (milestone: number) => {
-      canCelebrateToday().then((canCelebrate) => {
-        if (!canCelebrate) return;
-        showCelebration({
-          eyebrow: t('celebration.streakMilestone.eyebrow'),
-          title: t('celebration.streakMilestone.title', { count: milestone }),
-          subtitle: t('celebration.streakMilestone.subtitle', { count: milestone }),
-          centerLabel: { value: String(milestone), caption: t('celebration.streakMilestone.dialCaption') },
-          colorTheme: milestone >= 100 ? 'purple' : milestone >= 30 ? 'gold' : 'green',
-          primaryLabel: t('celebration.streakMilestone.primaryCta'),
-          onPrimary: () => router.push('/log'),
-          secondaryLabel: t('celebration.dismiss'),
-        });
-        markCelebratedToday();
+      showCelebration({
+        eyebrow: t('celebration.streakMilestone.eyebrow'),
+        title: t('celebration.streakMilestone.title', { count: milestone }),
+        subtitle: t('celebration.streakMilestone.subtitle', { count: milestone }),
+        centerLabel: { value: String(milestone), caption: t('celebration.streakMilestone.dialCaption') },
+        colorTheme: milestone >= 100 ? 'purple' : milestone >= 30 ? 'gold' : 'green',
+        primaryLabel: t('celebration.streakMilestone.primaryCta'),
+        onPrimary: () => router.push('/log'),
+        secondaryLabel: t('celebration.dismiss'),
       });
     },
     [showCelebration, t, router]

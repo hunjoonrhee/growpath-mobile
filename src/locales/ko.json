@@ -308,6 +308,7 @@
   },
   "celebration": {
     "dismiss": "나중에",
+    "closeAccessibilityLabel": "닫기",
     "stageComplete": {
       "eyebrow": "STAGE COMPLETE",
       "title": "{{stage}} 단계를 마쳤어요!",

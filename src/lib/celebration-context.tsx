@@ -20,27 +20,27 @@ export type CelebrationOptions = {
 };
 
 type CelebrationContextValue = {
-  celebration: CelebrationOptions | null;
+  /** Every pending celebration in the order they fired - see CelebrationOverlay, which renders this as a swipeable stack (like Nike Run Club's post-run achievement cards) instead of showing only one and silently dropping the rest. */
+  queue: CelebrationOptions[];
   showCelebration: (options: CelebrationOptions) => void;
-  hideCelebration: () => void;
+  /** Clears the whole batch - browsing between queued cards is free (plain horizontal swipe, no side effects), but acting on any one of them or explicitly closing ends the review session for all of them, not just that card. */
+  clearQueue: () => void;
 };
 
 const CelebrationContext = createContext<CelebrationContextValue | null>(null);
 
 export function CelebrationProvider({ children }: { children: ReactNode }) {
-  const [celebration, setCelebration] = useState<CelebrationOptions | null>(null);
+  const [queue, setQueue] = useState<CelebrationOptions[]>([]);
 
   const showCelebration = useCallback((options: CelebrationOptions) => {
-    setCelebration(options);
+    setQueue((current) => [...current, options]);
   }, []);
 
-  const hideCelebration = useCallback(() => {
-    setCelebration(null);
+  const clearQueue = useCallback(() => {
+    setQueue([]);
   }, []);
 
-  return (
-    <CelebrationContext.Provider value={{ celebration, showCelebration, hideCelebration }}>{children}</CelebrationContext.Provider>
-  );
+  return <CelebrationContext.Provider value={{ queue, showCelebration, clearQueue }}>{children}</CelebrationContext.Provider>;
 }
 
 export function useCelebrationContext(): CelebrationContextValue {

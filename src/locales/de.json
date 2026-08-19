@@ -308,6 +308,7 @@
   },
   "celebration": {
     "dismiss": "Später",
+    "closeAccessibilityLabel": "Schließen",
     "stageComplete": {
       "eyebrow": "STAGE COMPLETE",
       "title": "Du hast {{stage}} abgeschlossen!",

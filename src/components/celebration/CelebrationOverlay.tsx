@@ -1,285 +1,117 @@
 import * as Haptics from 'expo-haptics';
-import { LinearGradient } from 'expo-linear-gradient';
+import { X } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
-import { Modal, Pressable, StyleSheet, View } from 'react-native';
-import Animated, { Easing, useAnimatedStyle, useSharedValue, withDelay, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
+import { useTranslation } from 'react-i18next';
+import { Modal, Pressable, ScrollView, StyleSheet, View, useWindowDimensions, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 
-import { CompassDial } from '@/components/compass-dial';
-import { ThemedText } from '@/components/themed-text';
-import { Spacing } from '@/constants/theme';
-import { useCelebrationContext, type CelebrationColorTheme } from '@/lib/celebration-context';
+import { CelebrationPage } from '@/components/celebration/CelebrationPage';
+import { useCelebrationContext } from '@/lib/celebration-context';
 
-type ResolvedCelebrationTheme = {
-  gradient: readonly [string, string];
-  ringColor: string;
-  eyebrowColor: string;
-  titleColor: string;
-  subtitleColor: string;
-  buttonBg: string;
-  buttonText: string;
-  secondaryColor: string;
-  dialTrack: string;
-  dialColorFrom: string;
-  dialColorTo: string;
-  markerFill: string;
-};
-
-// Celebration is deliberately theme-independent - "라이트/다크 모두 어두운
-// 배경(축하는 한 가지 얼굴로)" in the mockup's spec: this look is fixed
-// regardless of the app's current light/dark mode, so these are plain
-// constants, not useTheme() reads. `colorTheme` (green/gold/purple) is a
-// separate axis - a milestone *tier* signal, not a light/dark variant.
-const CELEBRATION_THEMES: Record<CelebrationColorTheme, ResolvedCelebrationTheme> = {
-  green: {
-    gradient: ['rgba(47,93,80,1)', 'rgba(30,42,36,1)'],
-    ringColor: '#9FD9B8',
-    eyebrowColor: '#9FD9B8',
-    titleColor: '#F4F6F1',
-    subtitleColor: '#C4DCCE',
-    buttonBg: '#F4F6F1',
-    buttonText: '#1E2A24',
-    secondaryColor: '#9FD9B8',
-    dialTrack: 'rgba(255,255,255,0.15)',
-    dialColorFrom: '#6FBF95',
-    dialColorTo: '#9FD9B8',
-    markerFill: '#1E4438',
-  },
-  gold: {
-    gradient: ['rgba(51,38,22,1)', 'rgba(28,20,12,1)'],
-    ringColor: '#D8B778',
-    eyebrowColor: '#D8B778',
-    titleColor: '#F7F3EA',
-    subtitleColor: '#CBB68C',
-    buttonBg: '#F7F3EA',
-    buttonText: '#2A2013',
-    secondaryColor: '#D8B778',
-    dialTrack: 'rgba(255,255,255,0.12)',
-    dialColorFrom: '#B8925A',
-    dialColorTo: '#D8B778',
-    markerFill: '#241A10',
-  },
-  purple: {
-    gradient: ['rgba(58,33,89,1)', 'rgba(31,18,51,1)'],
-    ringColor: '#C9A6FF',
-    eyebrowColor: '#C9A6FF',
-    titleColor: '#F5F1FF',
-    subtitleColor: '#CBB8E8',
-    buttonBg: '#F5F1FF',
-    buttonText: '#241542',
-    secondaryColor: '#C9A6FF',
-    dialTrack: 'rgba(255,255,255,0.12)',
-    dialColorFrom: '#9B72D6',
-    dialColorTo: '#C9A6FF',
-    markerFill: '#1F1233',
-  },
-};
-
-const DIAL_MS = 340;
-const RING_LOOP_MS = 1700;
-const RING_DELAY_MS = 550;
-
-function Ring({ delay, color }: { delay: number; color: string }) {
-  const progress = useSharedValue(0);
-
-  useEffect(() => {
-    progress.value = withDelay(delay, withRepeat(withSequence(withTiming(1, { duration: RING_LOOP_MS, easing: Easing.out(Easing.ease) })), -1, false));
-  }, [delay, progress]);
-
-  const style = useAnimatedStyle(() => ({
-    transform: [{ scale: 1 + progress.value * 0.4 }],
-    opacity: 1 - progress.value,
-  }));
-
-  return <Animated.View style={[styles.ring, { borderColor: color }, style]} />;
-}
-
-/** Animates a plain number from 0 to `target` over `durationMs` - CompassDial takes percent as a plain prop, not a shared value, so this drives it with ordinary React state instead of reaching into the dial's internals. */
-function useCountUp(target: number, durationMs: number): number {
-  const [value, setValue] = useState(0);
-  const frameRef = useRef<number | null>(null);
-
-  useEffect(() => {
-    // Resetting to 0 synchronously (not deferred) so the very first animation
-    // frame below starts from a known value, not whatever's left from a
-    // previous celebration.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setValue(0);
-    const start = Date.now();
-    const tick = () => {
-      const elapsed = Date.now() - start;
-      const t = Math.min(1, elapsed / durationMs);
-      setValue(target * (1 - Math.pow(1 - t, 3)));
-      if (t < 1) {
-        frameRef.current = requestAnimationFrame(tick);
-      }
-    };
-    frameRef.current = requestAnimationFrame(tick);
-    return () => {
-      if (frameRef.current) cancelAnimationFrame(frameRef.current);
-    };
-  }, [target, durationMs]);
-
-  return value;
-}
-
-/** Mounted once at the app root (see _layout.tsx) - renders whatever useCelebration()/showCelebration() currently has active. */
+/**
+ * Mounted once at the app root (see _layout.tsx) - renders whatever
+ * useCelebration()/showCelebration() has queued as a horizontal swipeable
+ * stack (Nike Run Club's post-run achievement cards, not a single
+ * take-it-or-leave-it screen): several celebrations firing around the same
+ * time (e.g. a roadmap stage completing on the same day a streak milestone
+ * lands) all get their own full card instead of one silently winning.
+ * Swiping between cards is free browsing; acting on any one of them (or the
+ * explicit close button) ends the review session for the whole batch.
+ */
 export function CelebrationOverlay() {
-  const { celebration, hideCelebration } = useCelebrationContext();
-  const targetPercent = celebration?.percent ?? 100;
-  const animatedPercent = useCountUp(celebration ? targetPercent : 0, DIAL_MS);
-  const theme = CELEBRATION_THEMES[celebration?.colorTheme ?? 'green'];
+  const { t } = useTranslation();
+  const { queue, clearQueue } = useCelebrationContext();
+  const { width } = useWindowDimensions();
+  const [pageIndex, setPageIndex] = useState(0);
+  const wasVisible = useRef(false);
 
   useEffect(() => {
-    if (celebration) {
-      // Once/day rate limiting is the caller's job (see useCelebration) -
-      // this always fires when actually shown.
+    const isVisible = queue.length > 0;
+    if (isVisible && !wasVisible.current) {
+      // Once per batch, not once per card swiped into view - swiping to
+      // preview an upcoming card isn't a new "moment" worth a haptic buzz.
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+      setPageIndex(0);
     }
-  }, [celebration]);
+    wasVisible.current = isVisible;
+  }, [queue.length]);
+
+  const handleMomentumScrollEnd = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    setPageIndex(Math.round(event.nativeEvent.contentOffset.x / width));
+  };
 
   return (
-    <Modal visible={celebration !== null} transparent animationType="fade" onRequestClose={hideCelebration}>
-      <LinearGradient colors={theme.gradient} style={styles.overlay}>
-        {celebration && (
-          <View style={styles.content}>
-            <View style={styles.dialWrap}>
-              <Ring delay={0} color={theme.ringColor} />
-              <Ring delay={RING_DELAY_MS} color={theme.ringColor} />
-              <CompassDial
-                percent={animatedPercent}
-                colorFrom={theme.dialColorFrom}
-                colorTo={theme.dialColorTo}
-                tickActiveColor={theme.ringColor}
-                tickInactiveColor="rgba(255,255,255,0.2)"
-                trackColor={theme.dialTrack}
-                markerFill={theme.markerFill}
-                textColor={theme.titleColor}
-                subLabelColor={theme.subtitleColor}
-                showLabel={celebration.percent !== undefined}
-              />
-              {celebration.centerLabel && (
-                <View style={styles.dialCenterLabel} pointerEvents="none">
-                  <ThemedText type="title" style={[styles.dialCenterValue, { color: theme.titleColor }]}>
-                    {celebration.centerLabel.value}
-                  </ThemedText>
-                  {celebration.centerLabel.caption && (
-                    <ThemedText type="small" style={[styles.dialCenterCaption, { color: theme.subtitleColor }]}>
-                      {celebration.centerLabel.caption}
-                    </ThemedText>
-                  )}
-                </View>
-              )}
-            </View>
-
-            <ThemedText type="smallBold" style={[styles.eyebrow, { color: theme.eyebrowColor }]}>
-              {celebration.eyebrow}
-            </ThemedText>
-            <ThemedText type="title" style={[styles.title, { color: theme.titleColor }]}>
-              {celebration.title}
-            </ThemedText>
-            <ThemedText type="small" style={[styles.subtitle, { color: theme.subtitleColor }]}>
-              {celebration.subtitle}
-            </ThemedText>
+    <Modal visible={queue.length > 0} transparent animationType="fade" onRequestClose={clearQueue}>
+      <View style={styles.root}>
+        {queue.length > 0 && (
+          <>
+            <ScrollView
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              onMomentumScrollEnd={handleMomentumScrollEnd}
+              style={styles.pager}>
+              {queue.map((item, index) => (
+                <CelebrationPage key={index} celebration={item} width={width} onAct={clearQueue} />
+              ))}
+            </ScrollView>
 
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel={celebration.primaryLabel}
-              onPress={() => {
-                celebration.onPrimary();
-                hideCelebration();
-              }}
-              style={[styles.primaryButton, { backgroundColor: theme.buttonBg }]}>
-              <ThemedText type="smallBold" style={[styles.primaryButtonLabel, { color: theme.buttonText }]}>
-                {celebration.primaryLabel}
-              </ThemedText>
+              accessibilityLabel={t('celebration.closeAccessibilityLabel')}
+              onPress={clearQueue}
+              hitSlop={12}
+              style={styles.closeButton}>
+              <X size={20} color="rgba(255,255,255,0.85)" strokeWidth={2} />
             </Pressable>
 
-            {celebration.secondaryLabel && (
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={celebration.secondaryLabel}
-                onPress={() => {
-                  celebration.onSecondary?.();
-                  hideCelebration();
-                }}
-                hitSlop={8}
-                style={styles.secondaryButton}>
-                <ThemedText type="smallBold" style={[styles.secondaryLabel, { color: theme.secondaryColor }]}>
-                  {celebration.secondaryLabel}
-                </ThemedText>
-              </Pressable>
+            {queue.length > 1 && (
+              <View style={styles.dots} pointerEvents="none">
+                {queue.map((_, index) => (
+                  <View key={index} style={[styles.dot, index === pageIndex && styles.dotActive]} />
+                ))}
+              </View>
             )}
-          </View>
+          </>
         )}
-      </LinearGradient>
+      </View>
     </Modal>
   );
 }
 
 const styles = StyleSheet.create({
-  overlay: {
+  root: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: Spacing.five,
   },
-  content: {
-    alignItems: 'center',
-    maxWidth: 320,
+  pager: {
+    flex: 1,
   },
-  dialWrap: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: Spacing.three,
-  },
-  ring: {
+  closeButton: {
     position: 'absolute',
-    width: 176,
-    height: 176,
-    borderRadius: 88,
-    borderWidth: 2,
-  },
-  dialCenterLabel: {
-    position: 'absolute',
-    width: 176,
-    height: 176,
+    top: 56,
+    right: 20,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.12)',
   },
-  dialCenterValue: {
-    fontSize: 40,
-    lineHeight: 50,
+  dots: {
+    position: 'absolute',
+    bottom: 40,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 6,
   },
-  dialCenterCaption: {
-    marginTop: 2,
+  dot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: 'rgba(255,255,255,0.3)',
   },
-  eyebrow: {
-    letterSpacing: 2,
-    fontSize: 12,
+  dotActive: {
+    backgroundColor: 'rgba(255,255,255,0.9)',
   },
-  title: {
-    fontSize: 26,
-    lineHeight: 32,
-    textAlign: 'center',
-    marginTop: Spacing.two,
-  },
-  subtitle: {
-    textAlign: 'center',
-    lineHeight: 20,
-    marginTop: Spacing.two,
-  },
-  primaryButton: {
-    borderRadius: 16,
-    paddingVertical: Spacing.three,
-    paddingHorizontal: Spacing.five,
-    marginTop: Spacing.five,
-    alignSelf: 'stretch',
-    alignItems: 'center',
-  },
-  primaryButtonLabel: {},
-  secondaryButton: {
-    marginTop: Spacing.three - 2,
-    padding: Spacing.one,
-  },
-  secondaryLabel: {},
 });

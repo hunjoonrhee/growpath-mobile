@@ -1,3 +1,4 @@
+import { toDateString } from '@/lib/date';
 import { API_CALL_TIMEOUT_MS, env } from '@/lib/env';
 import { createSession } from '@/lib/sessions';
 import type { PronunciationResult } from '@/lib/speech-transcription';
@@ -205,6 +206,42 @@ export async function saveRoleplayTranscript(input: SaveRoleplayTranscriptInput)
     summary: input.summary.tilNote,
   });
   if (error) throw error;
+}
+
+export type BestPronunciationScore = {
+  score: number;
+  date: string;
+};
+
+/**
+ * Highest pronScore across every saved roleplay transcript - feeds the
+ * Achievements screen's "최고 발음 점수" badge. Scores only exist on
+ * user messages sent via voice (see ChatMessage.pronunciation), so this
+ * scans every message of every session rather than querying a column -
+ * there's no separate scores table, the score lives inside the jsonb
+ * transcript.
+ */
+export async function fetchBestPronunciationScore(userId: string, limit = 200): Promise<BestPronunciationScore | null> {
+  const { data, error } = await supabase
+    .from('roleplay_sessions')
+    .select('transcript, created_at')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+    .limit(limit);
+  if (error) throw error;
+
+  let best: BestPronunciationScore | null = null;
+  for (const row of data ?? []) {
+    const messages = (row.transcript as ChatMessage[] | null) ?? [];
+    const date = toDateString(new Date(row.created_at as string));
+    for (const message of messages) {
+      const score = message.pronunciation?.pronScore;
+      if (typeof score === 'number' && (best === null || score > best.score)) {
+        best = { score, date };
+      }
+    }
+  }
+  return best;
 }
 
 export type SaveRoleplayTilEntryInput = {

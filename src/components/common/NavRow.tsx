@@ -1,5 +1,5 @@
 import { ChevronRight, type LucideIcon } from 'lucide-react-native';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
@@ -10,9 +10,10 @@ export type NavRowProps = {
   label: string;
   subtitle?: string;
   onPress: () => void;
+  style?: StyleProp<ViewStyle>;
 };
 
-export function NavRow({ icon: Icon, label, subtitle, onPress }: NavRowProps) {
+export function NavRow({ icon: Icon, label, subtitle, onPress, style }: NavRowProps) {
   const colors = useTheme();
 
   return (
@@ -20,7 +21,12 @@ export function NavRow({ icon: Icon, label, subtitle, onPress }: NavRowProps) {
       accessibilityRole="button"
       accessibilityLabel={label}
       onPress={onPress}
-      style={({ pressed }) => [styles.row, { backgroundColor: colors.surf, borderColor: colors.border }, pressed && styles.pressed]}>
+      style={({ pressed }) => [
+        styles.row,
+        { backgroundColor: colors.surf, borderColor: colors.border },
+        pressed && styles.pressed,
+        style,
+      ]}>
       <Icon size={20} color={colors.textDim} strokeWidth={1.8} />
       <View style={styles.text}>
         <ThemedText type="smallBold">{label}</ThemedText>

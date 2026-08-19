@@ -12,6 +12,8 @@ export type CelebrationOptions = {
   percent?: number;
   /** Overrides the dial's center text for celebrations whose milestone isn't a percent (e.g. a streak day count) - shown instead of CompassDial's own "N %" label. */
   centerLabel?: { value: string; caption?: string };
+  /** Shows this image (an achievement badge's art) in the dial's center instead of text - for celebrations with no natural number to display (e.g. "you saved your first word"). Takes priority over centerLabel if both are somehow set. */
+  centerIcon?: number;
   colorTheme?: CelebrationColorTheme;
   primaryLabel: string;
   onPrimary: () => void;

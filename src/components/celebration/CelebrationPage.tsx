@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect, useRef, useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Image, Pressable, StyleSheet, View } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withDelay, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
 
 import { CELEBRATION_THEMES } from '@/components/celebration/celebration-themes';
@@ -82,9 +82,14 @@ export function CelebrationPage({ celebration, width, onAct }: CelebrationPagePr
             markerFill={theme.markerFill}
             textColor={theme.titleColor}
             subLabelColor={theme.subtitleColor}
-            showLabel={celebration.percent !== undefined}
+            showLabel={celebration.percent !== undefined && !celebration.centerIcon}
           />
-          {celebration.centerLabel && (
+          {celebration.centerIcon && (
+            <View style={styles.dialCenterLabel} pointerEvents="none">
+              <Image source={celebration.centerIcon} style={styles.dialCenterIcon} resizeMode="cover" />
+            </View>
+          )}
+          {!celebration.centerIcon && celebration.centerLabel && (
             <View style={styles.dialCenterLabel} pointerEvents="none">
               <ThemedText type="title" style={[styles.dialCenterValue, { color: theme.titleColor }]}>
                 {celebration.centerLabel.value}
@@ -177,6 +182,14 @@ const styles = StyleSheet.create({
   },
   dialCenterCaption: {
     marginTop: 2,
+  },
+  // Sized to sit inside CompassDial's ring (176px outer) without touching
+  // the tick marks - the badge art is an opaque circle image, not a
+  // transparent icon, so it needs real clearance from the ring itself.
+  dialCenterIcon: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
   },
   eyebrow: {
     letterSpacing: 2,

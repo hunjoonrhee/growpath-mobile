@@ -31,3 +31,9 @@ export function relativeDateLabel(dateString: string, t: (key: string, options?:
   if (days === 1) return t('log.relativeYesterday');
   return t('log.relativeDaysAgo', { count: days });
 }
+
+/** "8월 15일" / "Aug 15" / "15. Aug." depending on locale - a personal record's date is often too old for relativeDateLabel's "N일 전" to read naturally, and Intl already knows how to localize a month/day pair per-locale for free. */
+export function formatShortDate(dateString: string, locale: string): string {
+  const date = new Date(`${dateString}T00:00:00`);
+  return new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' }).format(date);
+}

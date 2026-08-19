@@ -82,6 +82,13 @@ export async function fetchDueVocabWordCount(userId: string): Promise<number> {
   return count ?? 0;
 }
 
+/** Total saved word count regardless of review schedule - feeds the Achievements screen's "저장한 단어 수" badge. */
+export async function fetchVocabWordCount(userId: string): Promise<number> {
+  const { count, error } = await supabase.from('vocab_words').select('id', { count: 'exact', head: true }).eq('user_id', userId);
+  if (error) throw error;
+  return count ?? 0;
+}
+
 /** Every saved word regardless of review schedule, newest first - unlike fetchDueVocabWords this isn't meant to be paged through in a single sitting, so it isn't capped. */
 export async function fetchAllVocabWords(userId: string): Promise<VocabWord[]> {
   const { data, error } = await supabase

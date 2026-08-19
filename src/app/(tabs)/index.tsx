@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Alert, Pressable, RefreshControl, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { getBadgeImage } from '@/components/achievements/badge-registry';
 import { CompassDial } from '@/components/compass-dial';
 import { NoActiveRoadmapState } from '@/components/roadmap/NoActiveRoadmapState';
 import { ThemedText } from '@/components/themed-text';
@@ -16,6 +17,11 @@ import { RecommendationCard } from '@/components/today/RecommendationCard';
 import { StageProgressBar } from '@/components/today/StageProgressBar';
 import { TimerHandoffSheet } from '@/components/today/TimerHandoffSheet';
 import { Spacing, Typography } from '@/constants/theme';
+import { useAchievementStats } from '@/hooks/achievements/use-achievement-stats';
+import { useHoursMilestoneDetector } from '@/hooks/achievements/use-hours-milestone-detector';
+import { useNewRecordDetector } from '@/hooks/achievements/use-new-record-detector';
+import { useOneTimeUnlockDetector } from '@/hooks/achievements/use-one-time-unlock-detector';
+import { useRecordsMilestoneDetector } from '@/hooks/achievements/use-records-milestone-detector';
 import { useProfileInfo } from '@/hooks/profile/use-profile-info';
 import { useActiveRoadmap } from '@/hooks/roadmap/use-active-roadmap';
 import { useGapAnalysis } from '@/hooks/roadmap/use-gap-analysis';
@@ -43,6 +49,12 @@ export default function TodayScreen() {
   const gapAnalysis = useGapAnalysis(userId, adoptedRoadmapId.data, roadmap.data);
   const streak = useStudyStreak(userId);
   const weeklySessionCount = useWeeklySessionCount(userId);
+  // null (not 0) when the roadmap hasn't loaded yet - achievement unlock
+  // checks need to tell "not loaded" apart from "genuinely zero stages",
+  // unlike the `totalStages` display fallback further down.
+  const totalStagesForAchievements = roadmap.data?.stages.length ?? null;
+  const achievementStats = useAchievementStats(userId, focusStageLevel.data, totalStagesForAchievements);
+  const totalStudyHours = achievementStats.data ? Math.floor(achievementStats.data.totalStudyMinutes / 60) : null;
   // Vocab review only makes sense for a goal that actually involves a
   // language (a pure language goal, or a hybrid like "German-speaking lead
   // architect") - see roadmap.targetLanguage, classified at generation time.
@@ -112,6 +124,126 @@ export default function TodayScreen() {
   );
 
   useStreakMilestoneDetector(userId, streak.data, handleMilestoneReached);
+
+  const handleRecordsMilestone = useCallback(
+    (milestone: number) => {
+      showCelebration({
+        eyebrow: t('celebration.recordsMilestone.eyebrow'),
+        title: t('celebration.recordsMilestone.title', { count: milestone }),
+        subtitle: t('celebration.recordsMilestone.subtitle'),
+        centerLabel: { value: String(milestone), caption: t('celebration.recordsMilestone.dialCaption') },
+        colorTheme: milestone >= 100 ? 'purple' : milestone >= 50 ? 'gold' : 'green',
+        primaryLabel: t('celebration.viewAchievementsCta'),
+        onPrimary: () => router.push('/achievements'),
+        secondaryLabel: t('celebration.dismiss'),
+      });
+    },
+    [showCelebration, t, router]
+  );
+
+  useRecordsMilestoneDetector(userId, achievementStats.data?.totalSessionCount, handleRecordsMilestone);
+
+  const handleHoursMilestone = useCallback(
+    (milestone: number) => {
+      showCelebration({
+        eyebrow: t('celebration.hoursMilestone.eyebrow'),
+        title: t('celebration.hoursMilestone.title', { count: milestone }),
+        subtitle: t('celebration.hoursMilestone.subtitle'),
+        centerLabel: { value: String(milestone), caption: t('celebration.hoursMilestone.dialCaption') },
+        colorTheme: milestone >= 100 ? 'purple' : milestone >= 50 ? 'gold' : 'green',
+        primaryLabel: t('celebration.viewAchievementsCta'),
+        onPrimary: () => router.push('/achievements'),
+        secondaryLabel: t('celebration.dismiss'),
+      });
+    },
+    [showCelebration, t, router]
+  );
+
+  useHoursMilestoneDetector(userId, totalStudyHours, handleHoursMilestone);
+
+  const handleNewLongestSession = useCallback(
+    (minutes: number) => {
+      showCelebration({
+        eyebrow: t('celebration.prLongestSession.eyebrow'),
+        title: t('celebration.prLongestSession.title'),
+        subtitle: t('celebration.prLongestSession.subtitle', { minutes }),
+        centerLabel: { value: String(minutes), caption: t('celebration.prLongestSession.dialCaption') },
+        colorTheme: 'gold',
+        primaryLabel: t('celebration.viewAchievementsCta'),
+        onPrimary: () => router.push('/achievements'),
+        secondaryLabel: t('celebration.dismiss'),
+      });
+    },
+    [showCelebration, t, router]
+  );
+
+  useNewRecordDetector(
+    userId ? `growpath.bestLongestSession.${userId}` : null,
+    achievementStats.data?.longestSessionMinutes,
+    handleNewLongestSession
+  );
+
+  const handleNewPronunciationRecord = useCallback(
+    (score: number) => {
+      const roundedScore = Math.round(score);
+      showCelebration({
+        eyebrow: t('celebration.prPronunciation.eyebrow'),
+        title: t('celebration.prPronunciation.title'),
+        subtitle: t('celebration.prPronunciation.subtitle', { score: roundedScore }),
+        centerLabel: { value: String(roundedScore), caption: t('celebration.prPronunciation.dialCaption') },
+        colorTheme: 'gold',
+        primaryLabel: t('celebration.viewAchievementsCta'),
+        onPrimary: () => router.push('/achievements'),
+        secondaryLabel: t('celebration.dismiss'),
+      });
+    },
+    [showCelebration, t, router]
+  );
+
+  useNewRecordDetector(
+    userId ? `growpath.bestPronunciation.${userId}` : null,
+    achievementStats.data?.bestPronunciationScore,
+    handleNewPronunciationRecord
+  );
+
+  const handleFirstWordSaved = useCallback(() => {
+    showCelebration({
+      eyebrow: t('celebration.prSavedWords.eyebrow'),
+      title: t('celebration.prSavedWords.title'),
+      subtitle: t('celebration.prSavedWords.subtitle'),
+      centerIcon: getBadgeImage('pr-saved-words'),
+      colorTheme: 'gold',
+      primaryLabel: t('celebration.viewAchievementsCta'),
+      onPrimary: () => router.push('/achievements'),
+      secondaryLabel: t('celebration.dismiss'),
+    });
+  }, [showCelebration, t, router]);
+
+  useOneTimeUnlockDetector(
+    userId ? `growpath.savedWordsUnlocked.${userId}` : null,
+    (achievementStats.data?.savedVocabWordCount ?? 0) > 0,
+    handleFirstWordSaved
+  );
+
+  const handleRoadmapCompleted = useCallback(() => {
+    showCelebration({
+      eyebrow: t('celebration.roadmapComplete.eyebrow'),
+      title: t('celebration.roadmapComplete.title'),
+      subtitle: t('celebration.roadmapComplete.subtitle'),
+      percent: 100,
+      centerIcon: getBadgeImage('goal-roadmap-100'),
+      colorTheme: 'purple',
+      primaryLabel: t('celebration.viewAchievementsCta'),
+      onPrimary: () => router.push('/achievements'),
+      secondaryLabel: t('celebration.dismiss'),
+    });
+  }, [showCelebration, t, router]);
+
+  useOneTimeUnlockDetector(
+    adoptedRoadmapId.data ? `growpath.roadmapComplete.${adoptedRoadmapId.data}` : null,
+    Boolean(totalStagesForAchievements) && currentStage >= (totalStagesForAchievements ?? 0),
+    handleRoadmapCompleted
+  );
 
   useTodayWidgetSync(
     roadmap.data

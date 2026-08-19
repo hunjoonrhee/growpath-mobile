@@ -1,9 +1,10 @@
 import { useRouter } from 'expo-router';
-import { Check } from 'lucide-react-native';
+import { Check, Trophy } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Alert, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { NavRow } from '@/components/common/NavRow';
 import { SettingsButton } from '@/components/navigation/SettingsButton';
 import { CertificationsSection } from '@/components/profile/CertificationsSection';
 import { ProfileInfoForm } from '@/components/profile/ProfileInfoForm';
@@ -72,6 +73,13 @@ export default function ProfileScreen() {
           )}
 
           <CertificationsSection userId={userId} />
+
+          <NavRow
+            icon={Trophy}
+            label={t('profile.achievementsNavLabel')}
+            onPress={() => router.push('/achievements')}
+            style={styles.achievementsNavRow}
+          />
         </ScrollView>
       </SafeAreaView>
     </ThemedView>
@@ -100,6 +108,9 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     lineHeight: 28,
+  },
+  achievementsNavRow: {
+    marginTop: Spacing.four,
   },
   sectionTitle: {
     ...Typography.sectionLabel,

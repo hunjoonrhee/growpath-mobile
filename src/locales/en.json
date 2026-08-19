@@ -94,7 +94,8 @@
     "certDeleteCta": "Delete",
     "certDeleteError": "Couldn't delete. Please try again in a moment.",
     "certDeletedToastTitle": "Certification deleted",
-    "settingsNavLabel": "Settings"
+    "settingsNavLabel": "Settings",
+    "achievementsNavLabel": "Achievements"
   },
   "settings": {
     "title": "Settings",
@@ -119,6 +120,45 @@
     "logoutConfirm": "Log out",
     "logoutError": "Couldn't log out. Please try again in a moment.",
     "languageError": "Couldn't change the language. Please try again in a moment."
+  },
+  "achievements": {
+    "backAccessibilityLabel": "Go back",
+    "title": "Achievements",
+    "loading": "Loading achievements...",
+    "loadError": "Couldn't load your achievements. Please try again in a moment.",
+    "unlockedCount": "{{unlocked}} unlocked · {{total}} total",
+    "sections": {
+      "milestone": "Milestones",
+      "personalRecord": "Personal records",
+      "goal": "Goal progress"
+    },
+    "badges": {
+      "streak3": "3-day streak",
+      "streak7": "7-day streak",
+      "streak30": "30-day streak",
+      "streak100": "100-day streak",
+      "records10": "10 logs",
+      "records50": "50 logs",
+      "records100": "100 logs",
+      "hours10": "10 hours studied",
+      "hours50": "50 hours studied",
+      "hours100": "100 hours studied",
+      "prLongestSession": "Longest session",
+      "prPronunciation": "Best pronunciation",
+      "prSavedWords": "Words saved",
+      "goalStageComplete": "Stage complete",
+      "goalRoadmap100": "Roadmap 100%"
+    },
+    "detail": {
+      "longestSession": "{{minutes}} min · {{date}}",
+      "pronunciation": "{{score}} · {{date}}",
+      "savedWords": "{{count}}"
+    },
+    "badgePreview": {
+      "stageCompleteTitle": "You completed a stage!",
+      "savedWordsTitle": "Your vocab list is growing!",
+      "savedWordsSubtitle": "You've saved {{count}} words so far."
+    }
   },
   "auth": {
     "tagline": "Know your goal → know today's step\nAI-powered personal growth compass",
@@ -322,6 +362,8 @@
   "celebration": {
     "dismiss": "Later",
     "closeAccessibilityLabel": "Close",
+    "viewAchievementsCta": "View achievements",
+    "previewCloseCta": "Got it",
     "stageComplete": {
       "eyebrow": "STAGE COMPLETE",
       "title": "You finished {{stage}}!",
@@ -334,6 +376,40 @@
       "subtitle": "You've shown up {{count}} days in a row. Keep the streak alive.",
       "primaryCta": "Log today's study",
       "dialCaption": "day streak"
+    },
+    "recordsMilestone": {
+      "eyebrow": "MILESTONE",
+      "title": "{{count}} logs recorded!",
+      "subtitle": "You're building a real habit of logging.",
+      "dialCaption": "logs"
+    },
+    "hoursMilestone": {
+      "eyebrow": "MILESTONE",
+      "title": "{{count}} hours studied!",
+      "subtitle": "Your total study time keeps growing.",
+      "dialCaption": "hours"
+    },
+    "prLongestSession": {
+      "eyebrow": "PERSONAL RECORD",
+      "title": "New longest session!",
+      "subtitle": "You focused for {{minutes}} minutes.",
+      "dialCaption": "min"
+    },
+    "prPronunciation": {
+      "eyebrow": "PERSONAL RECORD",
+      "title": "New pronunciation record!",
+      "subtitle": "You scored {{score}}.",
+      "dialCaption": "score"
+    },
+    "prSavedWords": {
+      "eyebrow": "MILESTONE",
+      "title": "You saved your first word!",
+      "subtitle": "Keep reviewing it in your vocab list."
+    },
+    "roadmapComplete": {
+      "eyebrow": "GOAL ACHIEVED",
+      "title": "You completed your roadmap!",
+      "subtitle": "Every stage, done."
     }
   }
 }

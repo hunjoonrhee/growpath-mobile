@@ -94,7 +94,8 @@
     "certDeleteCta": "Löschen",
     "certDeleteError": "Löschen fehlgeschlagen. Bitte versuche es gleich noch einmal.",
     "certDeletedToastTitle": "Zertifikat gelöscht",
-    "settingsNavLabel": "Einstellungen"
+    "settingsNavLabel": "Einstellungen",
+    "achievementsNavLabel": "Erfolge"
   },
   "settings": {
     "title": "Einstellungen",
@@ -119,6 +120,45 @@
     "logoutConfirm": "Abmelden",
     "logoutError": "Abmelden fehlgeschlagen. Bitte versuche es gleich noch einmal.",
     "languageError": "Sprache konnte nicht geändert werden. Bitte versuche es gleich noch einmal."
+  },
+  "achievements": {
+    "backAccessibilityLabel": "Zurück",
+    "title": "Erfolge",
+    "loading": "Erfolge werden geladen...",
+    "loadError": "Erfolge konnten nicht geladen werden. Bitte versuche es gleich noch einmal.",
+    "unlockedCount": "{{unlocked}} freigeschaltet · {{total}} gesamt",
+    "sections": {
+      "milestone": "Meilensteine",
+      "personalRecord": "Persönliche Rekorde",
+      "goal": "Zielfortschritt"
+    },
+    "badges": {
+      "streak3": "3 Tage in Folge",
+      "streak7": "7 Tage in Folge",
+      "streak30": "30 Tage in Folge",
+      "streak100": "100 Tage in Folge",
+      "records10": "10 Einträge",
+      "records50": "50 Einträge",
+      "records100": "100 Einträge",
+      "hours10": "10 Stunden gelernt",
+      "hours50": "50 Stunden gelernt",
+      "hours100": "100 Stunden gelernt",
+      "prLongestSession": "Längste Session",
+      "prPronunciation": "Beste Aussprache",
+      "prSavedWords": "Gespeicherte Vokabeln",
+      "goalStageComplete": "Stufe abgeschlossen",
+      "goalRoadmap100": "Roadmap 100%"
+    },
+    "detail": {
+      "longestSession": "{{minutes}} Min · {{date}}",
+      "pronunciation": "{{score}} · {{date}}",
+      "savedWords": "{{count}}"
+    },
+    "badgePreview": {
+      "stageCompleteTitle": "Du hast eine Stufe abgeschlossen!",
+      "savedWordsTitle": "Deine Vokabelliste wächst!",
+      "savedWordsSubtitle": "Du hast bisher {{count}} Vokabeln gespeichert."
+    }
   },
   "auth": {
     "tagline": "Kenne dein Ziel → kenne den heutigen Schritt\nKI-gestützter Wachstumskompass",
@@ -322,6 +362,8 @@
   "celebration": {
     "dismiss": "Später",
     "closeAccessibilityLabel": "Schließen",
+    "viewAchievementsCta": "Erfolge ansehen",
+    "previewCloseCta": "Alles klar",
     "stageComplete": {
       "eyebrow": "STAGE COMPLETE",
       "title": "Du hast {{stage}} abgeschlossen!",
@@ -334,6 +376,40 @@
       "subtitle": "Du warst {{count}} Tage in Folge dabei. Bleib dran.",
       "primaryCta": "Heute eintragen",
       "dialCaption": "Tage in Folge"
+    },
+    "recordsMilestone": {
+      "eyebrow": "MILESTONE",
+      "title": "{{count}} Einträge erreicht!",
+      "subtitle": "Du baust dir eine echte Eintrage-Gewohnheit auf.",
+      "dialCaption": "Einträge"
+    },
+    "hoursMilestone": {
+      "eyebrow": "MILESTONE",
+      "title": "{{count}} Stunden gelernt!",
+      "subtitle": "Deine gesamte Lernzeit wächst weiter.",
+      "dialCaption": "Stunden"
+    },
+    "prLongestSession": {
+      "eyebrow": "PERSONAL RECORD",
+      "title": "Neue längste Session!",
+      "subtitle": "Du warst {{minutes}} Minuten konzentriert dabei.",
+      "dialCaption": "Min"
+    },
+    "prPronunciation": {
+      "eyebrow": "PERSONAL RECORD",
+      "title": "Neuer Ausspracherekord!",
+      "subtitle": "Du hast {{score}} erreicht.",
+      "dialCaption": "Punkte"
+    },
+    "prSavedWords": {
+      "eyebrow": "MILESTONE",
+      "title": "Du hast dein erstes Wort gespeichert!",
+      "subtitle": "Wiederhole es einfach in deiner Vokabelliste."
+    },
+    "roadmapComplete": {
+      "eyebrow": "GOAL ACHIEVED",
+      "title": "Du hast deine Roadmap abgeschlossen!",
+      "subtitle": "Jede Stufe geschafft."
     }
   }
 }

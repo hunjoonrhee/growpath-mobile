@@ -186,3 +186,27 @@ export async function fetchWeeklySessionCount(userId: string): Promise<number> {
   if (error) throw error;
   return count ?? 0;
 }
+
+export type SessionStat = {
+  date: string;
+  durationMinutes: number | null;
+};
+
+/**
+ * Date + duration for every session, up to a generous cap - feeds the
+ * Achievements screen's aggregate stats (total count, total time, longest
+ * single session, longest streak ever). A higher cap than
+ * fetchStudySessionDates' 200 since totals/records should stay accurate
+ * for a heavier user for longer, but still bounded rather than an
+ * unlimited fetch.
+ */
+export async function fetchSessionStats(userId: string, limit = 1000): Promise<SessionStat[]> {
+  const { data, error } = await supabase
+    .from('sessions')
+    .select('date, duration_minutes')
+    .eq('user_id', userId)
+    .order('date', { ascending: false })
+    .limit(limit);
+  if (error) throw error;
+  return (data ?? []).map((row) => ({ date: row.date as string, durationMinutes: row.duration_minutes as number | null }));
+}
